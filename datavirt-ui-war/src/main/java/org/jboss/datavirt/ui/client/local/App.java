@@ -33,7 +33,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
- * The main entry point into the S-RAMP browser UI app.
+ * The main entry point into the Data Virtualization UI app.
  *
  * @author eric.wittmann@redhat.com
  */

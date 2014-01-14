@@ -95,7 +95,7 @@
     <servlet-class>org.jboss.datavirt.commons.ui.header.OverlordHeaderDataJS</servlet-class>
     <init-param>
         <param-name>app-id</param-name>
-        <param-value>s-ramp-ui</param-value>
+        <param-value>datavirt-ui</param-value>
     </init-param>
   </servlet>
   <servlet-mapping>
@@ -124,18 +124,18 @@
   <!-- Define a Security Constraint on this Application -->
   <security-constraint>
     <web-resource-collection>
-      <web-resource-name>S-RAMP UI</web-resource-name>
+      <web-resource-name>Data Virtualization UI</web-resource-name>
       <url-pattern>*.html</url-pattern>
     </web-resource-collection>
     <auth-constraint>
-      <role-name>overlorduser</role-name>
+      <role-name>datavirtuser</role-name>
     </auth-constraint>
   </security-constraint>
 
   <!-- Define the Login Configuration for this Application -->
   <login-config>
     <auth-method>FORM</auth-method>
-    <realm-name>Overlord</realm-name>
+    <realm-name>DataVirt</realm-name>
     <form-login-config>
       <form-login-page>/login.html</form-login-page>
       <form-error-page>/loginerror.html</form-error-page>
@@ -145,9 +145,9 @@
   <!-- Security roles referenced by this web application -->
   <security-role>
     <description>
-        The role that is required to log in to the S-RAMP UI.
+        The role that is required to log in to the Data Virtualization UI.
     </description>
-    <role-name>overlorduser</role-name>
+    <role-name>datavirtuser</role-name>
   </security-role>
 
 </web-app>

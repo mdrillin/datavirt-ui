@@ -51,7 +51,7 @@
     <servlet-class>org.jboss.datavirt.commons.ui.header.OverlordHeaderDataJS</servlet-class>
     <init-param>
         <param-name>app-id</param-name>
-        <param-value>s-ramp-ui</param-value>
+        <param-value>datavirt-ui</param-value>
     </init-param>
   </servlet>
   <servlet>
