@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title data-role="dummy">Data Virtualization - VDB Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content=""></meta>
+    <meta name="author" content=""></meta>
+    <link href="../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet"></link>
+    <link href="../../../../../../../../webapp/css/datavirt-ui.css" rel="stylesheet"></link>
+    <link href="../../../../../../../../webapp/css/datavirt-ui-responsive.css" rel="stylesheet"></link>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../../../../../../../../webapp/jquery-1.8.3/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap.min.js"></script>
+    <script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="../../../../../../../../webapp/js/datavirt-responsive.js"></script>
+    <script type="text/javascript" src="../../../../../../../../webapp/js/datavirt-widgets.js"></script>
+  </head>
+
+  <body>
+    <div id="page" data-field="page">
+
+      <!-- Content area with footer-->
+      <div id="page-content" class="container-fluid">
+
+        <!-- Breadcrumbs -->
+        <div class="row-fluid">
+          <ul class="breadcrumb">
+            <li><a data-field="back-to-dashboard" href="dashboard.html" data-i18n-key="breadcrumb.dashboard">Data Virtualization Dashboard</a> <span class="divider">/<span data-role="dummy"/></span></li>
+            <li><a data-field="back-to-vdbs" href="virtualdatabases.html" data-i18n-key="breadcrumb.vdbs">Virtual Databases</a> <span class="divider">/<span data-role="dummy"/></span></li>
+            <li class="active" data-i18n-key="breadcrumb.vdb-details">VDB Details</li>
+          </ul>
+        </div>
+
+        <!-- Loading spinner -->
+        <div data-field="vdbdetails-loading-spinner" class="spinner artifact-details-loading hide" data-i18n-key="loading-vdbdetails">Loading VDB details, please wait...</div>
+
+        <!-- Header -->
+        <div class="row-fluid sramp-meta-data-section-header">
+            <div class="span12">
+                <span data-field="vdbdetails-pagetitle" data-role="dummy">Virtual Database : MyVDB</span>
+                <span data-field="vdbdetails-vdbstatus" class="pull-right" data-role="dummy">Status</span>
+            </div>
+        </div>
+        
+        <!-- The VDBs table -->
+        <div class="span9">
+            <!-- Search Box -->
+            <div class="row-fluid">
+              <div class="span12 sramp-search">
+                <input data-field="model-search-box" id="model-search-box" type="text" class="span12 datavirt-search-box" placeholder="Search..."></input>
+              </div>
+            </div>
+            
+            <!-- Actions Bar -->
+            <div class="row-fluid sramp-artifacts">
+              <div class="span12 sramp-artifacts-actions">
+                <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload" data-i18n-key="addSource">Add Source</button>
+                <button data-field="btn-add-view" id="btn-add-view" class="btn btn-focus requires-fileupload" data-i18n-key="addView">Add View</button>
+                <button data-field="btn-remove" id="btn-remove" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
+                <a data-field="link-download-dynamicvdb" data-i18n-key="download-vdb">Download VDB...</a>
+                <button data-field="btn-refresh" class="btn pull-right"><i class="icon-refresh"></i></button>
+                <div class="pull-right sramp-sp4n-label desktop-only">
+                  <span data-i18n-key="displaying">Displaying</span>
+                  <span data-field="datavirt-vdbmodels-range-1" data-role="dummy">1-11</span>
+                  <span data-i18n-key="of">of</span>
+                  <span data-field="datavirt-vdbmodels-total-1" data-role="dummy">37</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Messages -->
+            <div data-field="datavirt-vdbmodels-none" style="display:none" class="sramp-artifacts-none">
+              <span data-i18n-key="no-vdbmodels">No VDB Models found.</span>
+            </div>
+            <div data-field="datavirt-vdbmodels-searching" style="display:none" class="sramp-artifacts-searching">
+              <span class="spinner" data-i18n-key="finding-vdbmodels">Finding Virtual DB Models, please wait...</span>
+            </div>
+
+            <!-- VDBs Table -->
+            <table data-field="datavirt-vdbmodels-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+              <thead>
+                <tr>
+                  <th data-i18n-key="name">Select</th>
+                  <th data-i18n-key="name">Model Name</th>
+                  <th data-i18n-key="name">Status</th>
+                  <th data-i18n-key="type">Model Type</th>
+                  <th data-i18n-key="type">Translator</th>
+                  <th data-i18n-key="type">JNDI Source</th>
+                </tr>
+              </thead>
+              <tbody data-role="dummy">
+                <tr>
+                  <td></td>
+                  <td>Model1 1</td>
+                  <td>Status</td>
+                  <td>Source</td>
+                  <td>mysql</td>
+                  <td>JNDI Name</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>Model2 1</td>
+                  <td>Status</td>
+                  <td>View</td>
+                  <td>sqlserver</td>
+                  <td>JNDI Name</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>Model3 1</td>
+                  <td>Status</td>
+                  <td>Source</td>
+                  <td>salesforce</td>
+                  <td>JNDI Name</td>
+                </tr>
+              </tbody>
+            </table>
+              
+            <!-- Pager -->
+            <div class="mobile-only" style="padding: 0px; margin: 0px">
+              <span data-i18n-key="displaying">Displaying</span>
+              <span data-field="datavirt-vdbmodels-range-2" data-role="dummy">1-11</span>
+              <span data-i18n-key="of">of</span>
+              <span data-field="datavirt-vdbmodels-total-2" data-role="dummy">37</span>
+            </div>
+            <div data-field="datavirt-vdbmodels-pager" class="pagination sramp-artifacts-pager" data-role="dummy">
+              <ul>
+                <li class="disabled"><a>&#x00AB;</a></li>
+                <li class="active"><a>1</a></li>
+                <li><a>2</a></li>
+                <li><a>3</a></li>
+                <li><a>4</a></li>
+                <li><a>&#x00BB;</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+          
+        <!-- Footer -->
+        <footer>
+          <hr />
+          <p data-i18n-key="footer">&copy; JBoss Data Virtualization 2014</p>
+        </footer>
+      </div> <!-- /container -->
+      
+    </div> <!-- /page -->
+
+    <!-- Some scripting to add functionality to the live template -->
+    <script>
+      $(document).ready(function() {
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/eclipse");
+        editor.getSession().setMode("ace/mode/xml");
+      });
+      $('.sramp-artifact-actions ul li:nth-child(3)').click(function() {
+        $('#delete-dialog-derived').modal();
+      });
+      $('.sramp-artifact-actions ul li:nth-child(4)').click(function() {
+        $('#delete-dialog-referenced').modal();
+      });
+    </script>
+  </body>
+</html>

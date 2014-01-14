@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title data-role="dummy">Data Virtualization - Data Source Details</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <meta name="description" content=""></meta>
+    <meta name="author" content=""></meta>
+    <link href="../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet"></link>
+    <link href="../../../../../../../../webapp/css/datavirt-ui.css" rel="stylesheet"></link>
+    <link href="../../../../../../../../webapp/css/datavirt-ui-responsive.css" rel="stylesheet"></link>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../../../../../../../../webapp/jquery-1.8.3/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap.min.js"></script>
+    <script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" src="../../../../../../../../webapp/js/datavirt-responsive.js"></script>
+    <script type="text/javascript" src="../../../../../../../../webapp/js/datavirt-widgets.js"></script>
+  </head>
+
+  <body>
+    <div id="page" data-field="page">
+
+      <!-- Content area with footer-->
+      <div id="page-content" class="container-fluid">
+
+        <!-- Breadcrumbs -->
+        <div class="row-fluid">
+          <ul class="breadcrumb">
+            <li><a data-field="back-to-dashboard" href="dashboard.html" data-i18n-key="breadcrumb.dashboard">Data Virtualization Dashboard</a> <span class="divider">/<span data-role="dummy"/></span></li>
+            <li><a data-field="back-to-datasources" href="datasources.html" data-i18n-key="breadcrumb.datasources">Data Sources</a> <span class="divider">/<span data-role="dummy"/></span></li>
+            <li class="active" data-i18n-key="breadcrumb.datasource-details">Data Source Details</li>
+          </ul>
+        </div>
+
+        <!-- Loading spinner -->
+        <div data-field="datasource-details-loading-spinner" class="spinner artifact-details-loading hide" data-i18n-key="loading-datasources">Loading datasource, please wait...</div>
+
+        <!-- Header -->
+        <div class="row-fluid sramp-meta-data-section-header">
+            <div class="span12">
+                <span data-field="datasourcedetails-pagetitle" data-role="dummy">Data Source : MyDS</span>
+            </div>
+        </div>
+        
+        <!-- Core Properties Table -->
+        <p>
+          <table data-field="datasource-core-properties-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+            <thead>
+              <tr>
+                <th data-i18n-key="name">Name</th>
+                <th data-i18n-key="type">Value</th>
+              </tr>
+            </thead>
+            <tbody data-role="dummy">
+              <tr>
+                <td>name</td>
+                <td>value</td>
+              </tr>
+            </tbody>
+          </table>
+        </p>   
+        <p>
+          <!-- Advanced Properties -->
+          <div id="sramp-filters" class="row-fluid close-on-mobile closed-on-mobile open-on-desktop">
+            <div class="span12">
+              <!-- Filter Accordian -->
+              <div class="" id="accordion-filters">
+              
+                <!-- Advanced Properties -->
+                <div class="sramp-filter-group">
+                  <div class="s-ramp-filter-header">
+                    <a class="sramp-filter-toggle" data-toggle="slide" data-target="#accordion-filters-properties">
+                      <span data-i18n-key="filters.custom-properties-header">Advanced Properties</span>
+                    </a>
+                  </div>
+                  <div id="accordion-filters-properties" class="sramp-filter-body closed">
+                    <div class="sramp-filter-inner">
+                       <table data-field="datasource-advanced-properties-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+                         <thead>
+                           <tr>
+                             <th data-i18n-key="name">Name</th>
+                             <th data-i18n-key="type">Value</th>
+                           </tr>
+                         </thead>
+                         <tbody data-role="dummy">
+                           <tr>
+                             <td>name</td>
+                             <td>value</td>
+                           </tr>
+                         </tbody>
+                       </table>
+                    </div>
+                    <div class="s-ramp-filter-footer">
+                      <a class="sramp-filter-toggle dropup" data-toggle="slide" data-target="#accordion-filters-properties">
+                        <span class="pull-right caret"></span>
+                      </a>
+                    </div>
+                  </div> <!-- accordion-filters-properties -->
+                </div> <!-- sramp-filter-group -->
+              </div> <!-- accordian-filters -->
+            </div> <!-- span12 -->
+          </div> <!-- sramp-filters -->
+        </p>   
+        
+        <!-- Footer -->
+        <footer>
+          <hr />
+          <p data-i18n-key="footer">&copy; JBoss Data Virtualization 2014</p>
+        </footer>
+      </div> <!-- /container -->
+      
+    </div> <!-- /page -->
+
+    <!-- Some scripting to add functionality to the live template -->
+    <script>
+      $(document).ready(function() {
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/eclipse");
+        editor.getSession().setMode("ace/mode/xml");
+      });
+      $('.sramp-artifact-actions ul li:nth-child(3)').click(function() {
+        $('#delete-dialog-derived').modal();
+      });
+      $('.sramp-artifact-actions ul li:nth-child(4)').click(function() {
+        $('#delete-dialog-referenced').modal();
+      });
+    </script>
+  </body>
+</html>

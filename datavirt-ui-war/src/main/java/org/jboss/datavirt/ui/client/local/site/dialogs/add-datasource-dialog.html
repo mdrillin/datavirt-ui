@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title data-role="dummy">S-RAMP Repository Browser - Artifact Details (Dialogs)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-datepicker.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-fileupload.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/css/datavirt-ui.css" rel="stylesheet"></link>
+    <link href="../../../../../../../../../webapp/css/datavirt-ui-responsive.css" rel="stylesheet"></link>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../../../../../../../../../webapp/jquery-1.8.3/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap-fileupload.min.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/js/datavirt-responsive.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/js/datavirt-widgets.js"></script>
+  </head>
+
+  <body>
+    <!-- Add DataSource modal dialog -->
+    <div data-field="add-datasource-dialog" id="add-datasource-dialog" class="modal hide">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;<span data-role="dummy"/></button>
+        <h4 data-i18n-key="dialog.add-datasource.title">Add Data Source</h4>
+      </div>
+      <div class="modal-body">
+        <p>Enter properties for the Data Source</p> 
+        <p><span data-field="add-datasource-status-label" /></p> 
+        <p>
+          <span data-i18n-key="datasource-name">Name:</label>
+          <span data-field="add-datasource-name-textbox" />
+        </p>
+        <p>
+          <span data-i18n-key="property-name">Type:</label>
+          <span data-field="add-datasource-type-listbox" />
+        </p>
+        <!-- Core Properties Table -->
+        <p>
+          <table data-field="add-datasource-core-properties-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+            <thead>
+              <tr>
+                <th data-i18n-key="name">Name</th>
+                <th data-i18n-key="type">Value</th>
+              </tr>
+            </thead>
+            <tbody data-role="dummy">
+              <tr>
+                <td>name</td>
+                <td>value</td>
+              </tr>
+            </tbody>
+          </table>
+        </p>   
+        <p>
+          <!-- Advanced Properties -->
+          <div id="sramp-filters" class="row-fluid close-on-mobile closed-on-mobile closed-on-desktop">
+            <div class="span12">
+              <!-- Filter Accordian -->
+              <div class="" id="accordion-filters">
+              
+                <!-- Advanced Properties -->
+                <div class="sramp-filter-group">
+                  <div class="s-ramp-filter-header">
+                    <a class="sramp-filter-toggle" data-toggle="slide" data-target="#accordion-filters-properties">
+                      <span data-i18n-key="filters.custom-properties-header">Advanced Properties</span>
+                    </a>
+                  </div>
+                  <div id="accordion-filters-properties" class="sramp-filter-body closed">
+                    <div class="sramp-filter-inner">
+                       <table data-field="add-datasource-advanced-properties-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+                         <thead>
+                           <tr>
+                             <th data-i18n-key="name">Name</th>
+                             <th data-i18n-key="type">Value</th>
+                           </tr>
+                         </thead>
+                         <tbody data-role="dummy">
+                           <tr>
+                             <td>name</td>
+                             <td>value</td>
+                           </tr>
+                         </tbody>
+                       </table>
+                    </div>
+                    <div class="s-ramp-filter-footer">
+                      <a class="sramp-filter-toggle dropup" data-toggle="slide" data-target="#accordion-filters-properties">
+                        <span class="pull-right caret"></span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </p>   
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" data-i18n-key="cancel">Cancel</button>
+        <button data-field="add-datasource-submit-button" class="btn btn-focus" disabled="disabled" data-i18n-key="add">Add</button>
+      </div>
+    </div>
+
+    <script>
+      $('#add-datasource-dialog').modal({keyboard:false,backdrop:'static'});
+      $('#add-datasource-dialog .input-name').focus();
+    </script>
+
+  </body>
+</html>
