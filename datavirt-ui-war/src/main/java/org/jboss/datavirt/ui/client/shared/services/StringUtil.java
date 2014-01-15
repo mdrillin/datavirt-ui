@@ -1,4 +1,4 @@
-package org.jboss.datavirt.ui.server.services.util;
+package org.jboss.datavirt.ui.client.shared.services;
 
 public final class StringUtil {
 

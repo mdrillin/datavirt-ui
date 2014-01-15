@@ -28,14 +28,30 @@
       <!-- Content area with footer-->
       <div id="page-content" class="container-fluid">
       
+        <!-- Common Tab Bar -->
+        <div class="row-fluid sramp-artifacts">
+          <div class="span12 sramp-artifacts-actions">
+            <a data-field="to-datasources-page" class="btn focus" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a>
+            <a data-field="to-datasource-types-page" class="btn focus" href="datasourcetypes.html"><span data-i18n-key="datasourcetypes">Data Source Types</span></a>
+            <a data-field="to-vdbs-page" class="btn focus" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a>
+          </div>
+        </div>
+  
         <!-- Breadcrumbs -->
         <div class="row-fluid">
           <ul class="breadcrumb">
-            <li><a data-i18n-key="breadcrumb.dashboard" data-field="back-to-dashboard" href="dashboard.html">Data Virtualization Dashboard</a> <span class="divider">/<span data-role="dummy"/></span></li>
             <li data-i18n-key="breadcrumb.virtualdatabases" class="active">Virtual Databases</li>
           </ul>
         </div>
           
+        <!-- Page Title Info -->
+        <div class="span12">
+            <h2 data-i18n-key="vdbs.page.title">Virtual Databases</h2>
+            <p data-i18n-key="vdbs.page.description">
+              Build virtual databases from existing data sources or other virtual databases.  
+            </p>
+        </div>
+        
           <!-- The VDBs table -->
           <div class="span9">
               <!-- Search Box -->

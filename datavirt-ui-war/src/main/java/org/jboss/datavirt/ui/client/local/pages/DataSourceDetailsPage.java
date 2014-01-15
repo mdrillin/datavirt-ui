@@ -49,6 +49,13 @@ import com.google.gwt.user.client.ui.Label;
 @Dependent
 public class DataSourceDetailsPage extends AbstractPage {
 
+    @Inject @DataField("to-datasources-page")
+    private TransitionAnchor<DataSourcesPage> toDataSourcesPage;
+    @Inject @DataField("to-datasource-types-page")
+    private TransitionAnchor<DataSourceTypesPage> toDataSourceTypesPage;
+    @Inject @DataField("to-vdbs-page")
+    private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
+
     @Inject
     protected ClientMessages i18n;
     @Inject
@@ -62,8 +69,6 @@ public class DataSourceDetailsPage extends AbstractPage {
     private String name;
 
     // Breadcrumbs
-    @Inject @DataField("back-to-dashboard")
-    TransitionAnchor<DashboardPage> backToDashboard;
     @Inject @DataField("back-to-datasources")
     TransitionAnchor<DataSourcesPage> backToDataSources;
 

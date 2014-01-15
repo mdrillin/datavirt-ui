@@ -18,7 +18,6 @@ package org.jboss.datavirt.ui.client.local.pages;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -38,6 +37,7 @@ import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHand
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceSummaryBean;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
+import org.jboss.errai.ui.nav.client.local.DefaultPage;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -63,9 +63,16 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author mdrillin@redhat.com
  */
 @Templated("/org/jboss/datavirt/ui/client/local/site/datasources.html#page")
-@Page(path="datasources")
+@Page(path="datasources", role=DefaultPage.class)
 @Dependent
 public class DataSourcesPage extends AbstractPage {
+
+    @Inject @DataField("to-datasources-page")
+    private TransitionAnchor<DataSourcesPage> toDataSourcesPage;
+    @Inject @DataField("to-datasource-types-page")
+    private TransitionAnchor<DataSourceTypesPage> toDataSourceTypesPage;
+    @Inject @DataField("to-vdbs-page")
+    private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
 
     @Inject
     protected ClientMessages i18n;
@@ -76,10 +83,6 @@ public class DataSourcesPage extends AbstractPage {
     @Inject
     protected ApplicationStateService stateService;
  
-    // Breadcrumbs
-    @Inject @DataField("back-to-dashboard")
-    TransitionAnchor<DashboardPage> backToDashboard;
-
     @Inject @DataField("datasource-search-box")
     protected TextBox searchBox;
 
@@ -176,21 +179,50 @@ public class DataSourcesPage extends AbstractPage {
     public void onAddSourceClick(ClickEvent event) {
         AddDataSourceDialog dialog = addDataSourceDialogFactory.get();
         dialog.setCurrentDsNames(this.allDsNames);
-        dialog.addValueChangeHandler(new ValueChangeHandler<Map.Entry<String,String>>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<Entry<String, String>> event) {
-                Entry<String, String> value = event.getValue();
-                if (value != null) {
-                    String propName = value.getKey();
-                    String propValue = value.getValue();
-//                    Map<String, String> newProps = new HashMap<String,String>(artifact.getModel().getProperties());
-//                    newProps.put(propName, propValue);
-//                    customProperties.setValue(newProps, true);
-                }
-            }
+        dialog.addValueChangeHandler(new ValueChangeHandler<Map<String,String>>() {
+        	@Override
+        	public void onValueChange(ValueChangeEvent<Map<String, String>> event) {
+//        		Properties dsProps = new Properties();
+//        		// Returns Map of all (propName, propValue) pairs where the value is not the default
+//        		Map<String, String> propNameValueMap = event.getValue();
+//
+//        		// Create the Data Source
+//        		String dsName = "test";
+//        		String dsType = "salesforce";
+//        		doCreateDataSource(dsName,dsType,propNameValueMap);
+        	}
         });
         dialog.show();
     }
+    
+    /**
+     * Creates a DataSource
+     * @param dsName the data source name
+     * @param dsType the data source template
+     * @param dsProps the data source propertis
+     */
+//    private void doCreateDataSource(String dsName, String dsType, Map<String,String> dsPropMap) {
+//        final NotificationBean notificationBean = notificationService.startProgressNotification(
+//                i18n.format("datasources.creating-datasource-title"), //$NON-NLS-1$
+//                i18n.format("datasources.creating-datasource-msg", dsName)); //$NON-NLS-1$
+//        dataSourceService.createDataSource(dsName, dsType, dsPropMap, new IRpcServiceInvocationHandler<Void>() {
+//            @Override
+//            public void onReturn(Void data) {
+//                notificationService.completeProgressNotification(notificationBean.getUuid(),
+//                        i18n.format("datasources.datasource-created"), //$NON-NLS-1$
+//                        i18n.format("datasources.create-success-msg")); //$NON-NLS-1$
+//
+//                // Refresh Page
+//            	doDataSourceSearch(currentPage);
+//            }
+//            @Override
+//            public void onError(Throwable error) {
+//                notificationService.completeProgressNotification(notificationBean.getUuid(),
+//                        i18n.format("datasources.create-error"), //$NON-NLS-1$
+//                        error);
+//            }
+//        });
+//    }
     
     /**
      * Event handler that fires when the user clicks the RemoveSource button.
@@ -217,7 +249,7 @@ public class DataSourcesPage extends AbstractPage {
         final NotificationBean notificationBean = notificationService.startProgressNotification(
                 i18n.format("datasources.deleting-datasource-title"), //$NON-NLS-1$
                 i18n.format("datasources.deleting-datasource-msg", dsText)); //$NON-NLS-1$
-        dataSourceService.delete(dsNames, new IRpcServiceInvocationHandler<Void>() {
+        dataSourceService.deleteDataSources(dsNames, new IRpcServiceInvocationHandler<Void>() {
             @Override
             public void onReturn(Void data) {
                 notificationService.completeProgressNotification(notificationBean.getUuid(),

@@ -27,10 +27,18 @@
       <!-- Content area with footer-->
       <div id="page-content" class="container-fluid">
 
+        <!-- Common Tab Bar -->
+        <div class="row-fluid sramp-artifacts">
+          <div class="span12 sramp-artifacts-actions">
+            <a data-field="to-datasources-page" class="btn focus" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a>
+            <a data-field="to-datasource-types-page" class="btn focus" href="datasourcetypes.html"><span data-i18n-key="datasourcetypes">Data Source Types</span></a>
+            <a data-field="to-vdbs-page" class="btn focus" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a>
+          </div>
+        </div>
+  
         <!-- Breadcrumbs -->
         <div class="row-fluid">
           <ul class="breadcrumb">
-            <li><a data-field="back-to-dashboard" href="dashboard.html" data-i18n-key="breadcrumb.dashboard">Data Virtualization Dashboard</a> <span class="divider">/<span data-role="dummy"/></span></li>
             <li><a data-field="back-to-vdbs" href="virtualdatabases.html" data-i18n-key="breadcrumb.vdbs">Virtual Databases</a> <span class="divider">/<span data-role="dummy"/></span></li>
             <li class="active" data-i18n-key="breadcrumb.vdb-details">VDB Details</li>
           </ul>
@@ -39,12 +47,21 @@
         <!-- Loading spinner -->
         <div data-field="vdbdetails-loading-spinner" class="spinner artifact-details-loading hide" data-i18n-key="loading-vdbdetails">Loading VDB details, please wait...</div>
 
-        <!-- Header -->
-        <div class="row-fluid sramp-meta-data-section-header">
-            <div class="span12">
-                <span data-field="vdbdetails-pagetitle" data-role="dummy">Virtual Database : MyVDB</span>
-                <span data-field="vdbdetails-vdbstatus" class="pull-right" data-role="dummy">Status</span>
-            </div>
+        <!-- Page Title Info -->
+        <div class="row">
+          <div class="span9">
+            <h2>
+              <span data-field="vdbdetails-pagetitle" data-role="dummy">Virtual Database : MyVDB</span>
+            </h2>
+          </div>
+        </div>
+        <p data-i18n-key="vdbdetails.pagedescription">
+          Add or remove models from the selected virtual databases.
+        </p>
+        <div class="row">
+          <div class="span9">
+            <span data-field="vdbdetails-vdbstatus" class="pull-right" data-role="dummy">Status</span>
+          </div>
         </div>
         
         <!-- The VDBs table -->

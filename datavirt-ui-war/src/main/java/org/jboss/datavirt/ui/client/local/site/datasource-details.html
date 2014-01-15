@@ -27,10 +27,18 @@
       <!-- Content area with footer-->
       <div id="page-content" class="container-fluid">
 
+        <!-- Common Tab Bar -->
+        <div class="row-fluid sramp-artifacts">
+          <div class="span12 sramp-artifacts-actions">
+            <a data-field="to-datasources-page" class="btn focus" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a>
+            <a data-field="to-datasource-types-page" class="btn focus" href="datasourcetypes.html"><span data-i18n-key="datasourcetypes">Data Source Types</span></a>
+            <a data-field="to-vdbs-page" class="btn focus" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a>
+          </div>
+        </div>
+  
         <!-- Breadcrumbs -->
         <div class="row-fluid">
           <ul class="breadcrumb">
-            <li><a data-field="back-to-dashboard" href="dashboard.html" data-i18n-key="breadcrumb.dashboard">Data Virtualization Dashboard</a> <span class="divider">/<span data-role="dummy"/></span></li>
             <li><a data-field="back-to-datasources" href="datasources.html" data-i18n-key="breadcrumb.datasources">Data Sources</a> <span class="divider">/<span data-role="dummy"/></span></li>
             <li class="active" data-i18n-key="breadcrumb.datasource-details">Data Source Details</li>
           </ul>
@@ -39,11 +47,12 @@
         <!-- Loading spinner -->
         <div data-field="datasource-details-loading-spinner" class="spinner artifact-details-loading hide" data-i18n-key="loading-datasources">Loading datasource, please wait...</div>
 
-        <!-- Header -->
-        <div class="row-fluid sramp-meta-data-section-header">
-            <div class="span12">
-                <span data-field="datasourcedetails-pagetitle" data-role="dummy">Data Source : MyDS</span>
-            </div>
+        <!-- Page Title Info -->
+        <div class="span12">
+            <h2><span data-field="datasourcedetails-pagetitle" data-role="dummy">Data Source : MyDS</span></h2>
+            <p data-i18n-key="vdbdetails.pagedescription">
+              View or edit the properties of the selected data source.
+            </p>
         </div>
         
         <!-- Core Properties Table -->

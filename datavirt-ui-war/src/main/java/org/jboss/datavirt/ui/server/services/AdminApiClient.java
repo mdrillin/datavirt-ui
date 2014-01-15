@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jboss.datavirt.ui.server.services.util.StringUtil;
+import org.jboss.datavirt.ui.client.shared.services.StringUtil;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.overlord.sramp.atom.err.SrampAtomException;
 import org.overlord.sramp.client.SrampClientException;

@@ -17,6 +17,7 @@ package org.jboss.datavirt.ui.client.local.pages.datasources;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -56,7 +57,7 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 @Templated("/org/jboss/datavirt/ui/client/local/site/dialogs/add-datasource-dialog.html#add-datasource-dialog")
 @Dependent
-public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHandlers<Map.Entry<String, String>> {
+public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHandlers<Map<String, String>> {
 
 	private static final String NO_SELECTION = "[Select a Type]";
 	
@@ -332,23 +333,19 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
      */
     @EventHandler("add-datasource-submit-button")
     protected void onSubmit(ClickEvent event) {
-//        final String key = name.getValue();
-//        final String val = value.getValue();
-//        ValueChangeEvent.fire(this, new Map.Entry<String, String>() {
-//            @Override
-//            public String setValue(String value) {
-//                return null;
-//            }
-//            @Override
-//            public String getValue() {
-//                return val;
-//            }
-//
-//            @Override
-//            public String getKey() {
-//                return key;
-//            }
-//        });
+    	List<DataSourcePropertyBean> coreProps = dataSourceCorePropertiesTable.getBeansWhereValueNotDefault();
+    	List<DataSourcePropertyBean> advancedProps = dataSourceAdvancedPropertiesTable.getBeansWhereValueNotDefault();
+    	Map<String,String> resultMap = new HashMap<String,String>();
+    	if(!coreProps.isEmpty() || !advancedProps.isEmpty()) {
+    		for(DataSourcePropertyBean propBean : coreProps) {
+    			resultMap.put(propBean.getName(), propBean.getValue());
+    		}
+    		for(DataSourcePropertyBean propBean : advancedProps) {
+    			resultMap.put(propBean.getName(), propBean.getValue());
+    		}
+    	}
+        ValueChangeEvent.fire(this, resultMap);
+
         hide();
     }
 
@@ -356,7 +353,7 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
      * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
      */
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Entry<String, String>> handler) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Map<String, String>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
     }
 }

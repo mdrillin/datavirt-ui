@@ -72,6 +72,13 @@ import com.google.gwt.user.client.ui.TextBox;
 @Dependent
 public class VdbDetailsPage extends AbstractPage {
 
+    @Inject @DataField("to-datasources-page")
+    private TransitionAnchor<DataSourcesPage> toDataSourcesPage;
+    @Inject @DataField("to-datasource-types-page")
+    private TransitionAnchor<DataSourceTypesPage> toDataSourceTypesPage;
+    @Inject @DataField("to-vdbs-page")
+    private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
+
     @Inject
     protected ClientMessages i18n;
     @Inject
@@ -85,8 +92,6 @@ public class VdbDetailsPage extends AbstractPage {
     private String vdbname;
 
     // Breadcrumbs
-    @Inject @DataField("back-to-dashboard")
-    TransitionAnchor<DashboardPage> backToDashboard;
     @Inject @DataField("back-to-vdbs")
     TransitionAnchor<VirtualDatabasesPage> backToVdbs;
 

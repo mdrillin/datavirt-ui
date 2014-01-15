@@ -69,6 +69,13 @@ import com.google.gwt.user.client.ui.TextBox;
 @Dependent
 public class VirtualDatabasesPage extends AbstractPage {
 
+    @Inject @DataField("to-datasources-page")
+    private TransitionAnchor<DataSourcesPage> toDataSourcesPage;
+    @Inject @DataField("to-datasource-types-page")
+    private TransitionAnchor<DataSourceTypesPage> toDataSourceTypesPage;
+    @Inject @DataField("to-vdbs-page")
+    private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
+
     @Inject
     protected ClientMessages i18n;
     @Inject
@@ -78,10 +85,6 @@ public class VirtualDatabasesPage extends AbstractPage {
     @Inject
     protected ApplicationStateService stateService;
  
-    // Breadcrumbs
-    @Inject @DataField("back-to-dashboard")
-    TransitionAnchor<DashboardPage> backToDashboard;
-
     @Inject @DataField("vdb-search-box")
     protected TextBox searchBox;
 

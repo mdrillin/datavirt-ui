@@ -81,6 +81,12 @@ public class VdbsTable extends SortableTemplatedWidgetTable implements HasTableR
         sortBy(Constants.SORT_COLID_NAME, true);
     }
 
+    public void clear() {
+    	super.clear();
+        rowSelectionMap.clear();
+        rowNameMap.clear();
+    }
+
     /**
      * Adds a single row to the table.
      * @param dataSourceSummaryBean

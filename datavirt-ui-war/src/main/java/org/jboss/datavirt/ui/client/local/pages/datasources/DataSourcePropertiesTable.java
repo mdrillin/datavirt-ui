@@ -15,13 +15,24 @@
  */
 package org.jboss.datavirt.ui.client.local.pages.datasources;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.enterprise.context.Dependent;
 
 import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
+import org.jboss.datavirt.ui.client.shared.services.StringUtil;
 import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidgetTable;
 
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * A table of Data Source properties.
@@ -30,6 +41,9 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 @Dependent
 public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable {
+
+    private Map<Integer,String> rowNameMap = new HashMap<Integer,String>();
+    private Map<Integer,DataSourcePropertyBean> rowBeanMap = new HashMap<Integer,DataSourcePropertyBean>();
 
     /**
      * Constructor.
@@ -59,6 +73,8 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable {
 
     public void clear() {
     	super.clear();
+    	rowBeanMap.clear();
+    	rowNameMap.clear();
     }
     
     /**
@@ -69,10 +85,46 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable {
         int rowIdx = this.rowElements.size();
 
         InlineLabel name = new InlineLabel(dataSourcePropertyBean.getName());
-        InlineLabel value = new InlineLabel(dataSourcePropertyBean.getValue());
+        
+        TextBox valueTextBox = new TextBox();
+        valueTextBox.setText(dataSourcePropertyBean.getValue());
+        
+        valueTextBox.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+                int rowIdx = rowElements.size();
+                String value = getText();
+                DataSourcePropertyBean propBean = rowBeanMap.get(rowIdx);
+                propBean.setValue(value);
+            }
+        });
+        valueTextBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                int rowIdx = rowElements.size();
+                String value = getText();
+                DataSourcePropertyBean propBean = rowBeanMap.get(rowIdx);
+                propBean.setValue(value);
+            }
+        });
 
         add(rowIdx, 0, name);
-        add(rowIdx, 1, value);
+        add(rowIdx, 1, valueTextBox);
+        
+        rowNameMap.put(rowIdx,dataSourcePropertyBean.getName());
+        rowBeanMap.put(rowIdx,dataSourcePropertyBean);
     }
     
+    public List<DataSourcePropertyBean> getBeansWhereValueNotDefault() {
+    	List<DataSourcePropertyBean> resultBeans = new ArrayList<DataSourcePropertyBean>();
+    	for(DataSourcePropertyBean propBean : rowBeanMap.values()) {
+    		String defaultValue = propBean.getDefaultValue();
+    		String value = propBean.getValue();
+    		if(!StringUtil.valuesAreEqual(value, defaultValue)) {
+    			resultBeans.add(propBean);
+    		}
+    	}
+    	return resultBeans;
+    }
+        
 }

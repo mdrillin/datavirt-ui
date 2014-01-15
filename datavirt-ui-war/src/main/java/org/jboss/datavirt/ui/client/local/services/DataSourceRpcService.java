@@ -156,11 +156,11 @@ public class DataSourceRpcService {
         }
     }
 
-    public void delete(Collection<String> dsNames, final IRpcServiceInvocationHandler<Void> handler) {
+    public void deleteDataSources(Collection<String> dsNames, final IRpcServiceInvocationHandler<Void> handler) {
         RemoteCallback<Void> successCallback = new DelegatingRemoteCallback<Void>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteDataSourceService.call(successCallback, errorCallback).delete(dsNames);
+        	remoteDataSourceService.call(successCallback, errorCallback).deleteDataSources(dsNames);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }

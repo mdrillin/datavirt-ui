@@ -74,6 +74,14 @@ public class VdbModelsTable extends SortableTemplatedWidgetTable implements HasT
         sortBy(Constants.SORT_COLID_NAME, true);
     }
 
+    public void clear() {
+    	super.clear();
+        rowSelectionMap.clear();
+        rowNameMap.clear();
+        rowTypeMap.clear();
+        rowTranslatorMap.clear();
+    }
+    
     /**
      * Adds a single row to the table.
      * @param dataSourceSummaryBean

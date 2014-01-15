@@ -448,7 +448,16 @@ public class DataSourceService implements IDataSourceService {
     }
 
     @Override
-    public void delete(Collection<String> dsNames) throws DataVirtUiException {
+    public void deleteDataSource(String dsName) throws DataVirtUiException {
+    	try {
+			clientAccessor.getClient().deleteDataSource(dsName);
+		} catch (AdminApiClientException e) {
+			throw new DataVirtUiException(e.getMessage());
+		}
+    }
+
+    @Override
+    public void deleteDataSources(Collection<String> dsNames) throws DataVirtUiException {
     	try {
 			clientAccessor.getClient().deleteDataSources(dsNames);
 		} catch (AdminApiClientException e) {

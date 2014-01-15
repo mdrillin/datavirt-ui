@@ -60,12 +60,14 @@ public interface IDataSourceService {
 
     public void update(DataSourceDetailsBean dataSource) throws DataVirtUiException;
 
+    public void deleteDataSource(String dsName) throws DataVirtUiException;
+
     /**
      * Called to delete DataSources.
      * @param dsNames the DataSource names
      * @throws DataVirtUiException
      */
-    public void delete(Collection<String> dsNames) throws DataVirtUiException;
+    public void deleteDataSources(Collection<String> dsNames) throws DataVirtUiException;
 
     /**
      * Called to delete DataSource Types.
