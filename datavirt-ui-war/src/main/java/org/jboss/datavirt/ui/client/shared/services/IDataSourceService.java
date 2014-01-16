@@ -58,7 +58,7 @@ public interface IDataSourceService {
 
     public List<DataSourcePropertyBean> getDataSourceTypeProperties(String dsType) throws DataVirtUiException;
 
-    public void update(DataSourceDetailsBean dataSource) throws DataVirtUiException;
+    public void createDataSource(DataSourceDetailsBean dataSource) throws DataVirtUiException;
 
     public void deleteDataSource(String dsName) throws DataVirtUiException;
 

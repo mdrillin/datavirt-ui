@@ -29,8 +29,10 @@ import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidget
 
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -40,9 +42,9 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author mdrillin@redhat.com
  */
 @Dependent
-public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable {
+public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable implements HasValueChangeHandlers<Void> {
 
-    private Map<Integer,String> rowNameMap = new HashMap<Integer,String>();
+    private Map<Integer,TextBox> rowNameMap = new HashMap<Integer,TextBox>();
     private Map<Integer,DataSourcePropertyBean> rowBeanMap = new HashMap<Integer,DataSourcePropertyBean>();
 
     /**
@@ -92,39 +94,77 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable {
         valueTextBox.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
-                int rowIdx = rowElements.size();
-                String value = getText();
-                DataSourcePropertyBean propBean = rowBeanMap.get(rowIdx);
-                propBean.setValue(value);
+            	updatePropertyValues();
             }
         });
         valueTextBox.addValueChangeHandler(new ValueChangeHandler<String>() {
             @Override
             public void onValueChange(ValueChangeEvent<String> event) {
-                int rowIdx = rowElements.size();
-                String value = getText();
-                DataSourcePropertyBean propBean = rowBeanMap.get(rowIdx);
-                propBean.setValue(value);
+            	updatePropertyValues();
             }
         });
 
         add(rowIdx, 0, name);
         add(rowIdx, 1, valueTextBox);
         
-        rowNameMap.put(rowIdx,dataSourcePropertyBean.getName());
+        rowNameMap.put(rowIdx,valueTextBox);
         rowBeanMap.put(rowIdx,dataSourcePropertyBean);
     }
     
-    public List<DataSourcePropertyBean> getBeansWhereValueNotDefault() {
+    public void updatePropertyValues() {
+    	for(int i=0; i<this.rowElements.size(); i++) {
+    		TextBox textBox = this.rowNameMap.get(i);
+    		DataSourcePropertyBean propBean = this.rowBeanMap.get(i);
+    		propBean.setValue(textBox.getText());
+    	}
+        ValueChangeEvent.fire(this, null);
+    }
+    
+    public List<DataSourcePropertyBean> getBeansWithRequiredOrNonDefaultValue() {
     	List<DataSourcePropertyBean> resultBeans = new ArrayList<DataSourcePropertyBean>();
     	for(DataSourcePropertyBean propBean : rowBeanMap.values()) {
-    		String defaultValue = propBean.getDefaultValue();
-    		String value = propBean.getValue();
-    		if(!StringUtil.valuesAreEqual(value, defaultValue)) {
+    		if(propBean.isRequired()) {
     			resultBeans.add(propBean);
+    		} else {
+        		String defaultValue = propBean.getDefaultValue();
+        		String value = propBean.getValue();
+        		if(!StringUtil.valuesAreEqual(value, defaultValue)) {
+        			resultBeans.add(propBean);
+        		}
     		}
     	}
     	return resultBeans;
+    }
+    
+    public boolean anyPropertyHasChanged() {
+    	boolean hasChanges = false;
+    	for(DataSourcePropertyBean propBean : rowBeanMap.values()) {
+    		String originalValue = propBean.getOriginalValue();
+    		String value = propBean.getValue();
+    		if(!StringUtil.valuesAreEqual(value, originalValue)) {
+    			hasChanges = true;
+    			break;
+    		}
+    	}
+    	return hasChanges;
+    }
+    
+    public void resetToOriginalValues() {
+    	for(int i=0; i<this.rowElements.size(); i++) {
+    		TextBox textBox = this.rowNameMap.get(i);
+    		DataSourcePropertyBean propBean = this.rowBeanMap.get(i);
+    		String value = propBean.getOriginalValue();
+    		propBean.setValue(value);
+    		textBox.setText(value);
+    	}
+    }
+    
+    /**
+     * @see com.google.gwt.event.logical.shared.HasValueChangeHandlers#addValueChangeHandler(com.google.gwt.event.logical.shared.ValueChangeHandler)
+     */
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Void> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
         
 }

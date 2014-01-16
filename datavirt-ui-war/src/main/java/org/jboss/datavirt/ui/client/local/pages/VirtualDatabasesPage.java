@@ -126,6 +126,7 @@ public class VirtualDatabasesPage extends AbstractPage {
 
     private int currentPage = 1;
     private Collection<String> allVdbNames = new ArrayList<String>();
+	private Collection<String> allDsNames = new ArrayList<String>();
     
    /**
      * Constructor.

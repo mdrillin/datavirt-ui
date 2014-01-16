@@ -33,6 +33,7 @@ import org.jboss.datavirt.ui.client.shared.beans.DataSourceTypeBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceTypeResultSetBean;
 import org.jboss.datavirt.ui.client.shared.exceptions.DataVirtUiException;
 import org.jboss.datavirt.ui.client.shared.services.IDataSourceService;
+import org.jboss.datavirt.ui.client.shared.services.StringUtil;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.jboss.errai.bus.server.annotations.Service;
@@ -48,6 +49,7 @@ public class DataSourceService implements IDataSourceService {
 
     private static final String DRIVER_KEY = "driver-name";
     private static final String CLASSNAME_KEY = "class-name";
+    private static final String CONN_FACTORY_CLASS_KEY = "managedconnectionfactory-class";
     
     @Inject
     private AdminApiClientAccessor clientAccessor;
@@ -164,22 +166,26 @@ public class DataSourceService implements IDataSourceService {
     
     @Override
     public DataSourceDetailsBean getDataSourceDetails(String dsName) throws DataVirtUiException {
-    	
+    	// Create DataSource Details Bean - set name
     	DataSourceDetailsBean dsDetailsBean = new DataSourceDetailsBean();
     	dsDetailsBean.setName(dsName);
 
+    	// Get Data Source properties
     	Properties dsProps = null;
     	try {
 			dsProps = clientAccessor.getClient().getDataSourceProperties(dsName);
 		} catch (AdminApiClientException e) {
 			throw new DataVirtUiException(e.getMessage());
 		}
-    	
+
+    	// Determine type/driver from properties
     	String dsType = getDataSourceType(dsProps);
+    	dsDetailsBean.setType(dsType);
+    	
     	// Get the Default Properties for the DS type
     	List<DataSourcePropertyBean> dataSourcePropertyBeans = getDataSourceTypeProperties(dsType);
     	    	
-        // DS type default property to data source specific value
+        // Set DS type default property to data source specific value
         for(DataSourcePropertyBean propBean: dataSourcePropertyBeans) {
             String propName = propBean.getName();
             String propValue = dsProps.getProperty(propName);
@@ -288,7 +294,7 @@ public class DataSourceService implements IDataSourceService {
     	    	
 		Collection<String> dsTypes = null;
     	try {
-    		dsTypes = clientAccessor.getClient().getDataSourceNames();
+    		dsTypes = clientAccessor.getClient().getDataSourceTypes();
 		} catch (AdminApiClientException e) {
 			throw new DataVirtUiException(e.getMessage());
 		}
@@ -325,10 +331,10 @@ public class DataSourceService implements IDataSourceService {
     	}
     	
 		// Get the Managed connection factory class for rars
-//		String rarConnFactoryValue = null;
-//		if(isRarDriver(driverName)) {
-//			rarConnFactoryValue = getManagedConnectionFactoryClassDefault(propDefnList);
-//		}
+		String rarConnFactoryValue = null;
+		if(isRarDriver(typeName)) {
+			rarConnFactoryValue = getManagedConnectionFactoryClassDefault(propDefnList);
+		}
     	
 		for(PropertyDefinition propDefn: propDefnList) {
 			DataSourcePropertyBean propBean = new DataSourcePropertyBean();
@@ -370,12 +376,12 @@ public class DataSourceService implements IDataSourceService {
 			}
 
 			// Copy the 'managedconnectionfactory-class' default value into the 'class-name' default value
-//			if(name.equals(CLASSNAME_KEY)) {
-//				propDefnBean.setDefaultValue(rarConnFactoryValue);
-//				propDefnBean.setValue(rarConnFactoryValue);
-//				propDefnBean.setOriginalValue(rarConnFactoryValue);
-//				propDefnBean.setRequired(true);
-//			}
+			if(name.equals(CLASSNAME_KEY)) {
+				propBean.setDefaultValue(rarConnFactoryValue);
+				propBean.setValue(rarConnFactoryValue);
+				propBean.setOriginalValue(rarConnFactoryValue);
+				propBean.setRequired(true);
+			}
 
 			// ------------------------
 			// Add PropertyObj to List
@@ -384,7 +390,43 @@ public class DataSourceService implements IDataSourceService {
 		}
 
     	return propertyDefnList;
-    }  
+    } 
+    
+    /**
+     * Determine if this is a 'rar' type driver that is deployed with Teiid
+     * @param driverName the name of the driver
+     * @return 'true' if the driver is a rar driver, 'false' if not.
+     */
+    private boolean isRarDriver(String driverName) {
+    	boolean isRarDriver = false;
+    	if(!StringUtil.isEmpty(driverName)) {
+    		if( driverName.equals(TranslatorHelper.TEIID_FILE_DRIVER) || driverName.equals(TranslatorHelper.TEIID_GOOGLE_DRIVER)
+    				|| driverName.equals(TranslatorHelper.TEIID_INFINISPAN_DRIVER) || driverName.equals(TranslatorHelper.TEIID_LDAP_DRIVER)
+    				|| driverName.equals(TranslatorHelper.TEIID_MONGODB_DRIVER) || driverName.equals(TranslatorHelper.TEIID_SALESORCE_DRIVER)
+    				|| driverName.equals(TranslatorHelper.TEIID_WEBSERVICE_DRIVER)) {
+    			isRarDriver = true;
+    		}
+    	}
+
+    	return isRarDriver;
+    }
+        
+    /*
+     * Get the default value for the Managed ConnectionFactory class
+     * @param propDefns the collection of property definitions
+     * @return default value of the ManagedConnectionFactory, null if not found.
+     */
+    private String getManagedConnectionFactoryClassDefault (Collection<? extends PropertyDefinition> propDefns) {
+    	String resultValue = null;
+    	for(PropertyDefinition pDefn : propDefns) {
+    		if(pDefn.getName().equalsIgnoreCase(CONN_FACTORY_CLASS_KEY)) {
+    			resultValue=(String)pDefn.getDefaultValue();
+    			break;
+    		}
+    	}
+    	return resultValue;
+    }
+
     
     /**
      * Get the Driver name for the supplied DataSource name - from the TeiidServer
@@ -420,31 +462,20 @@ public class DataSourceService implements IDataSourceService {
     	return driverName;
     }
          
-    @Override
-    public void update(DataSourceDetailsBean bean) throws DataVirtUiException {
-//        try {
-//            ArtifactType artifactType = ArtifactType.valueOf(bean.getModel(), bean.getRawType(), null);
-//            // Grab the latest from the server
-//            BaseArtifactType artifact = clientAccessor.getClient().getArtifactMetaData(artifactType, bean.getUuid());
-//            // Update it with new data from the bean
-//            artifact.setName(bean.getName());
-//            artifact.setDescription(bean.getDescription());
-//            artifact.setVersion(bean.getVersion());
-//            artifact.getProperty().clear();
-//            for (String propName : bean.getPropertyNames()) {
-//                SrampModelUtils.setCustomProperty(artifact, propName, bean.getProperty(propName));
-//            }
-//            artifact.getClassifiedBy().clear();
-//            for (String classifier : bean.getClassifiedBy()) {
-//                artifact.getClassifiedBy().add(classifier);
-//            }
-//            // Push the changes back to the server
-//            clientAccessor.getClient().updateArtifactMetaData(artifact);
-//        } catch (SrampClientException e) {
-//            throw new DataVirtUiException(e.getMessage());
-//        } catch (SrampAtomException e) {
-//            throw new DataVirtUiException(e.getMessage());
-//        }
+    public void createDataSource(DataSourceDetailsBean bean) throws DataVirtUiException {
+    	// First delete the source with this name, if it already exists
+    	deleteDataSource(bean.getName());
+    	
+    	List<DataSourcePropertyBean> dsPropBeans = bean.getProperties();
+    	Properties dsProps = new Properties();
+    	for(DataSourcePropertyBean dsPropBean : dsPropBeans) {
+    		dsProps.put(dsPropBean.getName(),dsPropBean.getValue());
+    	}
+    	try {
+			clientAccessor.getClient().createDataSource(bean.getName(), bean.getType(), dsProps);
+		} catch (AdminApiClientException e) {
+			throw new DataVirtUiException(e.getMessage());
+		}    	
     }
 
     @Override

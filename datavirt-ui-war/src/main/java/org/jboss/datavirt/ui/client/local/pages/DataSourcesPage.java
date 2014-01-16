@@ -17,7 +17,6 @@ package org.jboss.datavirt.ui.client.local.pages;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -34,6 +33,7 @@ import org.jboss.datavirt.ui.client.local.services.ApplicationStateService;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
 import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
+import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceSummaryBean;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
@@ -179,17 +179,10 @@ public class DataSourcesPage extends AbstractPage {
     public void onAddSourceClick(ClickEvent event) {
         AddDataSourceDialog dialog = addDataSourceDialogFactory.get();
         dialog.setCurrentDsNames(this.allDsNames);
-        dialog.addValueChangeHandler(new ValueChangeHandler<Map<String,String>>() {
+        dialog.addValueChangeHandler(new ValueChangeHandler<DataSourceDetailsBean>() {
         	@Override
-        	public void onValueChange(ValueChangeEvent<Map<String, String>> event) {
-//        		Properties dsProps = new Properties();
-//        		// Returns Map of all (propName, propValue) pairs where the value is not the default
-//        		Map<String, String> propNameValueMap = event.getValue();
-//
-//        		// Create the Data Source
-//        		String dsName = "test";
-//        		String dsType = "salesforce";
-//        		doCreateDataSource(dsName,dsType,propNameValueMap);
+        	public void onValueChange(ValueChangeEvent<DataSourceDetailsBean> event) {
+        		doCreateDataSource(event.getValue());
         	}
         });
         dialog.show();
@@ -197,32 +190,30 @@ public class DataSourcesPage extends AbstractPage {
     
     /**
      * Creates a DataSource
-     * @param dsName the data source name
-     * @param dsType the data source template
-     * @param dsProps the data source propertis
+     * @param dsDetailsBean the data source details
      */
-//    private void doCreateDataSource(String dsName, String dsType, Map<String,String> dsPropMap) {
-//        final NotificationBean notificationBean = notificationService.startProgressNotification(
-//                i18n.format("datasources.creating-datasource-title"), //$NON-NLS-1$
-//                i18n.format("datasources.creating-datasource-msg", dsName)); //$NON-NLS-1$
-//        dataSourceService.createDataSource(dsName, dsType, dsPropMap, new IRpcServiceInvocationHandler<Void>() {
-//            @Override
-//            public void onReturn(Void data) {
-//                notificationService.completeProgressNotification(notificationBean.getUuid(),
-//                        i18n.format("datasources.datasource-created"), //$NON-NLS-1$
-//                        i18n.format("datasources.create-success-msg")); //$NON-NLS-1$
-//
-//                // Refresh Page
-//            	doDataSourceSearch(currentPage);
-//            }
-//            @Override
-//            public void onError(Throwable error) {
-//                notificationService.completeProgressNotification(notificationBean.getUuid(),
-//                        i18n.format("datasources.create-error"), //$NON-NLS-1$
-//                        error);
-//            }
-//        });
-//    }
+    private void doCreateDataSource(DataSourceDetailsBean detailsBean) {
+        final NotificationBean notificationBean = notificationService.startProgressNotification(
+                i18n.format("datasources.creating-datasource-title"), //$NON-NLS-1$
+                i18n.format("datasources.creating-datasource-msg", detailsBean.getName())); //$NON-NLS-1$
+        dataSourceService.createDataSource(detailsBean, new IRpcServiceInvocationHandler<Void>() {
+            @Override
+            public void onReturn(Void data) {
+                notificationService.completeProgressNotification(notificationBean.getUuid(),
+                        i18n.format("datasources.datasource-created"), //$NON-NLS-1$
+                        i18n.format("datasources.create-success-msg")); //$NON-NLS-1$
+
+                // Refresh Page
+            	doDataSourceSearch(currentPage);
+            }
+            @Override
+            public void onError(Throwable error) {
+                notificationService.completeProgressNotification(notificationBean.getUuid(),
+                        i18n.format("datasources.create-error"), //$NON-NLS-1$
+                        error);
+            }
+        });
+    }
     
     /**
      * Event handler that fires when the user clicks the RemoveSource button.

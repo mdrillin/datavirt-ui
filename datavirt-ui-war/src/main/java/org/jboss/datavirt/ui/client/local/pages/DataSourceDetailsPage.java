@@ -15,6 +15,8 @@
  */
 package org.jboss.datavirt.ui.client.local.pages;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -23,19 +25,27 @@ import javax.inject.Inject;
 
 import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.pages.datasources.DataSourcePropertiesTable;
+import org.jboss.datavirt.ui.client.local.pages.details.ApplyDataSourcePropertiesDialog;
+import org.jboss.datavirt.ui.client.local.pages.details.ResetDataSourcePropertiesDialog;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
 import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
+import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.PageState;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
+import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.overlord.sramp.ui.client.local.widgets.common.HtmlSnippet;
 
-import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 
 /**
@@ -79,25 +89,21 @@ public class DataSourceDetailsPage extends AbstractPage {
     protected DataSourcePropertiesTable dataSourceCorePropertiesTable;
     @Inject @DataField("datasource-advanced-properties-table")
     protected DataSourcePropertiesTable dataSourceAdvancedPropertiesTable;
+
     // Actions
-//    @Inject  @DataField("btn-delete")
-//    Button deleteButton;
-//    @Inject
-//    DeleteDataSourceDialog deleteDataSourceDialog;
+    @Inject @DataField("btn-apply")
+    protected Button applyButton;
+    
+    @Inject @DataField("btn-reset")
+    protected Button resetButton;
 
-    // Overview tab
-//    @Inject @DataField("core-property-name") @Bound(property="name")
-//    EditableInlineLabel propName;
-//
-//    @Inject @DataField("link-download-content")
-//    Anchor downloadContentLink;
-//    @Inject @DataField("link-download-metaData")
-//    Anchor downloadMetaDataLink;
-
+    @Inject
+    ApplyDataSourcePropertiesDialog applyDataSourcePropertiesDialog;
+    @Inject
+    ResetDataSourcePropertiesDialog resetDataSourcePropertiesDialog;
+    
     @Inject @DataField("datasource-details-loading-spinner")
     protected HtmlSnippet datasourceLoading;
-//    protected Element pageContent;
-    //protected Element editorWrapper;
 
     /**
      * Constructor.
@@ -110,13 +116,30 @@ public class DataSourceDetailsPage extends AbstractPage {
      */
     @PostConstruct
     protected void onPostConstruct() {
-//        deleteDataSourceDialog.addClickHandler(new ClickHandler() {
-//            @Override
-//            public void onClick(ClickEvent event) {
-//                //onDeleteConfirm();
-//            }
-//        });
-
+    	dataSourceCorePropertiesTable.addValueChangeHandler(new ValueChangeHandler<Void>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Void> event) {
+            	setButtonStates();
+            }
+        });
+    	dataSourceAdvancedPropertiesTable.addValueChangeHandler(new ValueChangeHandler<Void>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Void> event) {
+            	setButtonStates();
+            }
+        });
+    	applyDataSourcePropertiesDialog.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                onApplyDataSourcePropertiesConfirmed();
+            }
+        });
+    	resetDataSourcePropertiesDialog.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                onResetDataSourcePropertiesConfirmed();
+            }
+        });
     }
 
     /**
@@ -146,7 +169,7 @@ public class DataSourceDetailsPage extends AbstractPage {
 //                updateVdbModelsTable(vdbDetailsBean);
 //                updateDownloadVdbLink(vdbDetailsBean);
 //                updatePager(data);
-//                doSetButtonEnablements();
+            	setButtonStates();
             }
             @Override
             public void onError(Throwable error) {
@@ -157,6 +180,21 @@ public class DataSourceDetailsPage extends AbstractPage {
             }
         });       
         
+    }
+    
+    private void setButtonStates() {
+    	boolean enableApply = false;
+    	boolean enableReset = false;
+    	
+    	boolean coreTableHasChanges = this.dataSourceCorePropertiesTable.anyPropertyHasChanged();
+    	boolean advTableHasChanges = this.dataSourceAdvancedPropertiesTable.anyPropertyHasChanged();
+    	
+    	if(coreTableHasChanges || advTableHasChanges) {
+    		enableApply = true;
+    		enableReset = true;
+    	}
+    	this.applyButton.setEnabled(enableApply);
+    	this.resetButton.setEnabled(enableReset);
     }
     
     private void populatePropertiesTable(DataSourceDetailsBean dsDetailsBean) {
@@ -176,38 +214,78 @@ public class DataSourceDetailsPage extends AbstractPage {
     	dataSourceAdvancedPropertiesTable.setVisible(true);
     }
     
+    private void onApplyDataSourcePropertiesConfirmed() {
+    	
+    	DataSourceDetailsBean resultBean = new DataSourceDetailsBean();
+    	resultBean.setName(currentDataSourceDetails.getName());
+    	resultBean.setType(currentDataSourceDetails.getType());
+    	
+    	List<DataSourcePropertyBean> props = new ArrayList<DataSourcePropertyBean>();
+    	List<DataSourcePropertyBean> coreProps = dataSourceCorePropertiesTable.getBeansWithRequiredOrNonDefaultValue();
+    	List<DataSourcePropertyBean> advancedProps = dataSourceAdvancedPropertiesTable.getBeansWithRequiredOrNonDefaultValue();
+    	props.addAll(coreProps);
+    	props.addAll(advancedProps);
+    	
+    	resultBean.setProperties(props);
+            	
+    	// Redeploys the Data Source
+    	doCreateDataSource(resultBean);
+    }
+    
+    private void onResetDataSourcePropertiesConfirmed() {
+    	dataSourceCorePropertiesTable.resetToOriginalValues();
+    	dataSourceAdvancedPropertiesTable.resetToOriginalValues();
+    	setButtonStates();
+    }
+    
     /**
-     * Called when the user clicks the Add Property button.
+     * Called when the user clicks the Apply edits button.
      * @param event
      */
-//    @EventHandler("add-property-button")
-//    protected void onAddProperty(ClickEvent event) {
-//        AddDataSourceDialog dialog = addPropertyDialogFactory.get();
-//        dialog.addValueChangeHandler(new ValueChangeHandler<Map.Entry<String,String>>() {
-//            @Override
-//            public void onValueChange(ValueChangeEvent<Entry<String, String>> event) {
-//                Entry<String, String> value = event.getValue();
-//                if (value != null) {
-//                    String propName = value.getKey();
-//                    String propValue = value.getValue();
-//                    Map<String, String> newProps = new HashMap<String,String>(artifact.getModel().getProperties());
-//                    newProps.put(propName, propValue);
-//                    customProperties.setValue(newProps, true);
-//                }
-//            }
-//        });
-//        dialog.show();
-//    }
+    @EventHandler("btn-apply")
+    protected void onApplyChanges(ClickEvent event) {
+    	String dsName = currentDataSourceDetails.getName();
+    	applyDataSourcePropertiesDialog.setDataSourceName(dsName);
+    	applyDataSourcePropertiesDialog.show();
+    }
+    
+    /**
+     * Creates a DataSource
+     * @param dsDetailsBean the data source details
+     */
+    private void doCreateDataSource(DataSourceDetailsBean detailsBean) {
+        final NotificationBean notificationBean = notificationService.startProgressNotification(
+                i18n.format("datasources.creating-datasource-title"), //$NON-NLS-1$
+                i18n.format("datasources.creating-datasource-msg", detailsBean.getName())); //$NON-NLS-1$
+        dataSourceService.createDataSource(detailsBean, new IRpcServiceInvocationHandler<Void>() {
+            @Override
+            public void onReturn(Void data) {
+                notificationService.completeProgressNotification(notificationBean.getUuid(),
+                        i18n.format("datasources.datasource-created"), //$NON-NLS-1$
+                        i18n.format("datasources.create-success-msg")); //$NON-NLS-1$
 
+                // Refresh Page
+            	doGetDataSourceDetails();
+            }
+            @Override
+            public void onError(Throwable error) {
+                notificationService.completeProgressNotification(notificationBean.getUuid(),
+                        i18n.format("datasources.create-error"), //$NON-NLS-1$
+                        error);
+            }
+        });
+    }
+    
     /**
-     * Called when the user clicks the Delete button.
+     * Called when the user clicks the Reset edits button.
      * @param event
      */
-//    @EventHandler("btn-delete")
-//    protected void onDeleteClick(ClickEvent event) {
-////        deleteDialog.setArtifactName(artifact.getModel().getName());
-////        deleteDialog.show();
-//    }
+    @EventHandler("btn-reset")
+    protected void onResetChanges(ClickEvent event) {
+    	String dsName = currentDataSourceDetails.getName();
+    	resetDataSourcePropertiesDialog.setDataSourceName(dsName);
+    	resetDataSourcePropertiesDialog.show();
+    }
 
     /**
      * Called when the user confirms the deletion.
@@ -232,50 +310,5 @@ public class DataSourceDetailsPage extends AbstractPage {
 //            }
 //        });
     }
-
-    protected void update(DataSourceDetailsBean dataSource) {
-//        this.dataSource.setModel(dataSource, InitialState.FROM_MODEL);
-        String contentUrl = GWT.getModuleBaseURL() + "services/dataVirtDownload"; //$NON-NLS-1$
-        contentUrl += "?name=" + dataSource.getName() + "&type=" + dataSource.getType(); //$NON-NLS-1$ //$NON-NLS-2$
-        String metaDataUrl = contentUrl + "&as=meta-data"; //$NON-NLS-1$
-//        this.downloadContentLink.setHref(contentUrl);
-//        this.downloadContentLink.setVisible(!dataSource.isDerived());
-//        this.downloadMetaDataLink.setHref(metaDataUrl);
-//
-//        if (dataSource.isDocument()) {
-//            this.downloadContentLink.getElement().removeClassName("hidden"); //$NON-NLS-1$
-//        } else {
-//            this.downloadContentLink.getElement().addClassName("hidden"); //$NON-NLS-1$
-//        }
-//
-//        deleteButton.setVisible(!dataSource.isDerived());
-
-        datasourceLoading.getElement().addClassName("hide"); //$NON-NLS-1$
-    }
-
-    /**
-     * Sends the model back up to the server (saves local changes).
-     */
-//    protected void pushModelToServer() {
-//        String noteTitle = i18n.format("artifact-details.updating-artifact.title"); //$NON-NLS-1$
-//        String noteBody = i18n.format("artifact-details.updating-artifact.message", artifact.getModel().getName()); //$NON-NLS-1$
-//        final NotificationBean notificationBean = notificationService.startProgressNotification(
-//                noteTitle, noteBody);
-//        artifactService.update(artifact.getModel(), new IRpcServiceInvocationHandler<Void>() {
-//            @Override
-//            public void onReturn(Void data) {
-//                String noteTitle = i18n.format("artifact-details.updated-artifact.title"); //$NON-NLS-1$
-//                String noteBody = i18n.format("artifact-details.updated-artifact.message", artifact.getModel().getName()); //$NON-NLS-1$
-//                notificationService.completeProgressNotification(notificationBean.getUuid(),
-//                        noteTitle, noteBody);
-//            }
-//            @Override
-//            public void onError(Throwable error) {
-//                notificationService.completeProgressNotification(notificationBean.getUuid(),
-//                        i18n.format("artifact-details.error-updating-arty"), //$NON-NLS-1$
-//                        error);
-//            }
-//        });
-//    }
 
 }

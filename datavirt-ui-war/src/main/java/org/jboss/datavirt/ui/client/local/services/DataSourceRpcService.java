@@ -146,11 +146,11 @@ public class DataSourceRpcService {
         }
     }
     
-    public void update(DataSourceDetailsBean dataSource, final IRpcServiceInvocationHandler<Void> handler) {
+    public void createDataSource(DataSourceDetailsBean dataSource, final IRpcServiceInvocationHandler<Void> handler) {
         RemoteCallback<Void> successCallback = new DelegatingRemoteCallback<Void>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteDataSourceService.call(successCallback, errorCallback).update(dataSource);
+        	remoteDataSourceService.call(successCallback, errorCallback).createDataSource(dataSource);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }
