@@ -254,9 +254,10 @@ public class DataSourceDetailsPage extends AbstractPage {
      * @param dsDetailsBean the data source details
      */
     private void doCreateDataSource(DataSourceDetailsBean detailsBean) {
+    	final String dsName = detailsBean.getName();
         final NotificationBean notificationBean = notificationService.startProgressNotification(
                 i18n.format("datasources.creating-datasource-title"), //$NON-NLS-1$
-                i18n.format("datasources.creating-datasource-msg", detailsBean.getName())); //$NON-NLS-1$
+                i18n.format("datasources.creating-datasource-msg", dsName)); //$NON-NLS-1$
         dataSourceService.createDataSource(detailsBean, new IRpcServiceInvocationHandler<Void>() {
             @Override
             public void onReturn(Void data) {

@@ -126,7 +126,6 @@ public class VirtualDatabasesPage extends AbstractPage {
 
     private int currentPage = 1;
     private Collection<String> allVdbNames = new ArrayList<String>();
-	private Collection<String> allDsNames = new ArrayList<String>();
     
    /**
      * Constructor.
@@ -250,8 +249,8 @@ public class VirtualDatabasesPage extends AbstractPage {
                         i18n.format("vdbs.vdb-deleted"), //$NON-NLS-1$
                         i18n.format("vdbs.delete-success-msg")); //$NON-NLS-1$
 
-                // Refresh Page
-            	doVdbSearch(currentPage);
+                // Deletion - go back to page 1 - delete could have made current page invalid
+            	doVdbSearch(1);
             }
             @Override
             public void onError(Throwable error) {
@@ -334,7 +333,7 @@ public class VirtualDatabasesPage extends AbstractPage {
         stateService.put(ApplicationStateKeys.VDBS_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.VDBS_SORT_COLUMN, currentSortColumn);
         
-        vdbService.search(searchText, page, currentSortColumn.columnId, currentSortColumn.ascending,
+        vdbService.search(searchText, page, currentSortColumn.columnId, !currentSortColumn.ascending,
 		        new IRpcServiceInvocationHandler<VdbResultSetBean>() {
             @Override
             public void onReturn(VdbResultSetBean data) {

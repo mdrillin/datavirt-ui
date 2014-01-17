@@ -61,6 +61,7 @@
         <div class="row">
           <div class="span9">
             <span data-field="vdbdetails-vdbstatus" class="pull-right" data-role="dummy">Status</span>
+            <span data-field="vdbdetails-vdbstatus-image" class="pull-right" data-role="dummy"><img src="../../../../../../../../webapp/images/StatusIcon_ok_32x32.png">Image</img></span>
           </div>
         </div>
         
@@ -94,20 +95,23 @@
             <div data-field="datavirt-vdbmodels-none" style="display:none" class="sramp-artifacts-none">
               <span data-i18n-key="no-vdbmodels">No VDB Models found.</span>
             </div>
-            <div data-field="datavirt-vdbmodels-searching" style="display:none" class="sramp-artifacts-searching">
-              <span class="spinner" data-i18n-key="finding-vdbmodels">Finding Virtual DB Models, please wait...</span>
+            <div data-field="datavirt-vdbmodels-retrieving" style="display:none" class="sramp-artifacts-searching">
+              <span class="spinner" data-i18n-key="retrieving-vdbmodels">Retrieving Virtual DB Models, please wait...</span>
+            </div>
+            <div data-field="datavirt-vdbmodels-adding" style="display:none" class="sramp-artifacts-searching">
+              <span class="spinner" data-i18n-key="adding-vdbmodels">Adding the Model, please wait...</span>
             </div>
 
             <!-- VDBs Table -->
             <table data-field="datavirt-vdbmodels-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
               <thead>
                 <tr>
-                  <th data-i18n-key="name">Select</th>
+                  <th data-i18n-key="select"></th>
                   <th data-i18n-key="name">Model Name</th>
-                  <th data-i18n-key="name">Status</th>
+                  <th data-i18n-key="status">Status</th>
                   <th data-i18n-key="type">Model Type</th>
-                  <th data-i18n-key="type">Translator</th>
-                  <th data-i18n-key="type">JNDI Source</th>
+                  <th data-i18n-key="translator">Translator</th>
+                  <th data-i18n-key="jndiSrc">JNDI Source</th>
                 </tr>
               </thead>
               <tbody data-role="dummy">

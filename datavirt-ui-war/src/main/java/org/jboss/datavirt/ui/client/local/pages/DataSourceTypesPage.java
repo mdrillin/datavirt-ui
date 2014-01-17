@@ -215,8 +215,8 @@ public class DataSourceTypesPage extends AbstractPage {
                         i18n.format("datasource-types.datasource-type-deleted"), //$NON-NLS-1$
                         i18n.format("datasource-types.delete-success-msg")); //$NON-NLS-1$
 
-                // Refresh Page
-            	doGetDataSourceTypes(currentPage);
+                // Deletion - go back to page 1 - delete could have made current page invalid
+            	doGetDataSourceTypes(1);
             }
             @Override
             public void onError(Throwable error) {
@@ -285,7 +285,7 @@ public class DataSourceTypesPage extends AbstractPage {
         stateService.put(ApplicationStateKeys.DATASOURCE_TYPES_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.DATASOURCE_TYPES_SORT_COLUMN, currentSortColumn);
         
-        dataSourceService.getDataSourceTypeResultSet(page, currentSortColumn.columnId, currentSortColumn.ascending,
+        dataSourceService.getDataSourceTypeResultSet(page, currentSortColumn.columnId, !currentSortColumn.ascending,
 		        new IRpcServiceInvocationHandler<DataSourceTypeResultSetBean>() {
             @Override
             public void onReturn(DataSourceTypeResultSetBean data) {

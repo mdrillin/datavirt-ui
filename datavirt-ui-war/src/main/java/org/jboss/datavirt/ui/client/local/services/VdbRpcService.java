@@ -72,11 +72,11 @@ public class VdbRpcService {
         }
     }
     
-    public void getVdbDetails(String vdbName, final IRpcServiceInvocationHandler<VdbDetailsBean> handler) {
+    public void getVdbDetails(String vdbName, int modelsPage, final IRpcServiceInvocationHandler<VdbDetailsBean> handler) {
         RemoteCallback<VdbDetailsBean> successCallback = new DelegatingRemoteCallback<VdbDetailsBean>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteVdbService.call(successCallback, errorCallback).getVdbDetails(vdbName);
+        	remoteVdbService.call(successCallback, errorCallback).getVdbDetails(vdbName,modelsPage);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }
@@ -102,12 +102,12 @@ public class VdbRpcService {
         }
     }
 
-    public void deploySourceVDBAddImportAndRedeploy(String vdbName, String sourceVDBName, String dataSourceName, String translator, 
+    public void deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String dataSourceName, String translator, 
     		final IRpcServiceInvocationHandler<VdbDetailsBean> handler) {
         RemoteCallback<VdbDetailsBean> successCallback = new DelegatingRemoteCallback<VdbDetailsBean>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteVdbService.call(successCallback, errorCallback).deploySourceVDBAddImportAndRedeploy(vdbName, sourceVDBName, dataSourceName, translator);
+        	remoteVdbService.call(successCallback, errorCallback).deploySourceVDBAddImportAndRedeploy(vdbName, modelsPageNumber,sourceVDBName, dataSourceName, translator);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }
@@ -123,23 +123,23 @@ public class VdbRpcService {
         }
     }
     
-    public void addOrReplaceViewModelAndRedeploy(String vdbName, String viewModelName, String ddlString, 
+    public void addOrReplaceViewModelAndRedeploy(String vdbName, int modelsPageNumber, String viewModelName, String ddlString, 
     		final IRpcServiceInvocationHandler<VdbDetailsBean> handler) {
         RemoteCallback<VdbDetailsBean> successCallback = new DelegatingRemoteCallback<VdbDetailsBean>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteVdbService.call(successCallback, errorCallback).addOrReplaceViewModelAndRedeploy(vdbName, viewModelName, ddlString);
+        	remoteVdbService.call(successCallback, errorCallback).addOrReplaceViewModelAndRedeploy(vdbName, modelsPageNumber,viewModelName, ddlString);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }
     }
     
-    public void removeModelsAndRedeploy(String vdbName, Map<String,String> removeModelNameAndTypeMap, 
+    public void removeModelsAndRedeploy(String vdbName, int modelsPageNumber, Map<String,String> removeModelNameAndTypeMap, 
     		final IRpcServiceInvocationHandler<VdbDetailsBean> handler) {
         RemoteCallback<VdbDetailsBean> successCallback = new DelegatingRemoteCallback<VdbDetailsBean>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteVdbService.call(successCallback, errorCallback).removeModelsAndRedeploy(vdbName, removeModelNameAndTypeMap);
+        	remoteVdbService.call(successCallback, errorCallback).removeModelsAndRedeploy(vdbName, modelsPageNumber,removeModelNameAndTypeMap);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }

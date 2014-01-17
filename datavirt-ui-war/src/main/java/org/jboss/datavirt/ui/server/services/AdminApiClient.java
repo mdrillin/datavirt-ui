@@ -27,6 +27,7 @@ import java.util.Properties;
 
 import org.jboss.datavirt.ui.client.shared.services.StringUtil;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
+import org.jboss.datavirt.ui.server.services.util.VdbHelper;
 import org.overlord.sramp.atom.err.SrampAtomException;
 import org.overlord.sramp.client.SrampClientException;
 import org.teiid.adminapi.Admin;
@@ -354,20 +355,19 @@ public class AdminApiClient {
 	}
 	
 	/*
-     * Delete the supplied list of DataSource types
-     * @param dataSourceTypeNames the collection of datasource types
-     */
+	 * Delete the supplied list of DataSource types
+	 * @param dataSourceTypeNames the collection of datasource types
+	 */
 	public void deleteDataSourceTypes(Collection<String> dataSourceTypeNames) throws AdminApiClientException {
 		if(this.admin==null) return;
 
 		// Delete the specified DataSource types
 		try {
-			// Get current list of DS Templates. If 'dsTypeName' is found, undeploy it...
-			Collection<String> currentTemplates = (Collection<String>) this.admin.getDataSourceTemplateNames();
-
 			for(String dsTypeName : dataSourceTypeNames) {
-				if(currentTemplates.contains(dsTypeName)) {
-					// Undeploy the datasource type
+				// Get current list of Drivers. If 'driverName' is found, undeploy it...
+				Collection<String> currentTypeNames = (Collection<String>) this.admin.getDataSourceTemplateNames();
+
+				if(currentTypeNames.contains(dsTypeName)) {
 					admin.undeploy(dsTypeName);
 				}
 			}
@@ -462,6 +462,7 @@ public class AdminApiClient {
 		Collection<? extends VDB> vdbs = getVDBs();
 
 		if(vdbs!=null) {
+			VdbHelper vdbHelper = VdbHelper.getInstance();
 			// Get VDB names
 			Collection<Properties> vdbSummaryProps = new ArrayList<Properties>();
 			for(VDB vdb : vdbs) {
@@ -469,7 +470,8 @@ public class AdminApiClient {
 				String vdbName = vdbMeta.getName();
 				boolean isDynamic = vdbMeta.isXmlDeployment();
 				boolean isPreview = vdbMeta.isPreview();
-				String status = vdbMeta.getStatus().toString();
+				
+				String vdbStatus = vdbHelper.getVdbStatus(vdbMeta);
 				
 				// Dynamic VDB
 				if(isDynamic) {
@@ -477,7 +479,7 @@ public class AdminApiClient {
 						Properties vdbSummary = new Properties();
 						vdbSummary.put("name", vdbName);
 						vdbSummary.put("type", "dynamic");
-						vdbSummary.put("status", status);
+						vdbSummary.put("status", vdbStatus);
 						vdbSummaryProps.add(vdbSummary);
 					}
 				// Archive VDB
@@ -486,13 +488,13 @@ public class AdminApiClient {
 						Properties vdbSummary = new Properties();
 						vdbSummary.put("name", vdbName);
 						vdbSummary.put("type", "archive");
-						vdbSummary.put("status", status);
+						vdbSummary.put("status", vdbStatus);
 						vdbSummaryProps.add(vdbSummary);
 					} else if(includePreview) {
 						Properties vdbSummary = new Properties();
 						vdbSummary.put("name", vdbName);
 						vdbSummary.put("type", "archive");
-						vdbSummary.put("status", status);
+						vdbSummary.put("status", vdbStatus);
 						vdbSummaryProps.add(vdbSummary);
 					}
 				}

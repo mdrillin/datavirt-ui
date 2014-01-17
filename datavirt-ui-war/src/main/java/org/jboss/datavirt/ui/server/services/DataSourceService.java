@@ -78,12 +78,20 @@ public class DataSourceService implements IDataSourceService {
         // List of all the names
         List<Properties> propertiesList = new ArrayList<Properties>(dsSummaryPropsCollection);
         // Save complete list
-        Collection<String> allDsNames = new ArrayList<String>(dsSummaryPropsCollection.size());
+        List<String> allDsNames = new ArrayList<String>(dsSummaryPropsCollection.size());
+        List<String> allDsNamesSort = new ArrayList<String>(dsSummaryPropsCollection.size());
         for(Properties dsProps : propertiesList) {
             String sourceName = dsProps.getProperty("name");
             if(sourceName!=null && !sourceName.isEmpty()) {
             	allDsNames.add(sourceName);
+            	allDsNamesSort.add(sourceName.toLowerCase());
             }
+        }
+        // Sort alpha by name
+        Collections.sort(allDsNamesSort);
+        // If reverse alpha, reverse the sorted list
+        if(!sortAscending) {
+        	Collections.reverse(allDsNamesSort);
         }
         
         int totalSources = propertiesList.size();
@@ -99,12 +107,18 @@ public class DataSourceService implements IDataSourceService {
         List<DataSourceSummaryBean> rows = new ArrayList<DataSourceSummaryBean>();
         for(int i=page_startIndex; i<=page_endIndex; i++) {
             DataSourceSummaryBean summaryBean = new DataSourceSummaryBean();
-            Properties dsSummaryProps = propertiesList.get(i);
-            String sourceName = dsSummaryProps.getProperty("name");
-            summaryBean.setName(sourceName);
-            summaryBean.setType(dsSummaryProps.getProperty("type"));
-            summaryBean.setUpdatedOn(new Date());
-            rows.add(summaryBean);
+            // Name of source were looking for
+            String dsName = allDsNamesSort.get(i);
+            // Iterate the properties List, find the matching source properties
+            for(Properties dsProps : propertiesList) {
+            	String thisDsName = dsProps.getProperty("name");
+            	if(thisDsName.equalsIgnoreCase(dsName)) {
+                    summaryBean.setName(thisDsName);
+                    summaryBean.setType(dsProps.getProperty("type"));
+                    rows.add(summaryBean);
+                    break;
+            	}
+            }
         }
         data.setAllDsNames(allDsNames);
         data.setDataSources(rows);
@@ -129,15 +143,21 @@ public class DataSourceService implements IDataSourceService {
         
     	// Filter out 'types' ending with .war
         List<String> dsTypesList = new ArrayList<String>(dsTypesCollection.size());
+        List<String> dsTypesListSort = new ArrayList<String>(dsTypesCollection.size());
     	for(String dsType : dsTypesCollection) {
     	   if(dsType!=null && !dsType.endsWith(".war")) {
     		   dsTypesList.add(dsType);
+    		   dsTypesListSort.add(dsType.toLowerCase());
     	   }
     	}
     	
-        // List of all the names
-        Collections.sort(dsTypesList);
-        
+        // Sort alpha by name
+        Collections.sort(dsTypesListSort);
+        // If reverse alpha, reverse the sorted list
+        if(!sortAscending) {
+        	Collections.reverse(dsTypesListSort);
+        }
+    	
         int totalTypes = dsTypesList.size();
         
         // Start and End Index for this page
@@ -151,10 +171,15 @@ public class DataSourceService implements IDataSourceService {
         List<DataSourceTypeBean> rows = new ArrayList<DataSourceTypeBean>();
         for(int i=page_startIndex; i<=page_endIndex; i++) {
         	DataSourceTypeBean typeBean = new DataSourceTypeBean();
-            String typeName = dsTypesList.get(i);
-            typeBean.setName(typeName);
-            typeBean.setUpdatedOn(new Date());
-            rows.add(typeBean);
+            String typeName = dsTypesListSort.get(i);
+            // Gets the name from original list (with correct case)
+            for(String thisTypeName : dsTypesList) {
+            	if(thisTypeName.equalsIgnoreCase(typeName)) {
+            		typeBean.setName(thisTypeName);
+            		rows.add(typeBean);
+            		break;
+            	}
+            }
         }
         data.setDataSourceTypes(rows);
         data.setItemsPerPage(pageSize);

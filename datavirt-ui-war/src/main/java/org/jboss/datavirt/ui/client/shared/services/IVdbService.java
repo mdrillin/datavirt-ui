@@ -44,20 +44,21 @@ public interface IVdbService {
     /**
      * Gets the VDB Details for the supplied vdb name
      * @param vdbName
+     * @param modelsPage the page number of models
      * @return the VDB Details
      * @throws DataVirtUiException
      */
-    public VdbDetailsBean getVdbDetails(String vdbName) throws DataVirtUiException;
+    public VdbDetailsBean getVdbDetails(String vdbName, int modelsPage) throws DataVirtUiException;
 
     public String getVdbXml(String vdbName) throws DataVirtUiException;
 
     public void createAndDeployDynamicVdb(String vdbName) throws DataVirtUiException;
 
-    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, String sourceVDBName, String dataSourceName, String translator) throws DataVirtUiException;
+    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String dataSourceName, String translator) throws DataVirtUiException;
 
-    public VdbDetailsBean addOrReplaceViewModelAndRedeploy(String vdbName, String viewModelName, String ddlString) throws DataVirtUiException;
+    public VdbDetailsBean addOrReplaceViewModelAndRedeploy(String vdbName, int modelsPageNumber, String viewModelName, String ddlString) throws DataVirtUiException;
 
-    public VdbDetailsBean removeModelsAndRedeploy(String vdbName, Map<String,String> removeModelNameAndTypeMap) throws DataVirtUiException;               
+    public VdbDetailsBean removeModelsAndRedeploy(String vdbName, int modelsPageNumber, Map<String,String> removeModelNameAndTypeMap) throws DataVirtUiException;               
 
     /**
      * Called to delete Vdbs.

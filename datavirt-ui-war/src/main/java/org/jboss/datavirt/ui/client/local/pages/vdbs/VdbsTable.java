@@ -38,6 +38,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
@@ -77,7 +78,6 @@ public class VdbsTable extends SortableTemplatedWidgetTable implements HasTableR
     @Override
     protected void configureColumnSorting() {
         setColumnSortable(1, Constants.SORT_COLID_NAME);
-        setColumnSortable(4, Constants.SORT_COLID_MODIFIED_ON);
         sortBy(Constants.SORT_COLID_NAME, true);
     }
 
@@ -93,7 +93,7 @@ public class VdbsTable extends SortableTemplatedWidgetTable implements HasTableR
      */
     public void addRow(final VdbSummaryBean vdbSummaryBean) {
         int rowIdx = this.rowElements.size();
-        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
+//        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
 
         CheckBox checkbox = new CheckBox();
         checkbox.addClickHandler(new ClickHandler() {
@@ -110,13 +110,29 @@ public class VdbsTable extends SortableTemplatedWidgetTable implements HasTableR
         Anchor name = toDetailsPageLinkFactory.get("vdbname", vdbSummaryBean.getName()); //$NON-NLS-1$
         name.setText(vdbSummaryBean.getName());
         InlineLabel type = new InlineLabel(vdbSummaryBean.getType());
-        InlineLabel status = new InlineLabel(vdbSummaryBean.getStatus());
-        InlineLabel modified = new InlineLabel(format.format(vdbSummaryBean.getUpdatedOn()));
 
+        InlineHTML statusHtml = new InlineHTML();
+        String statusStr = vdbSummaryBean.getStatus();
+        String iconUrl = getIconUrl(statusStr);
+        statusHtml.setHTML("<img src=\"" + iconUrl + "\">" + statusStr + "</img>");
+        
         add(rowIdx, 1, name);
         add(rowIdx, 2, type);
-        add(rowIdx, 3, status);
-        add(rowIdx, 4, modified);
+        add(rowIdx, 3, statusHtml);
+    }
+    
+    private String getIconUrl(String status) {
+    	String iconUrl = null;
+
+        if(status.equalsIgnoreCase("active")) {
+    		iconUrl = Constants.VDB_STATUS_URL_ACTIVE_16PX;
+    	} else if(status.toLowerCase().startsWith("inactive")) {
+    		iconUrl = Constants.VDB_STATUS_URL_INACTIVE_16PX;
+    	} else if(status.equalsIgnoreCase("loading")) {
+    		iconUrl = Constants.VDB_STATUS_URL_LOADING_16PX;
+    	}
+    	
+    	return iconUrl;
     }
     
     public HandlerRegistration addTableRowSelectionHandler(Handler handler) {

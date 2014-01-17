@@ -36,6 +36,8 @@ public class VdbDetailsBean extends VdbSummaryBean implements Serializable {
     private String updatedBy;
     private String version;
     private Collection<VdbModelBean> models = new ArrayList<VdbModelBean>();
+    private int modelsPerPage;
+    private int startIndex;
 
     /**
      * Constructor.
@@ -91,6 +93,41 @@ public class VdbDetailsBean extends VdbSummaryBean implements Serializable {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+    
+    /**
+     * @return the total number of Models
+     */
+    public int getTotalModels() {
+        return models.size();
+    }
+
+    /**
+     * @return the modelsPerPage
+     */
+    public int getModelsPerPage() {
+        return modelsPerPage;
+    }
+
+    /**
+     * @param modelsPerPage the modelsPerPage to set
+     */
+    public void setModelsPerPage(int modelsPerPage) {
+        this.modelsPerPage = modelsPerPage;
+    }
+
+    /**
+     * @return the startIndex
+     */
+    public int getStartIndex() {
+        return startIndex;
+    }
+
+    /**
+     * @param startIndex the startIndex to set
+     */
+    public void setStartIndex(int startIndex) {
+        this.startIndex = startIndex;
     }
 
 }

@@ -21,6 +21,39 @@ a:hover {
   padding-left: 20px;
 }
 
+.statusOkImg16
+{
+  src: url("../images/StatusIcon_ok_16x16.png");
+}
+.statusFailedImg16
+{
+  src: url("../images/StatusIcon_failed_16x16.png");
+}
+.statusLoadingImg16
+{
+  src: url("../images/StatusIcon_loading_16x16.png");
+}
+.statusInactiveImg16
+{
+  src: url("../images/StatusIcon_inactive_16x16.png");
+}
+.statusOkImg32
+{
+  src: url("../images/StatusIcon_ok_32x32.png");
+}
+.statusFailedImg32
+{
+  src: url("../images/StatusIcon_failed_32x32.png");
+}
+.statusLoadingImg32
+{
+  src: url("../images/StatusIcon_loading_32x32.png");
+}
+.statusInactiveImg32
+{
+  src: url("../images/StatusIcon_inactive_32x32.png");
+}
+
 input.sramp-date {
   cursor: pointer;
   background-color: white;
@@ -368,14 +401,6 @@ button.tree:hover {
   bottom: 1px;
   right: 1px;
   background: white;
-}
-
-.sramp-ontology-box-header {
-  font-weight: bold;
-  background-color: rgb(245, 240, 240);
-  border-bottom: 1px solid rgb(221, 221, 221);
-  padding: 3px;
-  height: 20px;
 }
 
 .sramp-settings {

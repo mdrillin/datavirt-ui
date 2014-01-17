@@ -193,9 +193,10 @@ public class DataSourcesPage extends AbstractPage {
      * @param dsDetailsBean the data source details
      */
     private void doCreateDataSource(DataSourceDetailsBean detailsBean) {
+    	final String dsName = detailsBean.getName();
         final NotificationBean notificationBean = notificationService.startProgressNotification(
                 i18n.format("datasources.creating-datasource-title"), //$NON-NLS-1$
-                i18n.format("datasources.creating-datasource-msg", detailsBean.getName())); //$NON-NLS-1$
+                i18n.format("datasources.creating-datasource-msg", dsName)); //$NON-NLS-1$
         dataSourceService.createDataSource(detailsBean, new IRpcServiceInvocationHandler<Void>() {
             @Override
             public void onReturn(Void data) {
@@ -244,11 +245,11 @@ public class DataSourcesPage extends AbstractPage {
             @Override
             public void onReturn(Void data) {
                 notificationService.completeProgressNotification(notificationBean.getUuid(),
-                        i18n.format("datasources.datasourc-deleted"), //$NON-NLS-1$
+                        i18n.format("datasources.datasource-deleted"), //$NON-NLS-1$
                         i18n.format("datasources.delete-success-msg")); //$NON-NLS-1$
 
-                // Refresh Page
-            	doDataSourceSearch(currentPage);
+                // Deletion - go back to page 1 - delete could have made current page invalid
+            	doDataSourceSearch(1);
             }
             @Override
             public void onError(Throwable error) {
@@ -328,7 +329,7 @@ public class DataSourcesPage extends AbstractPage {
         stateService.put(ApplicationStateKeys.DATASOURCES_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.DATASOURCES_SORT_COLUMN, currentSortColumn);
         
-        dataSourceService.search(searchText, page, currentSortColumn.columnId, currentSortColumn.ascending,
+        dataSourceService.search(searchText, page, currentSortColumn.columnId, !currentSortColumn.ascending,
 		        new IRpcServiceInvocationHandler<DataSourceResultSetBean>() {
             @Override
             public void onReturn(DataSourceResultSetBean data) {

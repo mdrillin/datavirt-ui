@@ -77,7 +77,6 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
     @Override
     protected void configureColumnSorting() {
         setColumnSortable(1, Constants.SORT_COLID_NAME);
-        setColumnSortable(3, Constants.SORT_COLID_MODIFIED_ON);
         sortBy(Constants.SORT_COLID_NAME, true);
     }
 
@@ -93,7 +92,7 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
      */
     public void addRow(final DataSourceSummaryBean dataSourceSummaryBean) {
         int rowIdx = this.rowElements.size();
-        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
+//        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
 
         CheckBox checkbox = new CheckBox();
         checkbox.addClickHandler(new ClickHandler() {
@@ -110,11 +109,9 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
         Anchor name = toDetailsPageLinkFactory.get("name", dataSourceSummaryBean.getName()); //$NON-NLS-1$
         name.setText(dataSourceSummaryBean.getName());
         InlineLabel type = new InlineLabel(dataSourceSummaryBean.getType());
-        InlineLabel modified = new InlineLabel(format.format(dataSourceSummaryBean.getUpdatedOn()));
 
         add(rowIdx, 1, name);
         add(rowIdx, 2, type);
-        add(rowIdx, 3, modified);
     }
     
     /**
@@ -129,16 +126,6 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
     	return chkbox.getValue();
     }
     
-//    public Collection<Integer> getSelectedRows() {
-//    	Collection<Integer> selectedRows = new ArrayList<Integer>();
-//    	for(Integer row : rowSelectionMap.keySet()) {
-//    		if(isSelected(row)) {
-//    			selectedRows.add(row);
-//    		}
-//    	}
-//    	return selectedRows;
-//    }
-//    
     public Collection<String> getSelectedDataSources() {
     	Collection<String> selectedDataSources = new ArrayList<String>();
     	for(Integer row : rowSelectionMap.keySet()) {

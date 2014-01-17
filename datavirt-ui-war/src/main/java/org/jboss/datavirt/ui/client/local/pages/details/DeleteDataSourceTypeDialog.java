@@ -67,9 +67,9 @@ public class DeleteDataSourceTypeDialog extends ModalDialog implements HasClickH
     public void setDataSourceTypeNames(Collection<String> dsTypes) {
     	String nameLabel = null;
     	if(dsTypes.size()==1) {
-    		nameLabel = "Data Source " + dsTypes.iterator().next();
+    		nameLabel = "Data Source Type " + dsTypes.iterator().next();
     	} else {
-    		nameLabel = "the selected Data Sources";
+    		nameLabel = "the selected Data Source Types";
     	}
         this.dataSourceTypeName.setText(nameLabel);
     }

@@ -140,15 +140,7 @@ public class VdbHelper {
 			// ------------
 			// VDB Status
 			// ------------
-			VDB.Status status = vdb.getStatus();
-			String vdbStatus = null;
-			// Change FAILED or REMOVED status to INACTIVE
-			if(status!=null) {
-				vdbStatus = status.toString();
-				if( vdbStatus.equalsIgnoreCase("FAILED") || vdbStatus.equalsIgnoreCase("REMOVED") ) {
-					vdbStatus="INACTIVE";
-				}
-			}
+			String vdbStatus = getVdbStatus(vdb);
 
 			// ------------
 			// VDB Models
@@ -183,7 +175,7 @@ public class VdbHelper {
 				// If this is not an XML Deployment, show the Status as Unknown
 				if(!vdb.isXmlDeployment()) {
 					modelStatus = "Unknown";
-					// Is XML Deployment, look at model errors
+			    // Is XML Deployment, look at model errors
 				} else {
 					List<String> errors = modelMeta.getValidityErrors();
 					if(errors.size()==0) {
@@ -209,16 +201,13 @@ public class VdbHelper {
 						// Connection Error. Reset the VDB overall status, as it may say loading
 						if(connectionError) {
 							modelStatus = "INACTIVE: Data Source connection failed...";
-							if(vdbStatus!=null && "LOADING".equalsIgnoreCase(vdbStatus)) {
-								vdbStatus = "INACTIVE";
-							}
-							// Validation Error with View SQL
+						// Validation Error with View SQL
 						} else if(validationError) {
 							modelStatus = "INACTIVE: Validation Error with SQL";
-							// Loading in progress
+						// Loading in progress
 						} else if(isLoading) {
 							modelStatus = "INACTIVE: Metadata loading in progress...";
-							// Unknown - use generic message
+						// Unknown - use generic message
 						} else {
 							modelStatus = "INACTIVE: unknown source issue";
 						}
@@ -237,6 +226,30 @@ public class VdbHelper {
 		}
 
 		return vdbDetailsBean;
+	}
+	
+	/**
+	 * Get the VDB Status that will be displayed in the UI.  This may be different from the VDBMetaData object status to simplify
+	 * @param vdb the VDBMetaData
+	 * @return the vdb status
+	 */
+	public String getVdbStatus(VDBMetaData vdb) {
+		VDB.Status status = vdb.getStatus();
+		String vdbStatus = "Unknown";
+		
+		// Change FAILED, REMOVED, LOADING status to INACTIVE
+		if(status!=null) {
+			vdbStatus = status.toString();
+			if( vdbStatus.equalsIgnoreCase("FAILED") || vdbStatus.equalsIgnoreCase("REMOVED") || vdbStatus.equalsIgnoreCase("LOADING") ) {
+				vdbStatus="INACTIVE";
+			}
+		}
+		
+		// If no models, change status to INACTIVE
+		List<Model> models = vdb.getModels();
+		if(models.isEmpty()) vdbStatus = "INACTIVE";
+		
+		return vdbStatus;
 	}
 	
     /**

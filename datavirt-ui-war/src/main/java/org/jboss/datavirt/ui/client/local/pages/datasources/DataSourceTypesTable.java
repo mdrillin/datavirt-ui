@@ -74,7 +74,6 @@ public class DataSourceTypesTable extends SortableTemplatedWidgetTable implement
     @Override
     protected void configureColumnSorting() {
         setColumnSortable(1, Constants.SORT_COLID_NAME);
-        setColumnSortable(2, Constants.SORT_COLID_MODIFIED_ON);
         sortBy(Constants.SORT_COLID_NAME, true);
     }
 
@@ -90,7 +89,7 @@ public class DataSourceTypesTable extends SortableTemplatedWidgetTable implement
      */
     public void addRow(final DataSourceTypeBean dataSourceTypeBean) {
         int rowIdx = this.rowElements.size();
-        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
+//        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
 
         String dsTypeName = dataSourceTypeBean.getName();
         if(!builtInDrivers.contains(dsTypeName)) {
@@ -110,10 +109,8 @@ public class DataSourceTypesTable extends SortableTemplatedWidgetTable implement
         }
         
         InlineLabel name = new InlineLabel(dsTypeName);
-        InlineLabel modified = new InlineLabel(format.format(dataSourceTypeBean.getUpdatedOn()));
 
         add(rowIdx, 1, name);
-        add(rowIdx, 2, modified);
     }
     
     /**

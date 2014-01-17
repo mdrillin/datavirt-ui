@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
+import org.jboss.datavirt.ui.client.shared.beans.DataSourceSummaryBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
@@ -66,7 +68,7 @@ public class VdbService implements IVdbService {
      */
     @Override
     public VdbResultSetBean search(String searchText, int page, String sortColumnId, boolean sortAscending) throws DataVirtUiException {
-        int pageSize = 20;
+        int pageSize = 15;
         
         VdbResultSetBean data = new VdbResultSetBean();
         
@@ -79,13 +81,22 @@ public class VdbService implements IVdbService {
         // List of all the names
         List<Properties> vdbPropsList = new ArrayList<Properties>(vdbSummaryProps);
         // Save complete list
-        Collection<String> allVdbNames = new ArrayList<String>(vdbSummaryProps.size());
+        List<String> allVdbNames = new ArrayList<String>(vdbSummaryProps.size());
+        List<String> allVdbNamesSort = new ArrayList<String>(vdbSummaryProps.size());
         for(Properties vdbProps : vdbPropsList) {
             String vdbName = vdbProps.getProperty("name");
             if(vdbName!=null && !vdbName.isEmpty()) {
             	allVdbNames.add(vdbName);
+            	allVdbNamesSort.add(vdbName.toLowerCase());
             }
         }
+        
+        // Sort alpha by name
+        Collections.sort(allVdbNamesSort);
+        // If reverse alpha, reverse the sorted list
+        if(!sortAscending) {
+        	Collections.reverse(allVdbNamesSort);
+        }    	
         
         int totalVdbs = vdbSummaryProps.size();
         
@@ -100,12 +111,17 @@ public class VdbService implements IVdbService {
         List<VdbSummaryBean> rows = new ArrayList<VdbSummaryBean>();
         for(int i=page_startIndex; i<=page_endIndex; i++) {
         	VdbSummaryBean summaryBean = new VdbSummaryBean();
-            Properties vdbProps = vdbPropsList.get(i);
-            summaryBean.setName(vdbProps.getProperty("name"));
-            summaryBean.setType(vdbProps.getProperty("type"));
-            summaryBean.setStatus(vdbProps.getProperty("status"));
-            summaryBean.setUpdatedOn(new Date());
-            rows.add(summaryBean);
+        	String vdbName = allVdbNamesSort.get(i);
+        	for(Properties vdbProps : vdbPropsList) {
+            	String thisVdbName = vdbProps.getProperty("name");
+            	if(thisVdbName.equalsIgnoreCase(vdbName)) {
+                    summaryBean.setName(thisVdbName);
+                    summaryBean.setType(vdbProps.getProperty("type"));
+                    summaryBean.setStatus(vdbProps.getProperty("status"));
+                    rows.add(summaryBean);
+                    break;
+            	}
+        	}
         }
         data.setAllVdbNames(allVdbNames);
         data.setVdbs(rows);
@@ -117,7 +133,8 @@ public class VdbService implements IVdbService {
     }
     
     @Override
-    public VdbDetailsBean getVdbDetails(String vdbName) throws DataVirtUiException {
+    public VdbDetailsBean getVdbDetails(String vdbName, int page) throws DataVirtUiException {
+        int pageSize = 15;
     	
     	VDBMetaData vdb = null;
 
@@ -127,7 +144,21 @@ public class VdbService implements IVdbService {
 			throw new DataVirtUiException(e.getMessage());
     	}
     	
-    	return vdbHelper.getVdbDetails(vdb);
+    	VdbDetailsBean vdbDetailsBean = vdbHelper.getVdbDetails(vdb);
+    	int totalModels = vdbDetailsBean.getTotalModels();
+    	
+        // Start and End Index for this page
+        int page_startIndex = (page - 1) * pageSize;
+        int page_endIndex = page_startIndex + (pageSize-1);
+        // If page endIndex greater than total rows, reset to end
+        if(page_endIndex > (totalModels-1)) {
+        	page_endIndex = totalModels-1;
+        }
+        
+        vdbDetailsBean.setModelsPerPage(pageSize);
+        vdbDetailsBean.setStartIndex(page_startIndex);
+
+        return vdbDetailsBean;
     }
     
     /**
@@ -320,7 +351,7 @@ public class VdbService implements IVdbService {
 		}
     }
     
-    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, String sourceVDBName, String dataSourceName, String translator) throws DataVirtUiException {
+    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String dataSourceName, String translator) throws DataVirtUiException {
     	// Deploy the Source VDB
     	deploySourceVDB(sourceVDBName, dataSourceName, translator);
 
@@ -328,7 +359,7 @@ public class VdbService implements IVdbService {
     	addImportAndRedeploy(vdbName,sourceVDBName,1);
 
     	// Return details
-    	return getVdbDetails(vdbName);
+    	return getVdbDetails(vdbName, modelsPageNumber);
     }   
     
     /**
@@ -524,7 +555,7 @@ public class VdbService implements IVdbService {
      * @param ddlString the DDL string to use for the view model
      * @return the VdbDetails
      */
-    public VdbDetailsBean addOrReplaceViewModelAndRedeploy(String vdbName, String viewModelName, String ddlString) throws DataVirtUiException {
+    public VdbDetailsBean addOrReplaceViewModelAndRedeploy(String vdbName, int modelsPageNumber, String viewModelName, String ddlString) throws DataVirtUiException {
     	// Get deployed VDB and check status
     	VDBMetaData theVDB;
     	try {
@@ -539,7 +570,7 @@ public class VdbService implements IVdbService {
     	redeployVDB(vdbName, newVdb);
 
     	// Return details
-    	return getVdbDetails(vdbName);
+    	return getVdbDetails(vdbName, modelsPageNumber);
     }
     
     /*
@@ -550,7 +581,7 @@ public class VdbService implements IVdbService {
      * @param removeModelTypeList the list of corresponding model types
      * @return the VdbDetails
      */
-    public VdbDetailsBean removeModelsAndRedeploy(String vdbName, Map<String,String> removeModelNameAndTypeMap) throws DataVirtUiException {                
+    public VdbDetailsBean removeModelsAndRedeploy(String vdbName, int modelsPageNumber, Map<String,String> removeModelNameAndTypeMap) throws DataVirtUiException {                
     	// Get deployed VDB and check status
     	VDBMetaData theVDB;
     	try {
@@ -565,7 +596,7 @@ public class VdbService implements IVdbService {
     	redeployVDB(vdbName, newVdb);
 
     	// Return details
-    	return getVdbDetails(vdbName);
+    	return getVdbDetails(vdbName, modelsPageNumber);
     }
     
 }

@@ -15,8 +15,6 @@
  */
 package org.jboss.datavirt.ui.client.local.pages.vdbs;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +31,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.InlineHTML;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
@@ -42,6 +41,10 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 @Dependent
 public class VdbModelsTable extends SortableTemplatedWidgetTable implements HasTableRowSelectionHandlers {
+
+    private static final String vdbStatusInactiveUrl = "images/StatusIcon_inactive_16x16.png";
+    private static final String vdbStatusActiveUrl = "images/StatusIcon_ok_16x16.png";
+    private static final String vdbStatusUnknownUrl = "images/StatusIcon_loading_16x16.png";
 
     private Map<Integer,CheckBox> rowSelectionMap = new HashMap<Integer,CheckBox>();
     private Map<Integer,String> rowNameMap = new HashMap<Integer,String>();
@@ -104,16 +107,35 @@ public class VdbModelsTable extends SortableTemplatedWidgetTable implements HasT
         rowTranslatorMap.put(rowIdx,vdbModelBean.getTranslator());
         
         InlineLabel name = new InlineLabel(vdbModelBean.getName());
-        InlineLabel status = new InlineLabel(vdbModelBean.getStatus());
+
+        InlineHTML statusHtml = new InlineHTML();
+        String statusStr = vdbModelBean.getStatus();
+        String iconUrl = getIconUrl(statusStr);
+        statusHtml.setHTML("<img src=\"" + iconUrl + "\">" + statusStr + "</img>");
+        
         InlineLabel modelType = new InlineLabel(vdbModelBean.getType());
         InlineLabel translator = new InlineLabel(vdbModelBean.getTranslator());
         InlineLabel jndiSource = new InlineLabel(vdbModelBean.getJndiSource());
 
         add(rowIdx, 1, name);
-        add(rowIdx, 2, status);
+        add(rowIdx, 2, statusHtml);
         add(rowIdx, 3, modelType);
         add(rowIdx, 4, translator);
         add(rowIdx, 5, jndiSource);
+    }
+        
+    private String getIconUrl(String status) {
+    	String iconUrl = null;
+
+        if(status.equalsIgnoreCase("active")) {
+    		iconUrl = Constants.VDBMODEL_STATUS_URL_ACTIVE_16PX;
+    	} else if(status.toLowerCase().startsWith("inactive")) {
+    		iconUrl = Constants.VDBMODEL_STATUS_URL_INACTIVE_16PX;
+    	} else if(status.equalsIgnoreCase("Unknown")) {
+    		iconUrl = Constants.VDBMODEL_STATUS_URL_UNKNOWN_16PX;
+    	}
+    	
+    	return iconUrl;
     }
     
     public HandlerRegistration addTableRowSelectionHandler(Handler handler) {
