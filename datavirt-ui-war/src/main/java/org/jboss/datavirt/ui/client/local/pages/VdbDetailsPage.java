@@ -29,6 +29,7 @@ import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.AddSourceModelDialog;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.AddViewModelDialog;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.DeleteVdbModelDialog;
+import org.jboss.datavirt.ui.client.local.pages.vdbs.EditViewModelDialog;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.VdbModelsTable;
 import org.jboss.datavirt.ui.client.local.services.ApplicationStateKeys;
 import org.jboss.datavirt.ui.client.local.services.ApplicationStateService;
@@ -61,7 +62,6 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * The page shown to the user when they click on one of the VDBs
@@ -104,13 +104,12 @@ public class VdbDetailsPage extends AbstractPage {
     @Inject @DataField("vdbdetails-vdbstatus-image")
     protected Image vdbStatusImage;
     
-    @Inject @DataField("model-search-box")
-    protected TextBox searchBox;
-
     @Inject @DataField("btn-add-source")
     protected Button addSourceButton;
     @Inject @DataField("btn-add-view")
     protected Button addViewButton;
+    @Inject @DataField("btn-edit")
+    protected Button editModelButton;
     @Inject @DataField("btn-remove")
     protected Button removeModelButton;
     @Inject @DataField("btn-refresh")
@@ -124,6 +123,8 @@ public class VdbDetailsPage extends AbstractPage {
     protected Instance<AddSourceModelDialog> addSourceModelDialogFactory;
     @Inject
     protected Instance<AddViewModelDialog> addViewModelDialogFactory;
+    @Inject
+    protected Instance<EditViewModelDialog> editViewModelDialogFactory;
     
     @Inject @DataField("datavirt-vdbmodels-none")
     protected HtmlSnippet noDataMessage;
@@ -162,12 +163,6 @@ public class VdbDetailsPage extends AbstractPage {
      */
     @PostConstruct
     protected void onPostConstruct() {
-        searchBox.addValueChangeHandler(new ValueChangeHandler<String>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-            	doGetVdbDetails();
-            }
-        });
         pager.addValueChangeHandler(new ValueChangeHandler<Integer>() {
             @Override
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -205,12 +200,10 @@ public class VdbDetailsPage extends AbstractPage {
      */
     @Override
     protected void onPageShowing() {
-        String searchText = (String) stateService.get(ApplicationStateKeys.VDBDETAILS_SEARCH_TEXT, ""); //$NON-NLS-1$
         Integer page = (Integer) stateService.get(ApplicationStateKeys.VDBDETAILS_PAGE, 1);
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.VDBDETAILS_SORT_COLUMN, vdbModelsTable.getDefaultSortColumn());
 
-    	this.searchBox.setValue(searchText);
-    	this.vdbModelsTable.sortBy(sortColumn.columnId, sortColumn.ascending);
+    	this.vdbModelsTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
     	
         // Kick off an vdb details retrieval
     	doGetVdbDetails(page);
@@ -233,10 +226,8 @@ public class VdbDetailsPage extends AbstractPage {
         currentPage = page;
         currentVdbDetails = null;
         
-		final String searchText = this.searchBox.getValue();
         final SortColumn currentSortColumn = this.vdbModelsTable.getCurrentSortColumn();
 
-        stateService.put(ApplicationStateKeys.VDBDETAILS_SEARCH_TEXT, searchText);
         stateService.put(ApplicationStateKeys.VDBDETAILS_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.VDBDETAILS_SORT_COLUMN, currentSortColumn);
 
@@ -256,7 +247,7 @@ public class VdbDetailsPage extends AbstractPage {
             }
             @Override
             public void onError(Throwable error) {
-//                notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
+                notificationService.sendErrorNotification(i18n.format("vdbdetails.error-retrieving-details"), error); //$NON-NLS-1$
                 noDataMessage.setVisible(true);
             	getModelsInProgressMessage.setVisible(false);
                 pageTitle.setText("unknown");
@@ -319,6 +310,7 @@ public class VdbDetailsPage extends AbstractPage {
         vdbService.deploySourceVDBAddImportAndRedeploy(vdbname, currentPage, sourceVDBName, dsName, translator, new IRpcServiceInvocationHandler<VdbDetailsBean>() {
             @Override
             public void onReturn(VdbDetailsBean vdbDetailsBean) {            	
+            	currentVdbDetails = vdbDetailsBean;
             	setVdbStatus(vdbDetailsBean);
                 updateVdbModelsTable(vdbDetailsBean);
                 updatePager(vdbDetailsBean);
@@ -326,7 +318,7 @@ public class VdbDetailsPage extends AbstractPage {
             }
             @Override
             public void onError(Throwable error) {
-//                notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
+                notificationService.sendErrorNotification(i18n.format("vdbdetails.error-adding-source-model"), error); //$NON-NLS-1$
                 noDataMessage.setVisible(true);
                 addModelInProgressMessage.setVisible(false);
             }
@@ -347,19 +339,20 @@ public class VdbDetailsPage extends AbstractPage {
                 if (value != null) {
                 	String modelName = value.get("modelNameKey");
                 	String ddl = value.get("ddlKey");
-                	doAddViewModel(modelName,ddl);
+                	doAddOrReplaceViewModel(modelName,ddl);
                 }
             }
         });
         dialog.show();
     }
 
-    private void doAddViewModel(String modelName, String ddl) {
+    private void doAddOrReplaceViewModel(String modelName, String ddl) {
         onAddModelsStarting();
 
         vdbService.addOrReplaceViewModelAndRedeploy(vdbname, currentPage, modelName, ddl, new IRpcServiceInvocationHandler<VdbDetailsBean>() {
             @Override
             public void onReturn(VdbDetailsBean vdbDetailsBean) {            	
+            	currentVdbDetails = vdbDetailsBean;
             	setVdbStatus(vdbDetailsBean);
                 updateVdbModelsTable(vdbDetailsBean);
                 updatePager(vdbDetailsBean);
@@ -367,11 +360,61 @@ public class VdbDetailsPage extends AbstractPage {
             }
             @Override
             public void onError(Throwable error) {
-//                notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
+                notificationService.sendErrorNotification(i18n.format("vdbdetails.error-adding-view-model"), error); //$NON-NLS-1$
                 noDataMessage.setVisible(true);
                 addModelInProgressMessage.setVisible(false);
             }
         });           	
+    }
+    
+    /**
+     * Event handler that fires when the user clicks the Edit model button.  Can only edit the View Model - to change the DDL
+     * @param event
+     */
+    @EventHandler("btn-edit")
+    public void onEditSourceClick(ClickEvent event) {
+    	// Edit will only have one selection
+    	String modelName = vdbModelsTable.getSelectedModelNameAndTypeMap().keySet().iterator().next();
+    	String modelType = vdbModelsTable.getSelectedModelNameAndTypeMap().get(modelName);
+    	
+       	// View Model
+    	if(modelType.equalsIgnoreCase("VIRTUAL")) {
+    		EditViewModelDialog dialog = editViewModelDialogFactory.get();
+    		dialog.setModelName(modelName);
+        	String ddl = getModelDdl(modelName,currentVdbDetails);
+    		dialog.setDDL(ddl);
+    		dialog.addValueChangeHandler(new ValueChangeHandler<Map<String,String>>() {
+    			@Override
+    			public void onValueChange(ValueChangeEvent<Map<String, String>> event) {
+    				Map<String, String> value = event.getValue();
+    				if (value != null) {
+    					String dialogModelName = value.get("modelNameKey");
+    					String dialogDdl = value.get("ddlKey");
+    					doAddOrReplaceViewModel(dialogModelName,dialogDdl);
+    				}
+    			}
+    		});
+    		dialog.show();
+
+    	}
+        
+    }
+    
+    /*
+     * Get the Model DDL for the specified model name from the VdbDetailsBean
+     * @param modelName the name of the model
+     * @param vdbDetails the VdbDetailsBean
+     * @return the model DDL
+     */
+    private String getModelDdl(String modelName, VdbDetailsBean vdbDetails) {
+    	String ddl = null;
+    	
+    	VdbModelBean modelBean = vdbDetails.getModel(modelName);
+    	if(modelBean != null) {
+    		ddl = modelBean.getDdl();
+    	}
+    	
+    	return ddl;
     }
     
     /**
@@ -421,6 +464,7 @@ public class VdbDetailsPage extends AbstractPage {
                         i18n.format("vdbdetails.model-deleted"), //$NON-NLS-1$
                         i18n.format("vdbdetails.delete-success-msg", modelTextFinal)); //$NON-NLS-1$
 
+            	currentVdbDetails = vdbDetailsBean;
             	setVdbStatus(vdbDetailsBean);
             	
                 updateVdbModelsTable(vdbDetailsBean);
@@ -446,12 +490,42 @@ public class VdbDetailsPage extends AbstractPage {
     }
     
     private void doSetButtonEnablements() {
-    	// Remove Model Button - enabled if at least one row is selected.
-    	int selectedRows = this.vdbModelsTable.getSelectedModelNameAndTypeMap().size();
-    	if(selectedRows==0) {
-    		removeModelButton.setEnabled(false);
+    	String vdbType = currentVdbDetails.getType();
+    	if(vdbType!=null && vdbType.equalsIgnoreCase("archive")) {
+    	    addSourceButton.setVisible(false);
+    	    addViewButton.setVisible(false);
+    	    editModelButton.setVisible(false);
+    	    removeModelButton.setVisible(false);
+    	    downloadDynamicVdbLink.setVisible(false);
     	} else {
-    		removeModelButton.setEnabled(true);
+    	    addSourceButton.setVisible(true);
+    	    addViewButton.setVisible(true);
+    	    editModelButton.setVisible(true);
+    	    removeModelButton.setVisible(true);
+    	    downloadDynamicVdbLink.setVisible(true);
+
+    	    // Get number of rows selected
+    		int selectedRows = this.vdbModelsTable.getSelectedModelNameAndTypeMap().size();
+    		
+    	    // Edit Model Button enablement - enable for single virtual model selection
+    	    if(selectedRows==1) {
+    	    	String modelName = this.vdbModelsTable.getSelectedModelNameAndTypeMap().keySet().iterator().next();
+    	    	String modelType = this.vdbModelsTable.getSelectedModelNameAndTypeMap().get(modelName);
+    	    	if(modelType.equalsIgnoreCase("VIRTUAL")) {
+    	    		editModelButton.setEnabled(true);
+    	    	} else {
+    	    		editModelButton.setEnabled(false);
+    	    	}
+    	    } else {
+    			editModelButton.setEnabled(false);
+    	    }
+    	    
+    	    // Remove Model Button - enabled if at least one row is selected.
+    		if(selectedRows==0) {
+    			removeModelButton.setEnabled(false);
+    		} else {
+    			removeModelButton.setEnabled(true);
+    		}
     	}
     }
     
@@ -460,6 +534,11 @@ public class VdbDetailsPage extends AbstractPage {
      * @param vdbDetails
      */
     protected void updateVdbModelsTable(VdbDetailsBean vdbDetails) {
+    	if( vdbDetails.getType().equals("dynamic") ) {
+    		this.vdbModelsTable.setEditable(true);
+    	} else {
+    		this.vdbModelsTable.setEditable(false);
+    	}
         this.vdbModelsTable.clear();
         this.getModelsInProgressMessage.setVisible(false);
         this.addModelInProgressMessage.setVisible(false);
@@ -523,10 +602,14 @@ public class VdbDetailsPage extends AbstractPage {
         if (numPages > 1)
             this.pager.setVisible(true);
 
-        int startIndex = data.getStartIndex() + 1;
-        int endBatchIndx = startIndex + data.getModelsPerPage() - 1;
+        int startIndex = data.getStartIndex();
+        int endBatchIndx = startIndex + data.getModelsPerPage();
         int endAllIndx = data.getTotalModels();
         int endIndex = (endBatchIndx <= endAllIndx) ? endBatchIndx : endAllIndx;
+        
+        // reset start index to zero if end index is zero
+        startIndex = (endIndex==0) ? endIndex : startIndex+1;
+        
         String rangeText = "" + startIndex + "-" + endIndex; //$NON-NLS-1$ //$NON-NLS-2$
         String totalText = String.valueOf(data.getTotalModels());
         this.rangeSpan1.setInnerText(rangeText);

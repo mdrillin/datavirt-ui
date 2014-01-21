@@ -53,7 +53,6 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * The default "Data Source Types" page.
@@ -81,9 +80,6 @@ public class DataSourceTypesPage extends AbstractPage {
     @Inject
     protected ApplicationStateService stateService;
  
-    @Inject @DataField("sourcetype-search-box")
-    protected TextBox searchBox;
-
     @Inject @DataField("btn-add-source-type")
     protected Button addSourceTypeButton;
     
@@ -128,12 +124,6 @@ public class DataSourceTypesPage extends AbstractPage {
      */
     @PostConstruct
     protected void postConstruct() {
-        searchBox.addValueChangeHandler(new ValueChangeHandler<String>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-            	doGetDataSourceTypes();
-            }
-        });
         pager.addValueChangeHandler(new ValueChangeHandler<Integer>() {
             @Override
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -243,12 +233,10 @@ public class DataSourceTypesPage extends AbstractPage {
      */
     @Override
     protected void onPageShowing() {
-        String searchText = (String) stateService.get(ApplicationStateKeys.DATASOURCE_TYPES_SEARCH_TEXT, ""); //$NON-NLS-1$
         Integer page = (Integer) stateService.get(ApplicationStateKeys.DATASOURCE_TYPES_PAGE, 1);
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.DATASOURCE_TYPES_SORT_COLUMN, dataSourceTypesTable.getDefaultSortColumn());
 
-    	this.searchBox.setValue(searchText);
-    	this.dataSourceTypesTable.sortBy(sortColumn.columnId, sortColumn.ascending);
+    	this.dataSourceTypesTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
     	
         // Kick off an dataSource retrieval
     	doGetDataSourceTypes(page);
@@ -278,10 +266,8 @@ public class DataSourceTypesPage extends AbstractPage {
     protected void doGetDataSourceTypes(int page) {
         onSearchStarting();
         currentPage = page;
-		final String searchText = this.searchBox.getValue();
         final SortColumn currentSortColumn = this.dataSourceTypesTable.getCurrentSortColumn();
 
-        stateService.put(ApplicationStateKeys.DATASOURCE_TYPES_SEARCH_TEXT, searchText);
         stateService.put(ApplicationStateKeys.DATASOURCE_TYPES_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.DATASOURCE_TYPES_SORT_COLUMN, currentSortColumn);
         
@@ -346,8 +332,13 @@ public class DataSourceTypesPage extends AbstractPage {
         if (numPages > 1)
             this.pager.setVisible(true);
 
-        int startIndex = data.getStartIndex() + 1;
-        int endIndex = startIndex + data.getDataSourceTypes().size() - 1;
+        int startIndex = data.getStartIndex();
+        int endIndex = startIndex + data.getDataSourceTypes().size();
+        
+        // reset start index to zero if end index is zero
+        startIndex = (endIndex==0) ? endIndex : startIndex+1;
+        
+        
         String rangeText = "" + startIndex + "-" + endIndex; //$NON-NLS-1$ //$NON-NLS-2$
         String totalText = String.valueOf(data.getTotalResults());
         this.rangeSpan1.setInnerText(rangeText);

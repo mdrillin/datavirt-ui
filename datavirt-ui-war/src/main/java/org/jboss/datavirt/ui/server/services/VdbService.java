@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -29,13 +28,13 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.jboss.datavirt.ui.client.shared.beans.DataSourceSummaryBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
 import org.jboss.datavirt.ui.client.shared.exceptions.DataVirtUiException;
 import org.jboss.datavirt.ui.client.shared.services.IVdbService;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
+import org.jboss.datavirt.ui.server.services.util.FilterUtil;
 import org.jboss.datavirt.ui.server.services.util.VdbHelper;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.teiid.adminapi.VDB;
@@ -43,6 +42,7 @@ import org.teiid.adminapi.VDB.Status;
 import org.teiid.adminapi.impl.ModelMetaData;
 import org.teiid.adminapi.impl.VDBMetaData;
 import org.teiid.adminapi.impl.VDBMetadataParser;
+import org.teiid.core.util.StringUtil;
 
 /**
  * Concrete implementation of the VDB service.
@@ -85,9 +85,11 @@ public class VdbService implements IVdbService {
         List<String> allVdbNamesSort = new ArrayList<String>(vdbSummaryProps.size());
         for(Properties vdbProps : vdbPropsList) {
             String vdbName = vdbProps.getProperty("name");
-            if(vdbName!=null && !vdbName.isEmpty()) {
+            if(!StringUtil.isEmpty(vdbName)) {
             	allVdbNames.add(vdbName);
-            	allVdbNamesSort.add(vdbName.toLowerCase());
+            	if ( FilterUtil.matchFilter(vdbName, searchText) ) {
+            		allVdbNamesSort.add(vdbName.toLowerCase());
+            	}
             }
         }
         
@@ -98,7 +100,7 @@ public class VdbService implements IVdbService {
         	Collections.reverse(allVdbNamesSort);
         }    	
         
-        int totalVdbs = vdbSummaryProps.size();
+        int totalVdbs = allVdbNamesSort.size();
         
         // Start and End Index for this page
         int page_startIndex = (page - 1) * pageSize;
@@ -109,18 +111,20 @@ public class VdbService implements IVdbService {
         }
         
         List<VdbSummaryBean> rows = new ArrayList<VdbSummaryBean>();
-        for(int i=page_startIndex; i<=page_endIndex; i++) {
-        	VdbSummaryBean summaryBean = new VdbSummaryBean();
-        	String vdbName = allVdbNamesSort.get(i);
-        	for(Properties vdbProps : vdbPropsList) {
-            	String thisVdbName = vdbProps.getProperty("name");
-            	if(thisVdbName.equalsIgnoreCase(vdbName)) {
-                    summaryBean.setName(thisVdbName);
-                    summaryBean.setType(vdbProps.getProperty("type"));
-                    summaryBean.setStatus(vdbProps.getProperty("status"));
-                    rows.add(summaryBean);
-                    break;
-            	}
+        if(!allVdbNamesSort.isEmpty()) {
+        	for(int i=page_startIndex; i<=page_endIndex; i++) {
+        		VdbSummaryBean summaryBean = new VdbSummaryBean();
+        		String vdbName = allVdbNamesSort.get(i);
+        		for(Properties vdbProps : vdbPropsList) {
+        			String thisVdbName = vdbProps.getProperty("name");
+        			if(thisVdbName.equalsIgnoreCase(vdbName)) {
+        				summaryBean.setName(thisVdbName);
+        				summaryBean.setType(vdbProps.getProperty("type"));
+        				summaryBean.setStatus(vdbProps.getProperty("status"));
+        				rows.add(summaryBean);
+        				break;
+        			}
+        		}
         	}
         }
         data.setAllVdbNames(allVdbNames);

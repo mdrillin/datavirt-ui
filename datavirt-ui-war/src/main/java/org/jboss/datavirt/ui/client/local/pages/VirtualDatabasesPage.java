@@ -40,6 +40,7 @@ import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHand
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
+import org.jboss.datavirt.ui.client.shared.services.StringUtil;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
@@ -54,6 +55,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -138,10 +141,10 @@ public class VirtualDatabasesPage extends AbstractPage {
      */
     @PostConstruct
     protected void postConstruct() {
-        searchBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+        searchBox.addKeyUpHandler(new KeyUpHandler() {
             @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-                doVdbSearch();
+            public void onKeyUp(KeyUpEvent event) {
+            	searchIfValueChanged();
             }
         });
         pager.addValueChangeHandler(new ValueChangeHandler<Integer>() {
@@ -285,12 +288,12 @@ public class VirtualDatabasesPage extends AbstractPage {
      */
     @Override
     protected void onPageShowing() {
-        String searchText = (String) stateService.get(ApplicationStateKeys.VDBS_SEARCH_TEXT, ""); //$NON-NLS-1$
+        String filterText = (String) stateService.get(ApplicationStateKeys.VDBS_FILTER_TEXT, ""); //$NON-NLS-1$
         Integer page = (Integer) stateService.get(ApplicationStateKeys.VDBS_PAGE, 1);
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.VDBS_SORT_COLUMN, vdbsTable.getDefaultSortColumn());
 
-    	this.searchBox.setValue(searchText);
-    	this.vdbsTable.sortBy(sortColumn.columnId, sortColumn.ascending);
+    	this.searchBox.setValue(filterText);
+    	this.vdbsTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
     	
         // Kick off a VDB retrieval
     	doVdbSearch(page);
@@ -312,6 +315,17 @@ public class VirtualDatabasesPage extends AbstractPage {
     	}
     }
     
+    private void searchIfValueChanged() {
+    	// Current Search Text state
+        String appSearchText = (String) stateService.get(ApplicationStateKeys.VDBS_FILTER_TEXT, ""); //$NON-NLS-1$
+        // SearchBox text
+        String searchBoxText = this.searchBox.getText();
+        // Search if different
+        if(!StringUtil.equals(appSearchText, searchBoxText)) {
+        	doVdbSearch();
+        }    	
+    }
+    
     /**
      * Search for VDBs based on the current filter settings and search text.
      */
@@ -326,14 +340,14 @@ public class VirtualDatabasesPage extends AbstractPage {
     protected void doVdbSearch(int page) {
         onSearchStarting();
         currentPage = page;
-		final String searchText = this.searchBox.getValue();
+		final String filterText = this.searchBox.getValue();
         final SortColumn currentSortColumn = this.vdbsTable.getCurrentSortColumn();
 
-        stateService.put(ApplicationStateKeys.VDBS_SEARCH_TEXT, searchText);
+        stateService.put(ApplicationStateKeys.VDBS_FILTER_TEXT, filterText);
         stateService.put(ApplicationStateKeys.VDBS_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.VDBS_SORT_COLUMN, currentSortColumn);
         
-        vdbService.search(searchText, page, currentSortColumn.columnId, !currentSortColumn.ascending,
+        vdbService.search(filterText, page, currentSortColumn.columnId, !currentSortColumn.ascending,
 		        new IRpcServiceInvocationHandler<VdbResultSetBean>() {
             @Override
             public void onReturn(VdbResultSetBean data) {
@@ -411,8 +425,12 @@ public class VirtualDatabasesPage extends AbstractPage {
         if (numPages > 1)
             this.pager.setVisible(true);
 
-        int startIndex = data.getStartIndex() + 1;
-        int endIndex = startIndex + data.getVdbs().size() - 1;
+        int startIndex = data.getStartIndex();
+        int endIndex = startIndex + data.getVdbs().size();
+        
+        // reset start index to zero if end index is zero
+        startIndex = (endIndex==0) ? endIndex : startIndex+1;
+
         String rangeText = "" + startIndex + "-" + endIndex; //$NON-NLS-1$ //$NON-NLS-2$
         String totalText = String.valueOf(data.getTotalResults());
         this.rangeSpan1.setInnerText(rangeText);

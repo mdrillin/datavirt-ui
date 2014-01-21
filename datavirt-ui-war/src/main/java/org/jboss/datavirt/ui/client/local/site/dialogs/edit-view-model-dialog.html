@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title data-role="dummy">Data Virtualization - Dialog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-datepicker.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/bootstrap-2.3.1/css/bootstrap-fileupload.min.css" rel="stylesheet" media="screen"></link>
+    <link href="../../../../../../../../../webapp/css/datavirt-ui.css" rel="stylesheet"></link>
+    <link href="../../../../../../../../../webapp/css/datavirt-ui-responsive.css" rel="stylesheet"></link>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="../../../../../../../../../webapp/jquery-1.8.3/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/bootstrap-2.3.1/js/bootstrap-fileupload.min.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/js/datavirt-responsive.js"></script>
+    <script type="text/javascript" src="../../../../../../../../../webapp/js/datavirt-widgets.js"></script>
+  </head>
+
+  <body>
+    <!-- Edit View Model modal -->
+    <div data-field="edit-view-model-dialog" id="edit-view-model-dialog" class="modal hide">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;<span data-role="dummy"/></button>
+        <h4 data-i18n-key="dialog.edit-viewmodel.title">Edit View Model</h4>
+      </div>
+      <div class="modal-body">
+        <p><span data-field="editviewmodel-status-label" /></p> 
+        <form onsubmit="return false;">
+          <fieldset>
+            <label data-i18n-key="model-name">Model Name:</label>
+            <bold><input data-field="name" class="input-name" name="viewmodel-name" type="text"></input></bold>
+            <label data-i18n-key="property-value">View DDL:</label>
+            <textarea data-field="ddl" class="input-value" rows="20" cols=""></textarea>
+          </fieldset>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" data-i18n-key="cancel">Cancel</button>
+        <button data-field="edit-view-model-submit-button" class="btn btn-focus" disabled="disabled" data-i18n-key="edit">Accept</button>
+      </div>
+    </div>
+
+    <script>
+      $('#edit-view-model-dialog').modal({keyboard:false,backdrop:'static'});
+      $('#edit-view-model-dialog .input-name').focus();
+    </script>
+
+  </body>
+</html>

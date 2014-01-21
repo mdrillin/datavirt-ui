@@ -18,7 +18,6 @@ package org.jboss.datavirt.ui.server.services;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -35,6 +34,7 @@ import org.jboss.datavirt.ui.client.shared.exceptions.DataVirtUiException;
 import org.jboss.datavirt.ui.client.shared.services.IDataSourceService;
 import org.jboss.datavirt.ui.client.shared.services.StringUtil;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
+import org.jboss.datavirt.ui.server.services.util.FilterUtil;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.teiid.adminapi.PropertyDefinition;
@@ -82,9 +82,11 @@ public class DataSourceService implements IDataSourceService {
         List<String> allDsNamesSort = new ArrayList<String>(dsSummaryPropsCollection.size());
         for(Properties dsProps : propertiesList) {
             String sourceName = dsProps.getProperty("name");
-            if(sourceName!=null && !sourceName.isEmpty()) {
+            if( sourceName!=null && !sourceName.isEmpty() ) {
             	allDsNames.add(sourceName);
-            	allDsNamesSort.add(sourceName.toLowerCase());
+            	if ( FilterUtil.matchFilter(sourceName, searchText) ) {
+            		allDsNamesSort.add(sourceName.toLowerCase());
+            	}
             }
         }
         // Sort alpha by name
@@ -94,7 +96,7 @@ public class DataSourceService implements IDataSourceService {
         	Collections.reverse(allDsNamesSort);
         }
         
-        int totalSources = propertiesList.size();
+        int totalSources = allDsNamesSort.size();
         
         // Start and End Index for this page
         int page_startIndex = (page - 1) * pageSize;
@@ -105,20 +107,22 @@ public class DataSourceService implements IDataSourceService {
         }
         
         List<DataSourceSummaryBean> rows = new ArrayList<DataSourceSummaryBean>();
-        for(int i=page_startIndex; i<=page_endIndex; i++) {
-            DataSourceSummaryBean summaryBean = new DataSourceSummaryBean();
-            // Name of source were looking for
-            String dsName = allDsNamesSort.get(i);
-            // Iterate the properties List, find the matching source properties
-            for(Properties dsProps : propertiesList) {
-            	String thisDsName = dsProps.getProperty("name");
-            	if(thisDsName.equalsIgnoreCase(dsName)) {
-                    summaryBean.setName(thisDsName);
-                    summaryBean.setType(dsProps.getProperty("type"));
-                    rows.add(summaryBean);
-                    break;
-            	}
-            }
+        if(!allDsNamesSort.isEmpty()) {
+        	for(int i=page_startIndex; i<=page_endIndex; i++) {
+        		DataSourceSummaryBean summaryBean = new DataSourceSummaryBean();
+        		// Name of source were looking for
+        		String dsName = allDsNamesSort.get(i);
+        		// Iterate the properties List, find the matching source properties
+        		for(Properties dsProps : propertiesList) {
+        			String thisDsName = dsProps.getProperty("name");
+        			if(thisDsName.equalsIgnoreCase(dsName)) {
+        				summaryBean.setName(thisDsName);
+        				summaryBean.setType(dsProps.getProperty("type"));
+        				rows.add(summaryBean);
+        				break;
+        			}
+        		}
+        	}
         }
         data.setAllDsNames(allDsNames);
         data.setDataSources(rows);

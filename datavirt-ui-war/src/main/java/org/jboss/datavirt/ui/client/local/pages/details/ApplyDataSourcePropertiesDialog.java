@@ -15,8 +15,6 @@
  */
 package org.jboss.datavirt.ui.client.local.pages.details;
 
-import java.util.Collection;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;

@@ -565,21 +565,21 @@ public class AdminApiClient {
      * @param deploymentName
      * @return the VDB Name
      */
-	private String getVDBNameForDeployment(String deploymentName) throws AdminApiClientException {
-		String vdbName = null;
-
-		// Get VDB name and version for the specified deploymentName
-		Collection<? extends VDB> allVdbs = getVDBs();
-		for(VDB vdbMeta : allVdbs) {
-			String deployName = vdbMeta.getPropertyValue("deployment-name");
-			if(deployName!=null && deployName.equals(deploymentName)) {
-				vdbName=vdbMeta.getName();
-				break;
-			}
-		}
-
-		return vdbName;
-	}
+//	private String getVDBNameForDeployment(String deploymentName) throws AdminApiClientException {
+//		String vdbName = null;
+//
+//		// Get VDB name and version for the specified deploymentName
+//		Collection<? extends VDB> allVdbs = getVDBs();
+//		for(VDB vdbMeta : allVdbs) {
+//			String deployName = vdbMeta.getPropertyValue("deployment-name");
+//			if(deployName!=null && deployName.equals(deploymentName)) {
+//				vdbName=vdbMeta.getName();
+//				break;
+//			}
+//		}
+//
+//		return vdbName;
+//	}
     
     /*
      * Find the Deployment Name for the provided VdbName and Version

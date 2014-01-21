@@ -24,19 +24,17 @@ package org.jboss.datavirt.ui.client.local.services;
 public final class ApplicationStateKeys {
 
 	public static final String DATASOURCES_PAGE = "datasources.page"; //$NON-NLS-1$
-	public static final String DATASOURCES_SEARCH_TEXT = "datasources.search-text"; //$NON-NLS-1$
+	public static final String DATASOURCES_FILTER_TEXT = "datasources.filter-text"; //$NON-NLS-1$
     public static final String DATASOURCES_SORT_COLUMN = "datasources.sort-column"; //$NON-NLS-1$
 
     public static final String DATASOURCE_TYPES_PAGE = "datasourcetypes.page"; //$NON-NLS-1$
-	public static final String DATASOURCE_TYPES_SEARCH_TEXT = "datasourcetypes.search-text"; //$NON-NLS-1$
     public static final String DATASOURCE_TYPES_SORT_COLUMN = "datasourcetypes.sort-column"; //$NON-NLS-1$
 
     public static final String VDBS_PAGE = "virtualdatabases.page"; //$NON-NLS-1$
-	public static final String VDBS_SEARCH_TEXT = "virtualdatabases.search-text"; //$NON-NLS-1$
+	public static final String VDBS_FILTER_TEXT = "virtualdatabases.filter-text"; //$NON-NLS-1$
     public static final String VDBS_SORT_COLUMN = "virtualdatabases.sort-column"; //$NON-NLS-1$
 	
     public static final String VDBDETAILS_PAGE = "vdbmodels.page"; //$NON-NLS-1$
-	public static final String VDBDETAILS_SEARCH_TEXT = "vdbmodels.search-text"; //$NON-NLS-1$
     public static final String VDBDETAILS_SORT_COLUMN = "vdbmodels.sort-column"; //$NON-NLS-1$
 
     public static final String DATASOURCE_DETAILS_PAGE = "datasourcedetails.page"; //$NON-NLS-1$

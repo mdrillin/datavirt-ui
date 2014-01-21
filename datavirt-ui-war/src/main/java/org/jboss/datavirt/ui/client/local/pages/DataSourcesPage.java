@@ -37,6 +37,7 @@ import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceSummaryBean;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
+import org.jboss.datavirt.ui.client.shared.services.StringUtil;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
@@ -52,6 +53,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -134,10 +137,10 @@ public class DataSourcesPage extends AbstractPage {
      */
     @PostConstruct
     protected void postConstruct() {
-        searchBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+        searchBox.addKeyUpHandler(new KeyUpHandler() {
             @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-                doDataSourceSearch();
+            public void onKeyUp(KeyUpEvent event) {
+            	searchIfValueChanged();
             }
         });
         pager.addValueChangeHandler(new ValueChangeHandler<Integer>() {
@@ -284,12 +287,12 @@ public class DataSourcesPage extends AbstractPage {
      */
     @Override
     protected void onPageShowing() {
-        String searchText = (String) stateService.get(ApplicationStateKeys.DATASOURCES_SEARCH_TEXT, ""); //$NON-NLS-1$
+        String filterText = (String) stateService.get(ApplicationStateKeys.DATASOURCES_FILTER_TEXT, ""); //$NON-NLS-1$
         Integer page = (Integer) stateService.get(ApplicationStateKeys.DATASOURCES_PAGE, 1);
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.DATASOURCES_SORT_COLUMN, dataSourcesTable.getDefaultSortColumn());
 
-    	this.searchBox.setValue(searchText);
-    	this.dataSourcesTable.sortBy(sortColumn.columnId, sortColumn.ascending);
+    	this.searchBox.setValue(filterText);
+    	this.dataSourcesTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
     	
         // Kick off an dataSource retrieval
     	doDataSourceSearch(page);
@@ -307,6 +310,17 @@ public class DataSourcesPage extends AbstractPage {
     		removeSourceButton.setEnabled(true);
     	}
     }
+
+    private void searchIfValueChanged() {
+    	// Current Search Text state
+        String appFilterText = (String) stateService.get(ApplicationStateKeys.DATASOURCES_FILTER_TEXT, ""); //$NON-NLS-1$
+        // SearchBox text
+        String searchBoxText = this.searchBox.getText();
+        // Search if different
+        if(!StringUtil.equals(appFilterText, searchBoxText)) {
+        	doDataSourceSearch();
+        }    	
+    }
     
     /**
      * Search for the datasources based on the current filter settings and search text.
@@ -322,14 +336,14 @@ public class DataSourcesPage extends AbstractPage {
     protected void doDataSourceSearch(int page) {
         onSearchStarting();
         currentPage = page;
-		final String searchText = this.searchBox.getValue();
+		final String filterText = this.searchBox.getValue();
         final SortColumn currentSortColumn = this.dataSourcesTable.getCurrentSortColumn();
 
-        stateService.put(ApplicationStateKeys.DATASOURCES_SEARCH_TEXT, searchText);
+        stateService.put(ApplicationStateKeys.DATASOURCES_FILTER_TEXT, filterText);
         stateService.put(ApplicationStateKeys.DATASOURCES_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.DATASOURCES_SORT_COLUMN, currentSortColumn);
         
-        dataSourceService.search(searchText, page, currentSortColumn.columnId, !currentSortColumn.ascending,
+        dataSourceService.search(filterText, page, currentSortColumn.columnId, !currentSortColumn.ascending,
 		        new IRpcServiceInvocationHandler<DataSourceResultSetBean>() {
             @Override
             public void onReturn(DataSourceResultSetBean data) {
@@ -391,8 +405,11 @@ public class DataSourcesPage extends AbstractPage {
         if (numPages > 1)
             this.pager.setVisible(true);
 
-        int startIndex = data.getStartIndex() + 1;
-        int endIndex = startIndex + data.getDataSources().size() - 1;
+        int startIndex = data.getStartIndex();
+        int endIndex = startIndex + data.getDataSources().size();
+        // reset start index to zero if end index is zero
+        startIndex = (endIndex==0) ? endIndex : startIndex+1;
+        
         String rangeText = "" + startIndex + "-" + endIndex; //$NON-NLS-1$ //$NON-NLS-2$
         String totalText = String.valueOf(data.getTotalResults());
         this.rangeSpan1.setInnerText(rangeText);

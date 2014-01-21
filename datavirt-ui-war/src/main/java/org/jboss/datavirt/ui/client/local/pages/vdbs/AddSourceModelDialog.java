@@ -18,7 +18,6 @@ package org.jboss.datavirt.ui.client.local.pages.vdbs;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -26,6 +25,7 @@ import javax.inject.Inject;
 
 import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
+import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
@@ -35,8 +35,6 @@ import org.overlord.sramp.ui.client.local.widgets.bootstrap.ModalDialog;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -44,8 +42,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
-import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * Dialog that allows the user to add a Source Model to a VDB
@@ -58,6 +54,9 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
 
     @Inject
     protected ClientMessages i18n;
+
+    @Inject
+    protected NotificationService notificationService;
 
     @Inject @DataField("addsourcemodel-status-label")
     protected Label statusLabel;
@@ -116,9 +115,7 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
             }
             @Override
             public void onError(Throwable error) {
-                //notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
-                //noDataMessage.setVisible(true);
-                //searchInProgressMessage.setVisible(false);
+                notificationService.sendErrorNotification(i18n.format("addSourceModelDialog.error-populating-datasources"), error); //$NON-NLS-1$
             }
         });
     }
@@ -159,9 +156,7 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
             }
             @Override
             public void onError(Throwable error) {
-                //notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
-                //noDataMessage.setVisible(true);
-                //searchInProgressMessage.setVisible(false);
+                notificationService.sendErrorNotification(i18n.format("addSourceModelDialog.error-populating-translators"), error); //$NON-NLS-1$
             }
         });
    }
@@ -201,9 +196,7 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
     		@Override
     		public void onError(Throwable error) {
     			defaultTranslatorMap = new HashMap<String,String>();
-    			//notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
-    			//noDataMessage.setVisible(true);
-    			//searchInProgressMessage.setVisible(false);
+    			notificationService.sendErrorNotification(i18n.format("addSourceModelDialog.error-populating-translatormappings"), error); //$NON-NLS-1$
     		}
     	});
     }

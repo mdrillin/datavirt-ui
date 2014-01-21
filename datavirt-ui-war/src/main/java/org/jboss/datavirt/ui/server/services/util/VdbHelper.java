@@ -3,6 +3,7 @@ package org.jboss.datavirt.ui.server.services.util;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -137,6 +138,15 @@ public class VdbHelper {
 			// ------------
 			vdbDetailsBean.setName(vdb.getName());
 			
+			// ------------
+			// VDB Type
+			// ------------
+			if(vdb.isXmlDeployment()) {
+				vdbDetailsBean.setType("dynamic");
+			} else {
+				vdbDetailsBean.setType("archive");				
+			}
+
 			// ------------
 			// VDB Status
 			// ------------
@@ -357,6 +367,9 @@ public class VdbHelper {
 		List<VDBImportMetadata> currentVdbImports = getVdbImports(vdb);
 		List<ModelMetaData> currentViewModels = getVdbViewModels(vdb);
 		Properties currentProperties = getVdbProperties(vdb);
+		
+		// If original VDB has view model with supplied name, remove it
+		removeViewModel(currentViewModels, viewModelName);
 
 		// Clear any prior Model Messages (needed for successful redeploy)
 		clearModelMessages(currentViewModels);
@@ -421,6 +434,16 @@ public class VdbHelper {
 		return newVdb;
 	}
 	
+	private void removeViewModel(List<ModelMetaData> viewModels, String viewModelName) {
+		Iterator<ModelMetaData> modelIterator = viewModels.iterator();
+		while(modelIterator.hasNext()) {
+			ModelMetaData viewModel = modelIterator.next();
+			if(viewModel.getName().equalsIgnoreCase(viewModelName)) {
+				modelIterator.remove();
+			}
+		}
+	}
+	
 	/**
 	 * Removes the models from the supplied VDB - if they exist. The new VDB is returned.
 	 * @param vdb the VDB
@@ -436,7 +459,7 @@ public class VdbHelper {
 		List<String> removeImportNameList = new ArrayList<String>();
 		for(String modelName : removeModelNameAndTypeMap.keySet()) {
 			String modelType = removeModelNameAndTypeMap.get(modelName);
-			if(modelType.equalsIgnoreCase("VIEW")) {
+			if(modelType.equalsIgnoreCase("VIRTUAL")) {
 				removeViewModelNameList.add(modelName);
 			} else {
 				removeImportNameList.add(modelName);

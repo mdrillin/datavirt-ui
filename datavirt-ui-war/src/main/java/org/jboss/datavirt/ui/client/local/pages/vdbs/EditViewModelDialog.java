@@ -38,33 +38,32 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * Dialog that allows the user to add a View Model to a VDB
+ * Dialog that allows the user to edit the View Model DDL
  *
  * @author mdrillin@redhat.com
  */
-@Templated("/org/jboss/datavirt/ui/client/local/site/dialogs/add-view-model-dialog.html#add-view-model-dialog")
+@Templated("/org/jboss/datavirt/ui/client/local/site/dialogs/edit-view-model-dialog.html#edit-view-model-dialog")
 @Dependent
-public class AddViewModelDialog extends ModalDialog implements HasValueChangeHandlers<Map<String,String>> {
+public class EditViewModelDialog extends ModalDialog implements HasValueChangeHandlers<Map<String,String>> {
 
     @Inject
     protected ClientMessages i18n;
-    @Inject @DataField("addviewmodel-status-label")
+    @Inject @DataField("editviewmodel-status-label")
     protected Label statusLabel;
     
     @Inject @DataField
-    protected TextBox name;
+    protected Label name;
     @Inject @DataField
     protected TextArea ddl;
-    @Inject @DataField("add-view-model-submit-button")
+    @Inject @DataField("edit-view-model-submit-button")
     protected Button submitButton;
 
     /**
      * Constructor.
      */
-    public AddViewModelDialog() {
+    public EditViewModelDialog() {
     }
 
     /**
@@ -73,18 +72,6 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
     @PostConstruct
     protected void onPostConstruct() {
         submitButton.setEnabled(false);
-        name.addKeyUpHandler(new KeyUpHandler() {
-            @Override
-            public void onKeyUp(KeyUpEvent event) {
-            	updateDialogStatus();
-            }
-        });
-        name.addValueChangeHandler(new ValueChangeHandler<String>() {
-            @Override
-            public void onValueChange(ValueChangeEvent<String> event) {
-            	updateDialogStatus();
-            }
-        });
         ddl.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -100,6 +87,14 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
     }
     
     /*
+     * Set the Model Name text
+     * @param the model name text
+     */
+    public void setModelName(String modelName) {
+    	this.name.setText(modelName);
+    }
+    
+    /*
      * Get the Model Name text
      * @return the model name text
      */
@@ -107,6 +102,14 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
     	return name.getText();
     }
 
+    /*
+     * Set the Model DDL
+     * @param the model DDL
+     */
+    public void setDDL(String ddl) {
+    	this.ddl.setText(ddl);
+    }
+    
     /*
      * Get the DDL Text
      * @return the DDL text
@@ -122,9 +125,9 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
     public void show() {
         super.show();
 
-		statusLabel.setText(i18n.format("addViewModelDialog.statusEnterModelName"));
+		statusLabel.setText(i18n.format("editViewModelDialog.statusEnterModelDDL"));
 
-        name.setFocus(true);
+        ddl.setFocus(true);
     }
     
     private void updateDialogStatus() {
@@ -140,27 +143,18 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
     	boolean isValid = true;
     	String statusStr = "OK";
 
-    	// Make sure Model Name is not empty
-		String modelName = getModelName();
-		if(modelName==null || modelName.trim().length()==0) {
-    		statusStr = i18n.format("addViewModelDialog.statusEnterModelName");
+    	// Make sure Model DDL is not empty
+    	String ddl = getDDL();
+    	if(ddl==null || ddl.trim().length()==0) {
+    		statusStr = i18n.format("editViewModelDialog.statusEnterModelDDL");
     		isValid = false;
-		}
-
-		if(isValid) {
-			// Make sure Model DDL is not empty
-			String ddl = getDDL();
-			if(ddl==null || ddl.trim().length()==0) {
-	    		statusStr = i18n.format("addViewModelDialog.statusEnterModelDDL");
-	    		isValid = false;
-			}
-		}
+    	}
     	
     	// Update the status label
     	if(!statusStr.equals("OK")) {
     		statusLabel.setText(statusStr);
     	} else {
-    		statusLabel.setText(i18n.format("addViewModelDialog.statusClickOkToAccept"));
+    		statusLabel.setText(i18n.format("editViewModelDialog.statusClickOkToAccept"));
     	}
 
     	return isValid;
@@ -170,7 +164,7 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
      * Called when the user clicks the submit button.
      * @param event
      */
-    @EventHandler("add-view-model-submit-button")
+    @EventHandler("edit-view-model-submit-button")
     protected void onSubmit(ClickEvent event) {
     	final String modelNameKey = "modelNameKey";
     	final String modelNameValue = getModelName();

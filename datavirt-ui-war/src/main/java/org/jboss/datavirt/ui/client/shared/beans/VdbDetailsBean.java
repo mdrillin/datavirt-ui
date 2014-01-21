@@ -67,6 +67,25 @@ public class VdbDetailsBean extends VdbSummaryBean implements Serializable {
     }
 
     /**
+     * @return the vdb model with the supplied name.  If not found, returns null
+     * @param modelName the model name
+     * @return the VdbModelBean
+     */
+    public VdbModelBean getModel(String modelName) {
+    	VdbModelBean resultModel = null;
+    	
+    	Collection<VdbModelBean> models = getModels();
+    	for(VdbModelBean aModel : models) {
+    		if(aModel.getName().equalsIgnoreCase(modelName)) {
+    			resultModel = aModel;
+    			break;
+    		}
+    	}
+    	
+        return resultModel;
+    }
+
+    /**
      * Sets the classified by.
      * @param classifiedBy
      */

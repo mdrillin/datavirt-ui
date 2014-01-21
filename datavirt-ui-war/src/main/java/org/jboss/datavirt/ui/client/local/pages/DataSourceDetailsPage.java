@@ -16,7 +16,6 @@
 package org.jboss.datavirt.ui.client.local.pages;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;

@@ -15,13 +15,10 @@
  */
 package org.jboss.datavirt.ui.server.api;
 
-import java.security.KeyPair;
-import java.security.KeyStore;
-
 import org.apache.http.HttpRequest;
-import org.jboss.datavirt.ui.server.DataVirtUIConfig;
-import org.jboss.datavirt.commons.auth.jboss7.SAMLBearerTokenLoginModule;
 import org.jboss.datavirt.commons.auth.jboss7.Jboss7SAMLBearerTokenUtil;
+import org.jboss.datavirt.commons.auth.jboss7.SAMLBearerTokenLoginModule;
+import org.jboss.datavirt.ui.server.DataVirtUIConfig;
 import org.overlord.sramp.client.auth.AuthenticationProvider;
 import org.overlord.sramp.client.auth.BasicAuthenticationProvider;
 

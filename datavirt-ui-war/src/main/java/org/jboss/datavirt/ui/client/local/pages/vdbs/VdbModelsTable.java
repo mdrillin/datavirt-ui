@@ -42,15 +42,13 @@ import com.google.gwt.user.client.ui.InlineLabel;
 @Dependent
 public class VdbModelsTable extends SortableTemplatedWidgetTable implements HasTableRowSelectionHandlers {
 
-    private static final String vdbStatusInactiveUrl = "images/StatusIcon_inactive_16x16.png";
-    private static final String vdbStatusActiveUrl = "images/StatusIcon_ok_16x16.png";
-    private static final String vdbStatusUnknownUrl = "images/StatusIcon_loading_16x16.png";
-
     private Map<Integer,CheckBox> rowSelectionMap = new HashMap<Integer,CheckBox>();
     private Map<Integer,String> rowNameMap = new HashMap<Integer,String>();
     private Map<Integer,String> rowTypeMap = new HashMap<Integer,String>();
     private Map<Integer,String> rowTranslatorMap = new HashMap<Integer,String>();
 
+    private boolean canEdit = true;
+    
     /**
      * Constructor.
      */
@@ -85,6 +83,10 @@ public class VdbModelsTable extends SortableTemplatedWidgetTable implements HasT
         rowTranslatorMap.clear();
     }
     
+    public void setEditable(boolean canEdit) {
+    	this.canEdit = canEdit;
+    }
+    
     /**
      * Adds a single row to the table.
      * @param dataSourceSummaryBean
@@ -100,6 +102,11 @@ public class VdbModelsTable extends SortableTemplatedWidgetTable implements HasT
             }
         });
         
+        if(canEdit) {
+        	checkbox.setEnabled(true);
+        } else {
+        	checkbox.setEnabled(false);
+        }
         add(rowIdx,0,checkbox);
         rowSelectionMap.put(rowIdx,checkbox);
         rowNameMap.put(rowIdx,vdbModelBean.getName());
