@@ -236,7 +236,7 @@ public class DataSourceTypesPage extends AbstractPage {
         Integer page = (Integer) stateService.get(ApplicationStateKeys.DATASOURCE_TYPES_PAGE, 1);
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.DATASOURCE_TYPES_SORT_COLUMN, dataSourceTypesTable.getDefaultSortColumn());
 
-    	this.dataSourceTypesTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
+    	this.dataSourceTypesTable.sortBy(sortColumn.columnId, sortColumn.ascending);
     	
         // Kick off an dataSource retrieval
     	doGetDataSourceTypes(page);

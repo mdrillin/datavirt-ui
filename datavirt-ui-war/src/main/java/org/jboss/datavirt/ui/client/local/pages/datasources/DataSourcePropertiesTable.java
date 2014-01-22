@@ -60,7 +60,7 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable impl
     public SortColumn getDefaultSortColumn() {
         SortColumn sortColumn = new SortColumn();
         sortColumn.columnId = Constants.SORT_COLID_NAME;
-        sortColumn.ascending = true;
+        sortColumn.ascending = false;
         return sortColumn;
     }
 
@@ -134,6 +134,33 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable impl
     		}
     	}
     	return resultBeans;
+    }
+    
+    /*
+     * Returns an overall status of the table properties.  Currently the only check is that required properties
+     * have a value, but this can be expanded in the future.  If all properties pass, the status is 'OK'. If not, a
+     * String identifying the problem is returned.
+     * @return the status - 'OK' if no problems.
+     */
+    public String getStatus() {
+    	// Assume 'OK' until a problem is found
+    	String status = "OK";
+
+    	for(DataSourcePropertyBean propBean : rowBeanMap.values()) {
+    		String propName = propBean.getName();
+    		String propValue = propBean.getValue();
+    		boolean isRequired = propBean.isRequired();
+
+    		// Check that required properties have a value
+    		if(isRequired) {
+    			if(propValue==null || propValue.trim().length()==0) {
+    				status = "A value is required for property: '"+propName+"'";
+    				break;
+    			}
+    		}
+    	}
+
+    	return status;
     }
     
     public boolean anyPropertyHasChanged() {

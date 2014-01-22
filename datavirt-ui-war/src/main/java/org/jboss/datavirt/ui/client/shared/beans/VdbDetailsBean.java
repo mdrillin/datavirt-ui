@@ -67,6 +67,17 @@ public class VdbDetailsBean extends VdbSummaryBean implements Serializable {
     }
 
     /**
+     * @return the vdb models names
+     */
+    public Collection<String> getModelNames() {
+    	Collection<String> allNames = new ArrayList<String>(models.size());
+        for(VdbModelBean model : models) {
+        	allNames.add(model.getName());
+        }
+    	return allNames;
+    }
+    
+    /**
      * @return the vdb model with the supplied name.  If not found, returns null
      * @param modelName the model name
      * @return the VdbModelBean

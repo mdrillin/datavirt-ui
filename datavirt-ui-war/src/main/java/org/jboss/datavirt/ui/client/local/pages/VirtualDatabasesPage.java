@@ -293,7 +293,7 @@ public class VirtualDatabasesPage extends AbstractPage {
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.VDBS_SORT_COLUMN, vdbsTable.getDefaultSortColumn());
 
     	this.searchBox.setValue(filterText);
-    	this.vdbsTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
+    	this.vdbsTable.sortBy(sortColumn.columnId, sortColumn.ascending);
     	
         // Kick off a VDB retrieval
     	doVdbSearch(page);

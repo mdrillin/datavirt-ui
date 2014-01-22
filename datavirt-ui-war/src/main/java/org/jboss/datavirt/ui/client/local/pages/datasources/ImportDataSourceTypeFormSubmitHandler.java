@@ -97,13 +97,8 @@ public class ImportDataSourceTypeFormSubmitHandler implements SubmitHandler, Sub
             }
         } else {
             Widget ty = new InlineLabel(i18n.format("import-datasource-type-submit.upload-complete.msg")); //$NON-NLS-1$
-//            TransitionAnchor<ArtifactDetailsPage> clickHere = toDetailsFactory.get("uuid", results.getUuid()); //$NON-NLS-1$
-//            clickHere.setText(i18n.format("import-artifact-submit.click-here-1")); //$NON-NLS-1$
-//            Widget postAmble = new InlineLabel(i18n.format("import-artifact-submit.click-here-2")); //$NON-NLS-1$
             FlowPanel body = new FlowPanel();
             body.add(ty);
-//            body.add(clickHere);
-//            body.add(postAmble);
             notificationService.completeProgressNotification(
                     notification.getUuid(),
                     i18n.format("import-datasource-type-submit.upload-complete.title"), //$NON-NLS-1$
@@ -224,9 +219,7 @@ public class ImportDataSourceTypeFormSubmitHandler implements SubmitHandler, Sub
          */
         public final DataVirtUiException getError() {
             String errorMessage = get("exception-message"); //$NON-NLS-1$
-//            String errorStack = get("exception-stack");
             DataVirtUiException error = new DataVirtUiException(errorMessage);
-//            error.setRootStackTrace(errorStack);
             return error;
         }
 

@@ -66,7 +66,7 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
     public SortColumn getDefaultSortColumn() {
         SortColumn sortColumn = new SortColumn();
         sortColumn.columnId = Constants.SORT_COLID_NAME;
-        sortColumn.ascending = true;
+        sortColumn.ascending = false;
         return sortColumn;
     }
 

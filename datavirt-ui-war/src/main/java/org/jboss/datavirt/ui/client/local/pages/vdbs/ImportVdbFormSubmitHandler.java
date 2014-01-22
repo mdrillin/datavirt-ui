@@ -97,13 +97,8 @@ public class ImportVdbFormSubmitHandler implements SubmitHandler, SubmitComplete
             }
         } else {
             Widget ty = new InlineLabel(i18n.format("import-vdb-submit.upload-complete.msg")); //$NON-NLS-1$
-//            TransitionAnchor<ArtifactDetailsPage> clickHere = toDetailsFactory.get("uuid", results.getUuid()); //$NON-NLS-1$
-//            clickHere.setText(i18n.format("import-artifact-submit.click-here-1")); //$NON-NLS-1$
-//            Widget postAmble = new InlineLabel(i18n.format("import-artifact-submit.click-here-2")); //$NON-NLS-1$
             FlowPanel body = new FlowPanel();
             body.add(ty);
-//            body.add(clickHere);
-//            body.add(postAmble);
             notificationService.completeProgressNotification(
                     notification.getUuid(),
                     i18n.format("import-vdb-submit.upload-complete.title"), //$NON-NLS-1$

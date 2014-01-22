@@ -15,6 +15,8 @@
  */
 package org.jboss.datavirt.ui.client.local.pages.vdbs;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,10 +63,16 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
     @Inject @DataField("add-view-model-submit-button")
     protected Button submitButton;
 
+    private Collection<String> currentModelNames = Collections.emptyList();
+
     /**
      * Constructor.
      */
     public AddViewModelDialog() {
+    }
+
+    public void setCurrentModelNames(Collection<String> currentModelNames) {
+    	this.currentModelNames = currentModelNames;
     }
 
     /**
@@ -146,6 +154,14 @@ public class AddViewModelDialog extends ModalDialog implements HasValueChangeHan
     		statusStr = i18n.format("addViewModelDialog.statusEnterModelName");
     		isValid = false;
 		}
+
+    	// Check entered name against existing names
+    	if(isValid) {
+    		if(currentModelNames.contains(modelName)) {
+        		statusStr = i18n.format("addViewModelDialog.statusModelNameAlreadyExists");
+        		isValid = false;
+    		}
+    	}
 
 		if(isValid) {
 			// Make sure Model DDL is not empty

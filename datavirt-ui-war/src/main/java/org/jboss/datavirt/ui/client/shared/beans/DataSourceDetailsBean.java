@@ -78,5 +78,5 @@ public class DataSourceDetailsBean extends DataSourceSummaryBean implements Seri
 	public void setProperties(List<DataSourcePropertyBean> properties) {
 		this.properties = properties;
 	}
-    
+	    
 }

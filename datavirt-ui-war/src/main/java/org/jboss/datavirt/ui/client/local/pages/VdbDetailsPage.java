@@ -15,8 +15,11 @@
  */
 package org.jboss.datavirt.ui.client.local.pages;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -40,6 +43,7 @@ import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbModelBean;
+import org.jboss.datavirt.ui.client.shared.beans.VdbModelBeanComparator;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.PageState;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
@@ -203,7 +207,7 @@ public class VdbDetailsPage extends AbstractPage {
         Integer page = (Integer) stateService.get(ApplicationStateKeys.VDBDETAILS_PAGE, 1);
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.VDBDETAILS_SORT_COLUMN, vdbModelsTable.getDefaultSortColumn());
 
-    	this.vdbModelsTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
+    	this.vdbModelsTable.sortBy(sortColumn.columnId, sortColumn.ascending);
     	
         // Kick off an vdb details retrieval
     	doGetVdbDetails(page);
@@ -226,10 +230,7 @@ public class VdbDetailsPage extends AbstractPage {
         currentPage = page;
         currentVdbDetails = null;
         
-        final SortColumn currentSortColumn = this.vdbModelsTable.getCurrentSortColumn();
-
         stateService.put(ApplicationStateKeys.VDBDETAILS_PAGE, currentPage);
-        stateService.put(ApplicationStateKeys.VDBDETAILS_SORT_COLUMN, currentSortColumn);
 
         vdbService.getVdbDetails(vdbname, currentPage, new IRpcServiceInvocationHandler<VdbDetailsBean>() {
             @Override
@@ -332,6 +333,7 @@ public class VdbDetailsPage extends AbstractPage {
     @EventHandler("btn-add-view")
     protected void onAddViewClick(ClickEvent event) {
     	AddViewModelDialog dialog = addViewModelDialogFactory.get();
+    	dialog.setCurrentModelNames(currentVdbDetails.getModelNames());
         dialog.addValueChangeHandler(new ValueChangeHandler<Map<String,String>>() {
             @Override
             public void onValueChange(ValueChangeEvent<Map<String, String>> event) {
@@ -530,7 +532,7 @@ public class VdbDetailsPage extends AbstractPage {
     }
     
     /**
-     * Updates the table of VDB Models TAble with the given VdbDetailsBean.
+     * Updates the table of VDB Models with the given VdbDetailsBean.
      * @param vdbDetails
      */
     protected void updateVdbModelsTable(VdbDetailsBean vdbDetails) {
@@ -543,7 +545,14 @@ public class VdbDetailsPage extends AbstractPage {
         this.getModelsInProgressMessage.setVisible(false);
         this.addModelInProgressMessage.setVisible(false);
         if (vdbDetails.getModels().size() > 0) {
-            for (VdbModelBean vdbModelBean : vdbDetails.getModels()) {
+            final SortColumn currentSortColumn = this.vdbModelsTable.getCurrentSortColumn();
+            stateService.put(ApplicationStateKeys.VDBDETAILS_SORT_COLUMN, currentSortColumn);
+
+            List<VdbModelBean> vdbModelList = new ArrayList<VdbModelBean>(vdbDetails.getModels());
+        	// Sort by name in the desired order
+        	Collections.sort(vdbModelList,new VdbModelBeanComparator(!currentSortColumn.ascending));
+
+            for (VdbModelBean vdbModelBean : vdbModelList) {
                 this.vdbModelsTable.addRow(vdbModelBean);
             }
             this.noDataMessage.setVisible(false);

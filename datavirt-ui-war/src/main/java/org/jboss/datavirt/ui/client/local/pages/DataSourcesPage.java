@@ -292,7 +292,7 @@ public class DataSourcesPage extends AbstractPage {
         SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.DATASOURCES_SORT_COLUMN, dataSourcesTable.getDefaultSortColumn());
 
     	this.searchBox.setValue(filterText);
-    	this.dataSourcesTable.sortBy(sortColumn.columnId, !sortColumn.ascending);
+    	this.dataSourcesTable.sortBy(sortColumn.columnId, sortColumn.ascending);
     	
         // Kick off an dataSource retrieval
     	doDataSourceSearch(page);

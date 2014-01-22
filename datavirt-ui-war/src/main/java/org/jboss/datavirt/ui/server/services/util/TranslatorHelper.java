@@ -201,43 +201,43 @@ public class TranslatorHelper {
 	public static String getUrlTemplate(String driverName) {
 		if(isEmpty(driverName)) return "unknown"; //$NON-NLS-1$
 
-		if(driverName.startsWith("derby")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("derby")) { //$NON-NLS-1$
 			return URL_DERBY;
 		}
 
-		if(driverName.startsWith("mysql")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("mysql")) { //$NON-NLS-1$
 			return URL_MYSQL;
 		}
 
-		if(driverName.startsWith("ojdbc")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("ojdbc")) { //$NON-NLS-1$
 			return URL_ORACLETHIN;
 		}
 
-		if(driverName.startsWith("db2")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("db2")) { //$NON-NLS-1$
 			return URL_DB2;
 		}
 
-		if(driverName.startsWith("postgresql")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("postgresql")) { //$NON-NLS-1$
 			return URL_POSTGRES;
 		}
 
-		if(driverName.startsWith("sqljdbc")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("sqljdbc")) { //$NON-NLS-1$
 			return URL_SQLSERVER;
 		}
 
-		if(driverName.startsWith("ifxjdbc")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("ifxjdbc")) { //$NON-NLS-1$
 			return URL_INFORMIX;
 		}
 
-		if(driverName.startsWith("iijdbc")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("iijdbc")) { //$NON-NLS-1$
 			return URL_INGRES;
 		}
 
-		if(driverName.startsWith("teiid")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("teiid")) { //$NON-NLS-1$
 			return URL_TEIID;
 		}
 
-		if(driverName.startsWith("modeshape")) { //$NON-NLS-1$
+		if(driverName.toLowerCase().startsWith("modeshape")) { //$NON-NLS-1$
 			return URL_MODESHAPE;
 		}
 

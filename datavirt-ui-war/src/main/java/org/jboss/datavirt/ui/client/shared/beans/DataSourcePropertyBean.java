@@ -104,19 +104,39 @@ public class DataSourcePropertyBean {
      */
     public boolean isCoreProperty() {
     	boolean isCore = false;
+		String displayName = getDisplayName();
     	if(this.isRequired) {
     		isCore = true;
+    		// If classname - not core - dont want to show up in core properties table
+    		if(isClassName(displayName)) {
+    			isCore = false;
+    		}
     	} else {
-    		String displayName = getDisplayName();
     		if(isUserName(displayName) || isPassword(displayName) || isConnectionUrl(displayName)) {
     			isCore = true;
     		}
     	}
     	return isCore;
     }
+    
     /*
-     * Determine if the supplied propertyItem is Username
-     * @param propItem the property item
+     * Determine if the supplied property name is ClassName
+     * @param displayName the property display name
+     * @return 'true' if classname property, 'false' if not.
+     */
+    private boolean isClassName(String displayName) {
+    	boolean found = false;
+    	if(displayName!=null) {
+    		if(displayName.equalsIgnoreCase("class-name") || displayName.equalsIgnoreCase("Class Name") ) {
+    			found = true;
+    		}
+    	}
+    	return found;
+    }
+
+    /*
+     * Determine if the supplied property name is UserName
+     * @param displayName the property display name
      * @return 'true' if username property, 'false' if not.
      */
     private boolean isUserName(String displayName) {
@@ -134,8 +154,8 @@ public class DataSourcePropertyBean {
     }
     
     /*
-     * Determine if the supplied propertyItem is Password
-     * @param propItem the property item
+     * Determine if the supplied property name is Password
+     * @param displayName the property display name
      * @return 'true' if password property, 'false' if not.
      */
     private boolean isPassword(String displayName) {
@@ -152,8 +172,8 @@ public class DataSourcePropertyBean {
     }
     
     /*
-     * Determine if the supplied propertyItem is ConnectionUrl
-     * @param propItem the property item
+     * Determine if the supplied property name is Connection URL
+     * @param displayName the property display name
      * @return 'true' if ConnectionUrl property, 'false' if not.
      */
     private boolean isConnectionUrl(String displayName) {

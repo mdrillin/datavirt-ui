@@ -16,6 +16,7 @@
 package org.jboss.datavirt.ui.client.local.pages;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -26,19 +27,24 @@ import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.pages.datasources.DataSourcePropertiesTable;
 import org.jboss.datavirt.ui.client.local.pages.details.ApplyDataSourcePropertiesDialog;
 import org.jboss.datavirt.ui.client.local.pages.details.ResetDataSourcePropertiesDialog;
+import org.jboss.datavirt.ui.client.local.services.ApplicationStateKeys;
+import org.jboss.datavirt.ui.client.local.services.ApplicationStateService;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
 import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
+import org.jboss.datavirt.ui.client.shared.beans.PropertyBeanComparator;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.PageState;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
+import org.overlord.sramp.ui.client.local.events.TableSortEvent;
 import org.overlord.sramp.ui.client.local.widgets.common.HtmlSnippet;
+import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidgetTable.SortColumn;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -71,6 +77,8 @@ public class DataSourceDetailsPage extends AbstractPage {
     protected DataSourceRpcService dataSourceService;
     @Inject
     protected NotificationService notificationService;
+    @Inject
+    protected ApplicationStateService stateService;
     
     protected DataSourceDetailsBean currentDataSourceDetails;
 
@@ -84,6 +92,9 @@ public class DataSourceDetailsPage extends AbstractPage {
     @Inject @DataField("datasourcedetails-pagetitle")
     protected Label pageTitle;
 
+    @Inject @DataField("datavirt-datasourcedetails-status")
+    protected Label statusMessage;
+    
     @Inject @DataField("datasource-core-properties-table")
     protected DataSourcePropertiesTable dataSourceCorePropertiesTable;
     @Inject @DataField("datasource-advanced-properties-table")
@@ -118,13 +129,25 @@ public class DataSourceDetailsPage extends AbstractPage {
     	dataSourceCorePropertiesTable.addValueChangeHandler(new ValueChangeHandler<Void>() {
             @Override
             public void onValueChange(ValueChangeEvent<Void> event) {
-            	setButtonStates();
+            	validatePage();
             }
         });
     	dataSourceAdvancedPropertiesTable.addValueChangeHandler(new ValueChangeHandler<Void>() {
             @Override
             public void onValueChange(ValueChangeEvent<Void> event) {
-            	setButtonStates();
+            	validatePage();
+            }
+        });
+    	dataSourceCorePropertiesTable.addTableSortHandler(new TableSortEvent.Handler() {
+            @Override
+            public void onTableSort(TableSortEvent event) {
+            	populateCorePropertiesTable(currentDataSourceDetails);
+            }
+        });
+    	dataSourceAdvancedPropertiesTable.addTableSortHandler(new TableSortEvent.Handler() {
+            @Override
+            public void onTableSort(TableSortEvent event) {
+            	populateAdvancedPropertiesTable(currentDataSourceDetails);
             }
         });
     	applyDataSourcePropertiesDialog.addClickHandler(new ClickHandler() {
@@ -146,8 +169,15 @@ public class DataSourceDetailsPage extends AbstractPage {
      */
     @Override
     protected void onPageShowing() {
+    	this.statusMessage.setVisible(true);
     	
-        // Get the Data Source Details
+        SortColumn sortColumnCore = (SortColumn) stateService.get(ApplicationStateKeys.DATASOURCE_DETAILS_SORT_COLUMN_CORE, dataSourceCorePropertiesTable.getDefaultSortColumn());
+        SortColumn sortColumnAdv = (SortColumn) stateService.get(ApplicationStateKeys.DATASOURCE_DETAILS_SORT_COLUMN_ADV, dataSourceAdvancedPropertiesTable.getDefaultSortColumn());
+
+    	this.dataSourceCorePropertiesTable.sortBy(sortColumnCore.columnId, sortColumnCore.ascending);
+    	this.dataSourceAdvancedPropertiesTable.sortBy(sortColumnAdv.columnId, sortColumnAdv.ascending);
+
+    	// Get the Data Source Details
     	doGetDataSourceDetails( );
     }
 
@@ -157,6 +187,12 @@ public class DataSourceDetailsPage extends AbstractPage {
     protected void doGetDataSourceDetails( ) {
         currentDataSourceDetails = null;
         
+        final SortColumn currentSortColumnCore = this.dataSourceCorePropertiesTable.getCurrentSortColumn();
+        final SortColumn currentSortColumnAdv = this.dataSourceAdvancedPropertiesTable.getCurrentSortColumn();
+
+        stateService.put(ApplicationStateKeys.DATASOURCE_DETAILS_SORT_COLUMN_CORE, currentSortColumnCore);
+        stateService.put(ApplicationStateKeys.DATASOURCE_DETAILS_SORT_COLUMN_ADV, currentSortColumnAdv);
+
         dataSourceService.getDataSourceDetails(name, new IRpcServiceInvocationHandler<DataSourceDetailsBean>() {
             @Override
             public void onReturn(DataSourceDetailsBean dsDetailsBean) {
@@ -164,55 +200,131 @@ public class DataSourceDetailsPage extends AbstractPage {
             	String title = "Data Source : "+dsDetailsBean.getName();
             	pageTitle.setText(title);
             	
-            	populatePropertiesTable(dsDetailsBean);
-//                updateVdbModelsTable(vdbDetailsBean);
-//                updateDownloadVdbLink(vdbDetailsBean);
-//                updatePager(data);
-            	setButtonStates();
+            	populateCorePropertiesTable(dsDetailsBean);
+            	populateAdvancedPropertiesTable(dsDetailsBean);
+            	validatePage();
             }
             @Override
             public void onError(Throwable error) {
-//                notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
-//                noDataMessage.setVisible(true);
-//                searchInProgressMessage.setVisible(false);
-                pageTitle.setText("unknown");
+                notificationService.sendErrorNotification(i18n.format("datasourcedetails.error-retrieving"), error); //$NON-NLS-1$
+                pageTitle.setText("Data Source : Error retrieving");
             }
         });       
         
     }
     
-    private void setButtonStates() {
-    	boolean enableApply = false;
-    	boolean enableReset = false;
-    	
+    /*
+     * Validates the page - set the status message text and button states
+     */
+    private void validatePage() {
+    	// ------------------
+    	// Set status message
+    	// ------------------
+    	String overallStatus = this.dataSourceCorePropertiesTable.getStatus();
+    	if(overallStatus.equalsIgnoreCase("OK")) {
+    		overallStatus = this.dataSourceAdvancedPropertiesTable.getStatus();
+    	}
+
     	boolean coreTableHasChanges = this.dataSourceCorePropertiesTable.anyPropertyHasChanged();
     	boolean advTableHasChanges = this.dataSourceAdvancedPropertiesTable.anyPropertyHasChanged();
+    	boolean propertiesChangedAndValid = false;
     	
-    	if(coreTableHasChanges || advTableHasChanges) {
-    		enableApply = true;
-    		enableReset = true;
+    	if(overallStatus.equalsIgnoreCase("OK")) {
+    		// Determine if any property changes
+    		if(!coreTableHasChanges && !advTableHasChanges) {
+        		statusMessage.setText(i18n.format("datasourcedetails.statusMessage-nochanges"));
+        	// Has changes and valid
+    		} else {
+    			propertiesChangedAndValid = true;
+    			statusMessage.setText(i18n.format("datasourcedetails.statusMessage-ok"));
+    		}
+    	} else {
+    		statusMessage.setText(overallStatus);
     	}
-    	this.applyButton.setEnabled(enableApply);
-    	this.resetButton.setEnabled(enableReset);
+    	
+    	// ------------------
+    	// Set button states
+    	// ------------------
+    	if(coreTableHasChanges || advTableHasChanges) {
+        	this.resetButton.setEnabled(true);
+    	} else {
+    		this.resetButton.setEnabled(false);
+    	}
+    	
+    	if(propertiesChangedAndValid) {
+    		this.applyButton.setEnabled(true);
+    	} else {
+    		this.applyButton.setEnabled(false);
+    	}
     }
     
-    private void populatePropertiesTable(DataSourceDetailsBean dsDetailsBean) {
+    /*
+     * Populate the core properties table
+     * @param dsDetailsBean the Data Source details
+     */
+    private void populateCorePropertiesTable(DataSourceDetailsBean dsDetailsBean) {
     	List<DataSourcePropertyBean> propList = dsDetailsBean.getProperties();
-    	
     	dataSourceCorePropertiesTable.clear();
-    	dataSourceAdvancedPropertiesTable.clear();
-    	
-    	for(DataSourcePropertyBean defn : propList) {
-    		if(defn.isCoreProperty()) {
-    			dataSourceCorePropertiesTable.addRow(defn);
-    		} else {
-    			dataSourceAdvancedPropertiesTable.addRow(defn);
-    		}
+
+        final SortColumn currentSortColumnCore = this.dataSourceCorePropertiesTable.getCurrentSortColumn();
+        stateService.put(ApplicationStateKeys.DATASOURCE_DETAILS_SORT_COLUMN_CORE, currentSortColumnCore);
+
+    	// Separate property types, sorted in correct order
+    	List<DataSourcePropertyBean> corePropList = getPropList(propList, true, !currentSortColumnCore.ascending);
+    	// Populate core properties table
+    	for(DataSourcePropertyBean defn : corePropList) {
+   			dataSourceCorePropertiesTable.addRow(defn);
     	}
     	dataSourceCorePropertiesTable.setVisible(true);
+    }
+
+    /*
+     * Populate the advanced properties table
+     * @param dsDetailsBean the Data Source details
+     */
+    private void populateAdvancedPropertiesTable(DataSourceDetailsBean dsDetailsBean) {
+    	List<DataSourcePropertyBean> propList = dsDetailsBean.getProperties();
+    	dataSourceAdvancedPropertiesTable.clear();
+
+        final SortColumn currentSortColumnAdv = this.dataSourceAdvancedPropertiesTable.getCurrentSortColumn();
+        stateService.put(ApplicationStateKeys.DATASOURCE_DETAILS_SORT_COLUMN_ADV, currentSortColumnAdv);
+
+    	// Separate property types, sorted in correct order
+    	List<DataSourcePropertyBean> advPropList = getPropList(propList, false, !currentSortColumnAdv.ascending);
+    	// Populate advanced properties table
+    	for(DataSourcePropertyBean defn : advPropList) {
+    		dataSourceAdvancedPropertiesTable.addRow(defn);
+    	}
     	dataSourceAdvancedPropertiesTable.setVisible(true);
     }
     
+    /*
+     * Filters the supplied list by correct type and order
+     * @param propList the complete list of properties
+     * @param getCore if 'true', returns the core properties.  if 'false' returns the advanced properties
+     * @param acending if 'true', sorts in ascending name order.  descending if 'false'
+     */
+    private List<DataSourcePropertyBean> getPropList(List<DataSourcePropertyBean> propList, boolean getCore, boolean ascending) {
+    	List<DataSourcePropertyBean> resultList = new ArrayList<DataSourcePropertyBean>();
+    	
+    	// Put only the desired property type into the resultList
+    	for(DataSourcePropertyBean prop : propList) {
+    		if(prop.isCoreProperty() && getCore) {
+    			resultList.add(prop);
+    		} else if(!prop.isCoreProperty() && !getCore) {
+    			resultList.add(prop);    			
+    		}
+    	}
+    	
+    	// Sort by name in the desired order
+    	Collections.sort(resultList,new PropertyBeanComparator(ascending));
+    	
+    	return resultList;
+    }
+    
+    /*
+     * Re-deploys the Data Source using the properties from the Tables
+     */
     private void onApplyDataSourcePropertiesConfirmed() {
     	
     	DataSourceDetailsBean resultBean = new DataSourceDetailsBean();
@@ -231,10 +343,13 @@ public class DataSourceDetailsPage extends AbstractPage {
     	doCreateDataSource(resultBean);
     }
     
+    /*
+     * Reset the table values to the original values
+     */
     private void onResetDataSourcePropertiesConfirmed() {
     	dataSourceCorePropertiesTable.resetToOriginalValues();
     	dataSourceAdvancedPropertiesTable.resetToOriginalValues();
-    	setButtonStates();
+    	validatePage();
     }
     
     /**
@@ -285,30 +400,6 @@ public class DataSourceDetailsPage extends AbstractPage {
     	String dsName = currentDataSourceDetails.getName();
     	resetDataSourcePropertiesDialog.setDataSourceName(dsName);
     	resetDataSourcePropertiesDialog.show();
-    }
-
-    /**
-     * Called when the user confirms the deletion.
-     */
-    protected void onDeleteConfirm() {
-//        final NotificationBean notificationBean = notificationService.startProgressNotification(
-//                i18n.format("artifact-details.deleting-artifact-title"), //$NON-NLS-1$
-//                i18n.format("artifact-details.deleting-artifact-msg", artifact.getModel().getName())); //$NON-NLS-1$
-//        artifactService.delete(artifact.getModel(), new IRpcServiceInvocationHandler<Void>() {
-//            @Override
-//            public void onReturn(Void data) {
-//                notificationService.completeProgressNotification(notificationBean.getUuid(),
-//                        i18n.format("artifact-details.artifact-deleted"), //$NON-NLS-1$
-//                        i18n.format("artifact-details.delete-success-msg", artifact.getModel().getName())); //$NON-NLS-1$
-//                backToDataSources.click();
-//            }
-//            @Override
-//            public void onError(Throwable error) {
-//                notificationService.completeProgressNotification(notificationBean.getUuid(),
-//                        i18n.format("artifact-details.delete-error"), //$NON-NLS-1$
-//                        error);
-//            }
-//        });
     }
 
 }

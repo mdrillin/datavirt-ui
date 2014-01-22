@@ -17,6 +17,7 @@ package org.jboss.datavirt.ui.client.local.pages.datasources;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -25,14 +26,17 @@ import javax.inject.Inject;
 
 import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
+import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
+import org.jboss.datavirt.ui.client.shared.beans.PropertyBeanComparator;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.overlord.sramp.ui.client.local.events.TableSortEvent;
 import org.overlord.sramp.ui.client.local.widgets.bootstrap.ModalDialog;
+import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidgetTable.SortColumn;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -61,6 +65,9 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
 	
     @Inject
     protected ClientMessages i18n;
+    @Inject
+    protected NotificationService notificationService;
+    
     @Inject @DataField("add-datasource-status-label")
     protected Label statusLabel;
     @Inject @DataField("add-datasource-name-textbox")
@@ -78,7 +85,7 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
     protected DataSourceRpcService dataSourceService;
 
     private Collection<String> currentDsNames;
-    private Collection<String> requiredPropNames = new ArrayList<String>();
+    private List<DataSourcePropertyBean> currentPropList = new ArrayList<DataSourcePropertyBean>();
     
     /**
      * Constructor.
@@ -104,19 +111,6 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
     protected void onPostConstruct() {
         submitButton.setEnabled(false);
         
-        dataSourceCorePropertiesTable.addTableSortHandler(new TableSortEvent.Handler() {
-            @Override
-            public void onTableSort(TableSortEvent event) {
-                //doDataSourceSearch(currentPage);
-            }
-        });
-        dataSourceAdvancedPropertiesTable.addTableSortHandler(new TableSortEvent.Handler() {
-            @Override
-            public void onTableSort(TableSortEvent event) {
-                //doDataSourceSearch(currentPage);
-            }
-        });
-        
         dsName.addKeyUpHandler(new KeyUpHandler() {
             @Override
             public void onKeyUp(KeyUpEvent event) {
@@ -134,36 +128,50 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
         	}
         });
         
+    	dataSourceCorePropertiesTable.addValueChangeHandler(new ValueChangeHandler<Void>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Void> event) {
+            	updateDialogStatus();
+            }
+        });
+    	dataSourceAdvancedPropertiesTable.addValueChangeHandler(new ValueChangeHandler<Void>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<Void> event) {
+            	updateDialogStatus();
+            }
+        });
+    	dataSourceCorePropertiesTable.addTableSortHandler(new TableSortEvent.Handler() {
+            @Override
+            public void onTableSort(TableSortEvent event) {
+            	populateCorePropertiesTable();
+            }
+        });
+    	dataSourceAdvancedPropertiesTable.addTableSortHandler(new TableSortEvent.Handler() {
+            @Override
+            public void onTableSort(TableSortEvent event) {
+            	populateAdvancedPropertiesTable();
+            }
+        });
+        
     }
 
     /**
      * Populate the Data Source Type ListBox
      */
     protected void doPopulateSourceTypeListBox() {
-//		final String searchText = this.searchBox.getValue();
-//        final SortColumn currentSortColumn = this.dataSourcesTable.getCurrentSortColumn();
-
-//        stateService.put(ApplicationStateKeys.DATASOURCES_SEARCH_TEXT, searchText);
-//        stateService.put(ApplicationStateKeys.DATASOURCES_PAGE, currentPage);
-//        stateService.put(ApplicationStateKeys.DATASOURCES_SORT_COLUMN, currentSortColumn);
-        
         dataSourceService.getDataSourceTypes(new IRpcServiceInvocationHandler<List<String>>() {
             @Override
             public void onReturn(List<String> dsTypes) {
                 populateSourceTypeListBox(dsTypes);
-                //updatePager(data);
-                //doSetButtonEnablements();
             }
             @Override
             public void onError(Throwable error) {
-                //notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
-                //noDataMessage.setVisible(true);
-                //searchInProgressMessage.setVisible(false);
+                notificationService.sendErrorNotification(i18n.format("adddatasourcedialog.error-populating-types-listbox"), error); //$NON-NLS-1$
             }
         });
-
     }
-
+    
+    
     /*
      * Init the List of DataSource Template Names
      * @param vdbName the name of the VDB
@@ -194,12 +202,6 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
      * @param selectedType the selected SourceType
      */
     protected void doPopulatePropertiesTable(String selectedType) {
-//		final String searchText = this.searchBox.getValue();
-//        final SortColumn currentSortColumn = this.dataSourcesTable.getCurrentSortColumn();
-
-//        stateService.put(ApplicationStateKeys.DATASOURCES_SEARCH_TEXT, searchText);
-//        stateService.put(ApplicationStateKeys.DATASOURCES_PAGE, currentPage);
-//        stateService.put(ApplicationStateKeys.DATASOURCES_SORT_COLUMN, currentSortColumn);
         if(selectedType.equals(NO_SELECTION)) {
         	dataSourceCorePropertiesTable.clear();
         	dataSourceAdvancedPropertiesTable.clear();
@@ -209,35 +211,78 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
         dataSourceService.getDataSourceTypeProperties(selectedType, new IRpcServiceInvocationHandler<List<DataSourcePropertyBean>>() {
             @Override
             public void onReturn(List<DataSourcePropertyBean> propList) {
-                populatePropertiesTable(propList);
+            	currentPropList.clear();
+            	currentPropList.addAll(propList);
+                populateCorePropertiesTable();
+                populateAdvancedPropertiesTable();
                 updateDialogStatus();
             }
             @Override
             public void onError(Throwable error) {
-                //notificationService.sendErrorNotification(i18n.format("datasources.error-searching"), error); //$NON-NLS-1$
-                //noDataMessage.setVisible(true);
-                //searchInProgressMessage.setVisible(false);
+                notificationService.sendErrorNotification(i18n.format("adddatasourcedialog.error-populating-properties-table"), error); //$NON-NLS-1$
             }
         });
 
     }
     
-    private void populatePropertiesTable(List<DataSourcePropertyBean> propList) {
-    	this.requiredPropNames.clear();
-    	
+    /*
+     * Populate the core properties table
+     * @param dsDetailsBean the Data Source details
+     */
+    private void populateCorePropertiesTable( ) {
     	dataSourceCorePropertiesTable.clear();
-    	dataSourceAdvancedPropertiesTable.clear();
-    	
-    	for(DataSourcePropertyBean defn : propList) {
-    		if(defn.isCoreProperty()) {
-    			dataSourceCorePropertiesTable.addRow(defn);
-    		} else {
-    			dataSourceAdvancedPropertiesTable.addRow(defn);
-    		}
-    		if(defn.isRequired()) this.requiredPropNames.add(defn.getDisplayName());
+
+        final SortColumn currentSortColumnCore = this.dataSourceCorePropertiesTable.getCurrentSortColumn();
+
+    	// Separate property types, sorted in correct order
+    	List<DataSourcePropertyBean> corePropList = getPropList(this.currentPropList, true, !currentSortColumnCore.ascending);
+    	// Populate core properties table
+    	for(DataSourcePropertyBean defn : corePropList) {
+    		dataSourceCorePropertiesTable.addRow(defn);
     	}
     	dataSourceCorePropertiesTable.setVisible(true);
+    }
+
+    /*
+     * Populate the advanced properties table
+     * @param dsDetailsBean the Data Source details
+     */
+    private void populateAdvancedPropertiesTable() {
+    	dataSourceAdvancedPropertiesTable.clear();
+
+        final SortColumn currentSortColumnAdv = this.dataSourceAdvancedPropertiesTable.getCurrentSortColumn();
+
+    	// Separate property types, sorted in correct order
+    	List<DataSourcePropertyBean> advPropList = getPropList(this.currentPropList, false, !currentSortColumnAdv.ascending);
+    	// Populate advanced properties table
+    	for(DataSourcePropertyBean defn : advPropList) {
+    		dataSourceAdvancedPropertiesTable.addRow(defn);
+    	}
     	dataSourceAdvancedPropertiesTable.setVisible(true);
+    }
+    
+    /*
+     * Filters the supplied list by correct type and order
+     * @param propList the complete list of properties
+     * @param getCore if 'true', returns the core properties.  if 'false' returns the advanced properties
+     * @param acending if 'true', sorts in ascending name order.  descending if 'false'
+     */
+    private List<DataSourcePropertyBean> getPropList(List<DataSourcePropertyBean> propList, boolean getCore, boolean ascending) {
+    	List<DataSourcePropertyBean> resultList = new ArrayList<DataSourcePropertyBean>();
+    	
+    	// Put only the desired property type into the resultList
+    	for(DataSourcePropertyBean prop : propList) {
+    		if(prop.isCoreProperty() && getCore) {
+    			resultList.add(prop);
+    		} else if(!prop.isCoreProperty() && !getCore) {
+    			resultList.add(prop);    			
+    		}
+    	}
+    	
+    	// Sort by name in the desired order
+    	Collections.sort(resultList,new PropertyBeanComparator(ascending));
+    	
+    	return resultList;
     }
     
     /**
@@ -248,15 +293,14 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
         super.show();
         dsName.setFocus(true);
 		statusLabel.setText(i18n.format("addDataSourceDialog.statusSelectDSType"));
-        
+		
         doPopulateSourceTypeListBox();
         
-        //SortColumn sortColumn = (SortColumn) stateService.get(ApplicationStateKeys.DATASOURCES_SORT_COLUMN, dataSourcesTable.getDefaultSortColumn());
+        SortColumn sortColumnCore = dataSourceCorePropertiesTable.getDefaultSortColumn();
+        SortColumn sortColumnAdv = dataSourceAdvancedPropertiesTable.getDefaultSortColumn();
 
-    	this.dataSourceCorePropertiesTable.sortBy("name", true);
-    	this.dataSourceAdvancedPropertiesTable.sortBy("name", true);
-    	//String selectedType = getDialogSourceType();
-    	//doPopulatePropertiesTable(selectedType);
+    	this.dataSourceCorePropertiesTable.sortBy(sortColumnCore.columnId, sortColumnCore.ascending);
+    	this.dataSourceAdvancedPropertiesTable.sortBy(sortColumnAdv.columnId, sortColumnAdv.ascending);
     }
 
     private void updateDialogStatus() {
@@ -298,12 +342,10 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
 
     	// Validate the Properties Tables
     	if(isValid) {
-    		// Temp set the Property status to OK
-    		statusStr = "OK";
-//    		int coreRowCount = this.dataSourceCorePropertiesTable.getRowCount();
-//    		for(int i=0 ; i<coreRowCount; i++) {
-//    			this.dataSourceCorePropertiesTable.getRow(rowIndex);
-//    		}
+        	statusStr = this.dataSourceCorePropertiesTable.getStatus();
+        	if(statusStr.equalsIgnoreCase("OK")) {
+        		statusStr = this.dataSourceAdvancedPropertiesTable.getStatus();
+        	}
     		
     		if(!statusStr.equals("OK")) {
     			isValid = false;
@@ -319,7 +361,7 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
 
     	return isValid;
     }
-    
+        
     private String getDialogSourceType() {
     	int index = sourceTypeListBox.getSelectedIndex();
     	return sourceTypeListBox.getValue(index);

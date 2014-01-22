@@ -37,7 +37,10 @@ public final class ApplicationStateKeys {
     public static final String VDBDETAILS_PAGE = "vdbmodels.page"; //$NON-NLS-1$
     public static final String VDBDETAILS_SORT_COLUMN = "vdbmodels.sort-column"; //$NON-NLS-1$
 
-    public static final String DATASOURCE_DETAILS_PAGE = "datasourcedetails.page"; //$NON-NLS-1$
-	public static final String DATASOURCE_DETAILS_SEARCH_TEXT = "datasourcedetails.search-text"; //$NON-NLS-1$
-    public static final String DATASOURCE_DETAILS_SORT_COLUMN = "datasourcedetails.sort-column"; //$NON-NLS-1$
+    public static final String DATASOURCE_DETAILS_SORT_COLUMN_CORE = "datasourcedetails.sort-column-core"; //$NON-NLS-1$
+    public static final String DATASOURCE_DETAILS_SORT_COLUMN_ADV = "datasourcedetails.sort-column-adv"; //$NON-NLS-1$
+    
+    public static final String ADD_DATASOURCE_DIALOG_SORT_COLUMN_CORE = "adddatasourcedialog.sort-column-core"; //$NON-NLS-1$
+    public static final String ADD_DATASOURCE_DIALOG_SORT_COLUMN_ADV = "adddatasourcedialog.sort-column-adv"; //$NON-NLS-1$
+    
 }

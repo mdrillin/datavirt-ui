@@ -50,6 +50,7 @@ public class DataSourceService implements IDataSourceService {
     private static final String DRIVER_KEY = "driver-name";
     private static final String CLASSNAME_KEY = "class-name";
     private static final String CONN_FACTORY_CLASS_KEY = "managedconnectionfactory-class";
+    private static final String CONNECTION_URL_DISPLAYNAME = "connection-url";
     
     @Inject
     private AdminApiClientAccessor clientAccessor;
@@ -396,12 +397,12 @@ public class DataSourceService implements IDataSourceService {
 				propBean.setValue(defaultValue.toString());
 				propBean.setOriginalValue(defaultValue.toString());
 				// Set Connection URL to template if available and value was null
-//			} else if(displayName.equalsIgnoreCase(PropertyItem.CONNECTION_URL_DISPLAYNAME)) {
-//				String urlTemplate = TranslatorHelper.getUrlTemplate(driverName);
-//				if(!StringUtil.isEmpty(urlTemplate)) {
-//					propDefnBean.setValue(urlTemplate);
-//					propDefnBean.setOriginalValue(urlTemplate);
-//				}
+			} else if(displayName.equalsIgnoreCase(CONNECTION_URL_DISPLAYNAME)) {
+				String urlTemplate = TranslatorHelper.getUrlTemplate(typeName);
+				if(!StringUtil.isEmpty(urlTemplate)) {
+					propBean.setValue(urlTemplate);
+					propBean.setOriginalValue(urlTemplate);
+				}
 			}
 
 			// Copy the 'managedconnectionfactory-class' default value into the 'class-name' default value
