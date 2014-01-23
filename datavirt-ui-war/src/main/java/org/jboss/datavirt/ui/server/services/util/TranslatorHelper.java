@@ -2,6 +2,8 @@ package org.jboss.datavirt.ui.server.services.util;
 
 import java.util.Collection;
 
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
+
 public class TranslatorHelper {
 
 	public static final String TEIID_FILE_DRIVER = "file"; //$NON-NLS-1$
@@ -84,8 +86,8 @@ public class TranslatorHelper {
 	 * @return the best fit translator for the provided driver
 	 */
 	public static String getTranslator(String driverName, Collection<String> translatorNames) {
-		if(isEmpty(driverName)) return "unknown";
-		if(isEmpty(translatorNames)) return "unknown";
+		if(isEmpty(driverName)) return Constants.STATUS_UNKNOWN;
+		if(isEmpty(translatorNames)) return Constants.STATUS_UNKNOWN;
 
 		if(driverName.equals(TEIID_FILE_DRIVER) && translatorNames.contains(FILE)) {
 			return FILE;
@@ -199,7 +201,7 @@ public class TranslatorHelper {
 	 * @return the URL Template
 	 */
 	public static String getUrlTemplate(String driverName) {
-		if(isEmpty(driverName)) return "unknown"; //$NON-NLS-1$
+		if(isEmpty(driverName)) return Constants.STATUS_UNKNOWN; 
 
 		if(driverName.toLowerCase().startsWith("derby")) { //$NON-NLS-1$
 			return URL_DERBY;

@@ -15,6 +15,7 @@
  */
 package org.jboss.datavirt.ui.client.local.pages.vdbs;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -87,11 +88,17 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
     
     private Map<String,String> defaultTranslatorMap;
     private Collection<String> currentModelNames = Collections.emptyList();
+    private List<String> unsupportedSources = Arrays.asList("ldap","modeshape","mongodb");
+    private String vdbName;
     
     /**
      * Constructor.
      */
     public AddSourceModelDialog() {
+    }
+
+    public void setVdbName(String vdbName) {
+    	this.vdbName = vdbName;
     }
 
     public void setCurrentModelNames(Collection<String> currentModelNames) {
@@ -108,7 +115,7 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
         // Change Listener for DataSource ListBox
         dataSourceListBox.addChangeHandler(new ChangeHandler()
         {
-        	// Changing the Type selection will re-populate property table with defaults for that type
+        	// Changing the DataSource selection will set the best guess translator and default the model name if empty
         	public void onChange(ChangeEvent event)
         	{
         		String selectedDataSource = getSelectedDataSource();
@@ -119,6 +126,16 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
         		// Select the translator for the source
         		selectTranslatorForSource(selectedDataSource);
         		
+            	updateDialogStatus();
+        	}
+        });
+
+        // Change Listener for Translator ListBox
+        translatorListBox.addChangeHandler(new ChangeHandler()
+        {
+        	// Changing the Type selection will re-populate property table with defaults for that type
+        	public void onChange(ChangeEvent event)
+        	{
             	updateDialogStatus();
         	}
         });
@@ -170,8 +187,11 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
     	// Repopulate the ListBox. The actual names 
     	int i = 1;
     	for(String source: sources) {
-    		dataSourceListBox.insertItem(source, i);
-    		i++;
+    		// Add source to listBox (omits the source for the current vdb)
+    		if(!source.equalsIgnoreCase(vdbName)) {
+    			dataSourceListBox.insertItem(source, i);
+    			i++;
+    		}
     	}
 
     	// Initialize by setting the selection to the first item.
@@ -326,7 +346,16 @@ public class AddSourceModelDialog extends ModalDialog implements HasValueChangeH
     		isValid = false;
     	}
     	
-    	// Make sure Model Name is not empty
+    	// Make sure translator is supported
+		String translator = getSelectedTranslator();
+		if(isValid) {
+			if(translator!=null && unsupportedSources.contains(translator.toLowerCase())) {
+				statusStr = i18n.format("addSourceModelDialog.statusSourceTypeNotSupported");
+				isValid = false;
+			}
+		}
+
+		// Make sure Model Name is not empty
 		String modelName = getModelName();
 		if(isValid) {
 			if(modelName==null || modelName.trim().length()==0) {

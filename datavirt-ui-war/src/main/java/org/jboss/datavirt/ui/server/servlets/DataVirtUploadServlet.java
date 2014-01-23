@@ -36,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
 import org.jboss.datavirt.ui.server.i18n.Messages;
 import org.jboss.datavirt.ui.server.services.VdbService;
@@ -152,7 +153,7 @@ public class DataVirtUploadServlet extends HttpServlet {
 
     	Map<String, String> responseParams = new HashMap<String, String>();
 
-    	if(vdbFileName.endsWith("-vdb.xml") || vdbFileName.endsWith(".vdb")) {
+    	if(vdbFileName.endsWith(Constants.DYNAMIC_VDB_SUFFIX) || vdbFileName.endsWith(".vdb")) {
     		vdbService.deployVdb(vdbFileName, vdbContent);
     	}
 		

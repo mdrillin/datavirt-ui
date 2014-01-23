@@ -104,6 +104,7 @@
   "addSourceModelDialog.statusEnterModelName" : "Please enter a name for the source model",
   "addSourceModelDialog.statusModelNameAlreadyExists" : "A Model with this name already exists",
   "addSourceModelDialog.statusSelectDS" : "Please select the Data Source and Translator",
+  "addSourceModelDialog.statusSourceTypeNotSupported" : "Sorry this Data Source Type is not currently supported in a dynamic VDB - cannot retrieve metadata",
   "addViewModelDialog.statusClickOkToAccept" : "Click Add to add the view model",
   "addViewModelDialog.statusEnterModelName" : "Please enter a name for the view model",
   "addViewModelDialog.statusEnterModelDDL" : "Please enter the model DDL",

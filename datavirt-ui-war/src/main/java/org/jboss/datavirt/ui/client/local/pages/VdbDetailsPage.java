@@ -254,8 +254,8 @@ public class VdbDetailsPage extends AbstractPage {
                 notificationService.sendErrorNotification(i18n.format("vdbdetails.error-retrieving-details"), error); //$NON-NLS-1$
                 noDataMessage.setVisible(true);
             	getModelsInProgressMessage.setVisible(false);
-                pageTitle.setText("unknown");
-                vdbStatusLabel.setText("unknown");
+                pageTitle.setText(Constants.STATUS_UNKNOWN);
+                vdbStatusLabel.setText(Constants.STATUS_UNKNOWN);
             }
         });       
         
@@ -268,13 +268,13 @@ public class VdbDetailsPage extends AbstractPage {
     private void setVdbStatus(VdbDetailsBean vdbDetails) {
     	String statusText = vdbDetails.getStatus();
     	vdbStatusLabel.setText(statusText);
-    	if(statusText.equalsIgnoreCase("active")) {
+    	if(statusText.equalsIgnoreCase(Constants.STATUS_ACTIVE)) {
     		vdbStatusImage.setTitle("The VDB is active");
     		vdbStatusImage.setUrl(Constants.VDB_STATUS_URL_ACTIVE_32PX);
-    	} else if(statusText.equalsIgnoreCase("inactive")) {
+    	} else if(statusText.equalsIgnoreCase(Constants.STATUS_INACTIVE)) {
     		vdbStatusImage.setTitle("The VDB is inactive");
     		vdbStatusImage.setUrl(Constants.VDB_STATUS_URL_INACTIVE_32PX);
-    	} else if(statusText.equalsIgnoreCase("loading")) {
+    	} else if(statusText.equalsIgnoreCase(Constants.STATUS_LOADING)) {
     		vdbStatusImage.setTitle("The VDB is loading");
     		vdbStatusImage.setUrl(Constants.VDB_STATUS_URL_LOADING_32PX);
     	}
@@ -293,6 +293,7 @@ public class VdbDetailsPage extends AbstractPage {
     @EventHandler("btn-add-source")
     protected void onAddSourceClick(ClickEvent event) {
         AddSourceModelDialog dialog = addSourceModelDialogFactory.get();
+        dialog.setVdbName(currentVdbDetails.getName());
     	dialog.setCurrentModelNames(currentVdbDetails.getModelNames());
         dialog.addValueChangeHandler(new ValueChangeHandler<Map<String,String>>() {
             @Override
@@ -578,7 +579,7 @@ public class VdbDetailsPage extends AbstractPage {
         this.getModelsInProgressMessage.setVisible(true);
 		this.vdbStatusImage.setTitle("The VDB is loading");
 		this.vdbStatusImage.setUrl(Constants.VDB_STATUS_URL_LOADING_32PX);
-		this.vdbStatusLabel.setText("LOADING");
+		this.vdbStatusLabel.setText(Constants.STATUS_LOADING);
         this.pager.setVisible(false);
         this.addModelInProgressMessage.setVisible(false);
         this.vdbModelsTable.setVisible(false);
@@ -596,7 +597,7 @@ public class VdbDetailsPage extends AbstractPage {
         this.addModelInProgressMessage.setVisible(true);
 		this.vdbStatusImage.setTitle("The VDB is loading");
 		this.vdbStatusImage.setUrl(Constants.VDB_STATUS_URL_LOADING_32PX);
-		this.vdbStatusLabel.setText("LOADING");
+		this.vdbStatusLabel.setText(Constants.STATUS_LOADING);
         this.pager.setVisible(false);
         this.getModelsInProgressMessage.setVisible(false);
         this.vdbModelsTable.setVisible(false);

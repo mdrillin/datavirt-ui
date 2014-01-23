@@ -123,11 +123,11 @@ public class VdbsTable extends SortableTemplatedWidgetTable implements HasTableR
     private String getIconUrl(String status) {
     	String iconUrl = null;
 
-        if(status.equalsIgnoreCase("active")) {
+        if(status.equalsIgnoreCase(Constants.STATUS_ACTIVE)) {
     		iconUrl = Constants.VDB_STATUS_URL_ACTIVE_16PX;
-    	} else if(status.toLowerCase().startsWith("inactive")) {
+    	} else if(status.toUpperCase().startsWith(Constants.STATUS_INACTIVE)) {
     		iconUrl = Constants.VDB_STATUS_URL_INACTIVE_16PX;
-    	} else if(status.equalsIgnoreCase("loading")) {
+    	} else if(status.equalsIgnoreCase(Constants.STATUS_LOADING)) {
     		iconUrl = Constants.VDB_STATUS_URL_LOADING_16PX;
     	}
     	

@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.jboss.datavirt.ui.server.services.util.VdbHelper;
@@ -279,7 +280,7 @@ public class AdminApiClient {
 	 * @return the dataSource type name
 	 */
 	private String getDataSourceType(Properties dsProps) {
-		if(dsProps==null) return "unknown";
+		if(dsProps==null) return Constants.STATUS_UNKNOWN;
 
 		String driverName = dsProps.getProperty(DRIVER_KEY);
 		// If driver-name not found, look for class name and match up the .rar
@@ -298,7 +299,7 @@ public class AdminApiClient {
 	 * @return the dataSource jndi name
 	 */
 	private String getDataSourceJndiName(Properties dsProps) {
-		if(dsProps==null) return "unknown";
+		if(dsProps==null) return Constants.STATUS_UNKNOWN;
 
 		return dsProps.getProperty(JNDINAME_KEY);
 	}
@@ -569,7 +570,7 @@ public class AdminApiClient {
 		List<VDBImportMetadata> importVdbs = vdb.getVDBImports();
 		List<String> srcModelVdbDeploymentNames = new ArrayList<String>(importVdbs.size());
 		for(VDBImportMetadata importVdb : importVdbs) {
-			String srcVdbDeploymentName = importVdb.getName()+"-vdb.xml";
+			String srcVdbDeploymentName = importVdb.getName() + Constants.DYNAMIC_VDB_SUFFIX;
 			srcModelVdbDeploymentNames.add(srcVdbDeploymentName);
 		}
 		

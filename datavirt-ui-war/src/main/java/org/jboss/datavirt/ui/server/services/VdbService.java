@@ -195,7 +195,7 @@ public class VdbService implements IVdbService {
     		// Only deploy the VDB if it was not found
     		if(vdb==null) {
     			// Deployment name for vdb must end in '-vdb.xml'
-    			String deploymentName = vdbName+"-vdb.xml";
+    			String deploymentName = vdbName + Constants.DYNAMIC_VDB_SUFFIX;
 
     			// Deploy the VDB
     			VDBMetaData newVdb = vdbHelper.createVdb(vdbName,1);
@@ -224,7 +224,7 @@ public class VdbService implements IVdbService {
 		}
 		
         // This wait method takes deploymentName
-        waitForVDBDeploymentToLoad(vdbFileName, 120);
+        waitForVDBDeploymentToLoad(vdbFileName, Constants.VDB_LOADING_TIMEOUT_SECS);
 
         // Add the VDB Source. If it exists, it is deleted first - then re-added.
 //        String vdbName = getVDBNameForDeployment(fileName);
@@ -408,13 +408,13 @@ public class VdbService implements IVdbService {
         	}
         	
         	// Deployment name for vdb must end in '-vdb.xml'.
-        	String deploymentName = sourceVDBName+"-vdb.xml";
+        	String deploymentName = sourceVDBName + Constants.DYNAMIC_VDB_SUFFIX;
 
         	// Create a new Source VDB to deploy
         	sourceVdb = vdbHelper.createVdb(sourceVDBName,1);
 
-        	// Create source model - same name as dataSource
-        	ModelMetaData model = vdbHelper.createSourceModel(modelName, dataSourceName, jndiName, translator);
+        	// Create source model - same name as dataSource.  Use model name for source mapping - will be unique
+        	ModelMetaData model = vdbHelper.createSourceModel(modelName, modelName, jndiName, translator);
 
         	// Adding the SourceModel to the VDB
         	sourceVdb.addModel(model);
@@ -426,7 +426,7 @@ public class VdbService implements IVdbService {
         	clientAccessor.getClient().deploy(deploymentName, new ByteArrayInputStream(vdbBytes));
 
         	// Wait for VDB to finish loading
-        	waitForVDBLoad(sourceVDBName, 1, 120);                        
+        	waitForVDBLoad(sourceVDBName, 1, Constants.VDB_LOADING_TIMEOUT_SECS);                        
 
         	// Get deployed VDB and return status
         	String vdbStatus = getVDBStatusMessage(sourceVDBName);
@@ -485,7 +485,7 @@ public class VdbService implements IVdbService {
 		}
 
     	// Deployment name for vdb must end in '-vdb.xml'
-    	String vdbDeployName = vdbName+"-vdb.xml";
+    	String vdbDeployName = vdbName + Constants.DYNAMIC_VDB_SUFFIX;
     	try {
         	// Undeploy the working VDB
     		clientAccessor.getClient().undeploy(vdbDeployName);
@@ -494,7 +494,7 @@ public class VdbService implements IVdbService {
     		clientAccessor.getClient().deploy(vdbDeployName, new ByteArrayInputStream(out.toByteArray()));
 
         	// Wait for VDB to finish loading
-        	waitForVDBLoad(vdbName, 1, 120);
+        	waitForVDBLoad(vdbName, 1, Constants.VDB_LOADING_TIMEOUT_SECS);
 
         	// Add the VDB as a source. If it already exists, it is deleted first then recreated.
         	// Re-create is required to clear the connection pool.
@@ -639,7 +639,7 @@ public class VdbService implements IVdbService {
     	for(String modelName : removeModelNameAndTypeMap.keySet()) {
     		String modelType = removeModelNameAndTypeMap.get(modelName);
     		if(modelType.equalsIgnoreCase(Constants.PHYSICAL)) {
-    			String srcVdbDeploymentName = modelName+"-vdb.xml";
+    			String srcVdbDeploymentName = modelName + Constants.DYNAMIC_VDB_SUFFIX;
     			srcVdbsToUndeploy.add(srcVdbDeploymentName);
     		}
     	}

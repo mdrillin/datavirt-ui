@@ -134,11 +134,11 @@ public class VdbModelsTable extends SortableTemplatedWidgetTable implements HasT
     private String getIconUrl(String status) {
     	String iconUrl = null;
 
-        if(status.equalsIgnoreCase("active")) {
+        if(status.equalsIgnoreCase(Constants.STATUS_ACTIVE)) {  
     		iconUrl = Constants.VDBMODEL_STATUS_URL_ACTIVE_16PX;
-    	} else if(status.toLowerCase().startsWith("inactive")) {
+    	} else if(status.toUpperCase().startsWith(Constants.STATUS_INACTIVE)) {
     		iconUrl = Constants.VDBMODEL_STATUS_URL_INACTIVE_16PX;
-    	} else if(status.equalsIgnoreCase("Unknown")) {
+    	} else if(status.equalsIgnoreCase(Constants.STATUS_UNKNOWN)) {
     		iconUrl = Constants.VDBMODEL_STATUS_URL_UNKNOWN_16PX;
     	}
     	

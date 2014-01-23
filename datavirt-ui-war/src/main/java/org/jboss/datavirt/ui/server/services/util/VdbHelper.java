@@ -98,14 +98,14 @@ public class VdbHelper {
 	/**
 	 * Create a Source Model
 	 * @param modelName the name of the Model
-	 * @param sourceName the name of the source
+	 * @param sourceMappingName the name of the source mapping
 	 * @param jndiName the jndi name
 	 * @param translator the translator name
 	 * @return the ModelMetaData
 	 */
-	public ModelMetaData createSourceModel(String modelName, String sourceName, String jndiName, String translator) {
+	public ModelMetaData createSourceModel(String modelName, String sourceMappingName, String jndiName, String translator) {
 		ModelMetaData modelMetaData = new ModelMetaData();
-		modelMetaData.addSourceMapping(sourceName, translator, jndiName);
+		modelMetaData.addSourceMapping(sourceMappingName, translator, jndiName);
 		modelMetaData.setName(modelName);
 		return modelMetaData;
 	}
@@ -186,12 +186,12 @@ public class VdbHelper {
 				
 				// If this is not an XML Deployment, show the Status as Unknown
 				if(!vdb.isXmlDeployment()) {
-					modelStatus = "Unknown";
+					modelStatus = Constants.STATUS_UNKNOWN;
 			    // Is XML Deployment, look at model errors
 				} else {
 					List<String> errors = modelMeta.getValidityErrors();
 					if(errors.size()==0) {
-						modelStatus = "ACTIVE";
+						modelStatus = Constants.STATUS_ACTIVE;
 					} else {
 						// There may be multiple errors - process the list...
 						boolean connectionError = false;
@@ -269,19 +269,19 @@ public class VdbHelper {
 	 */
 	public String getVdbStatus(VDBMetaData vdb) {
 		VDB.Status status = vdb.getStatus();
-		String vdbStatus = "Unknown";
+		String vdbStatus = Constants.STATUS_UNKNOWN;
 		
 		// Change FAILED, REMOVED, LOADING status to INACTIVE
 		if(status!=null) {
 			vdbStatus = status.toString();
-			if( vdbStatus.equalsIgnoreCase("FAILED") || vdbStatus.equalsIgnoreCase("REMOVED") || vdbStatus.equalsIgnoreCase("LOADING") ) {
-				vdbStatus="INACTIVE";
+			if( status==VDB.Status.FAILED || status==VDB.Status.REMOVED || status==VDB.Status.LOADING ) {
+				vdbStatus=Constants.STATUS_INACTIVE;
 			}
 		}
 		
 		// If no models, change status to INACTIVE
 		List<Model> models = vdb.getModels();
-		if(models.isEmpty()) vdbStatus = "INACTIVE";
+		if(models.isEmpty()) vdbStatus = Constants.STATUS_INACTIVE;
 		
 		return vdbStatus;
 	}

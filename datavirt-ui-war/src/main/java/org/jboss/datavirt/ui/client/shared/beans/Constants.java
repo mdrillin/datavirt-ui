@@ -28,7 +28,14 @@ public class Constants {
 	public static final String SUCCESS = "success";
 	public static final String PHYSICAL = "PHYSICAL";
 	public static final String VIRTUAL = "VIRTUAL";
-		
+
+	public static final String DYNAMIC_VDB_SUFFIX = "-vdb.xml";
+	public static final String STATUS_ACTIVE = "ACTIVE";
+	public static final String STATUS_INACTIVE = "INACTIVE";
+	public static final String STATUS_LOADING = "LOADING";
+	public static final String STATUS_UNKNOWN = "Unknown";
+	
+	public static final int VDB_LOADING_TIMEOUT_SECS = 300;
 	public static final String NO_TYPE_SELECTION = "[Select a Type]";
 
 	public static final String SORT_COLID_NAME = "name"; //$NON-NLS-1$

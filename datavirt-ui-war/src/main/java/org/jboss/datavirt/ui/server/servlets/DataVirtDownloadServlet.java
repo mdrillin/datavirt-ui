@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.server.services.VdbService;
 import org.overlord.sramp.atom.MediaType;
 
@@ -60,7 +61,7 @@ public class DataVirtDownloadServlet extends HttpServlet {
 			
     		String vdbXml =vdbService.getVdbXml(vdbName);
 
-			doDownloadVdb(httpResponse, vdbName+"-vdb.xml", new ByteArrayInputStream(vdbXml.getBytes("UTF-8")));
+			doDownloadVdb(httpResponse, vdbName + Constants.DYNAMIC_VDB_SUFFIX, new ByteArrayInputStream(vdbXml.getBytes("UTF-8")));
 			
 		} catch (Exception e) {
 			// TODO throw sensible errors (http responses - 404, 500, etc)

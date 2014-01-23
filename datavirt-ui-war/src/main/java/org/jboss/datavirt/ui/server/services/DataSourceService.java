@@ -24,6 +24,7 @@ import java.util.Properties;
 
 import javax.inject.Inject;
 
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceResultSetBean;
@@ -483,7 +484,7 @@ public class DataSourceService implements IDataSourceService {
      * @return the dataSource driver name
      */
     private String getDataSourceType(Properties dsProps) {
-    	if(dsProps==null) return "unknown";
+    	if(dsProps==null) return Constants.STATUS_UNKNOWN;
 
     	String driverName = dsProps.getProperty(DRIVER_KEY);
     	// If driver-name not found, look for class name and match up the .rar
