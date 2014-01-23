@@ -24,7 +24,7 @@ import javax.enterprise.context.Dependent;
 
 import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
-import org.jboss.datavirt.ui.client.shared.services.StringUtil;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidgetTable;
 
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -128,7 +128,7 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable impl
     		} else {
         		String defaultValue = propBean.getDefaultValue();
         		String value = propBean.getValue();
-        		if(!StringUtil.valuesAreEqual(value, defaultValue)) {
+        		if(!StringUtils.valuesAreEqual(value, defaultValue)) {
         			resultBeans.add(propBean);
         		}
     		}
@@ -168,7 +168,7 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable impl
     	for(DataSourcePropertyBean propBean : rowBeanMap.values()) {
     		String originalValue = propBean.getOriginalValue();
     		String value = propBean.getValue();
-    		if(!StringUtil.valuesAreEqual(value, originalValue)) {
+    		if(!StringUtils.valuesAreEqual(value, originalValue)) {
     			hasChanges = true;
     			break;
     		}

@@ -32,6 +32,7 @@ public class DataSourceSummaryBean {
     private String model;
     private String type;
     private String name;
+    private String jndiName;
     private String description;
     private String createdBy;
     private Date createdOn;
@@ -62,6 +63,13 @@ public class DataSourceSummaryBean {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return the jndi name
+     */
+    public String getJndiName() {
+        return jndiName;
     }
 
     /**
@@ -111,6 +119,13 @@ public class DataSourceSummaryBean {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @param jndiName the jndi name to set
+     */
+    public void setJndiName(String jndiName) {
+        this.jndiName = jndiName;
     }
 
     /**

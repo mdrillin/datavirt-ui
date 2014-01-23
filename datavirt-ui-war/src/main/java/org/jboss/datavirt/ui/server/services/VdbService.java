@@ -33,6 +33,7 @@ import org.jboss.datavirt.ui.client.shared.beans.VdbResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
 import org.jboss.datavirt.ui.client.shared.exceptions.DataVirtUiException;
 import org.jboss.datavirt.ui.client.shared.services.IVdbService;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
 import org.jboss.datavirt.ui.server.services.util.FilterUtil;
 import org.jboss.datavirt.ui.server.services.util.VdbHelper;
@@ -42,7 +43,6 @@ import org.teiid.adminapi.VDB.Status;
 import org.teiid.adminapi.impl.ModelMetaData;
 import org.teiid.adminapi.impl.VDBMetaData;
 import org.teiid.adminapi.impl.VDBMetadataParser;
-import org.teiid.core.util.StringUtil;
 
 /**
  * Concrete implementation of the VDB service.
@@ -85,7 +85,7 @@ public class VdbService implements IVdbService {
         List<String> allVdbNamesSort = new ArrayList<String>(vdbSummaryProps.size());
         for(Properties vdbProps : vdbPropsList) {
             String vdbName = vdbProps.getProperty("name");
-            if(!StringUtil.isEmpty(vdbName)) {
+            if(!StringUtils.isEmpty(vdbName)) {
             	allVdbNames.add(vdbName);
             	if ( FilterUtil.matchFilter(vdbName, searchText) ) {
             		allVdbNamesSort.add(vdbName.toLowerCase());
@@ -355,9 +355,14 @@ public class VdbService implements IVdbService {
 		}
     }
     
-    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String dataSourceName, String translator) throws DataVirtUiException {
+    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String modelName, String dataSourceName, String translator) throws DataVirtUiException {
+    	// Get JNDI for the specified DataSource name.  if null choose a default
+    	String jndiName = getSourceJndiName(dataSourceName);
+    	if(StringUtils.isEmpty(jndiName)) {
+    		jndiName = "java:/"+dataSourceName;
+    	}
     	// Deploy the Source VDB
-    	deploySourceVDB(sourceVDBName, dataSourceName, translator);
+    	deploySourceVDB(sourceVDBName, modelName, dataSourceName, jndiName, translator);
 
     	// Add the source VDB as an import, then redeploy the vdb
     	addImportAndRedeploy(vdbName,sourceVDBName,1);
@@ -365,14 +370,28 @@ public class VdbService implements IVdbService {
     	// Return details
     	return getVdbDetails(vdbName, modelsPageNumber);
     }   
+
+    private String getSourceJndiName(String dataSourceName) throws DataVirtUiException {
+    	// Get Data Source properties
+    	Properties dsProps = null;
+    	try {
+			dsProps = clientAccessor.getClient().getDataSourceProperties(dataSourceName);
+		} catch (AdminApiClientException e) {
+			throw new DataVirtUiException(e.getMessage());
+		}
+
+    	return dsProps.getProperty("jndi-name");
+    }
     
     /**
      * Deploys a SourceVDB for the specified dataSource, if it doesnt already exist
      * @param sourceVDBName the name of the source VDB
+     * @param modelName the name of the model
      * @param dataSourceName the name of the datasource
+     * @param jndiName the JNDI name of the datasource
      * @param translator the name of the translator
      */
-    public String deploySourceVDB(String sourceVDBName, String dataSourceName, String translator) throws DataVirtUiException {
+    public String deploySourceVDB(String sourceVDBName, String modelName, String dataSourceName, String jndiName, String translator) throws DataVirtUiException {
     	try {
         	// Get VDB with the supplied name.
         	// -- If it already exists, return its status
@@ -394,7 +413,7 @@ public class VdbService implements IVdbService {
         	sourceVdb = vdbHelper.createVdb(sourceVDBName,1);
 
         	// Create source model - same name as dataSource
-        	ModelMetaData model = vdbHelper.createSourceModel(dataSourceName, dataSourceName, translator);
+        	ModelMetaData model = vdbHelper.createSourceModel(modelName, dataSourceName, jndiName, translator);
 
         	// Adding the SourceModel to the VDB
         	sourceVdb.addModel(model);

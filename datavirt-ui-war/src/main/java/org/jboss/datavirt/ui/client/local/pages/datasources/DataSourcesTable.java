@@ -107,10 +107,12 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
         
         Anchor name = toDetailsPageLinkFactory.get("name", dataSourceSummaryBean.getName()); //$NON-NLS-1$
         name.setText(dataSourceSummaryBean.getName());
+        InlineLabel jndiName = new InlineLabel(dataSourceSummaryBean.getJndiName());
         InlineLabel type = new InlineLabel(dataSourceSummaryBean.getType());
 
         add(rowIdx, 1, name);
-        add(rowIdx, 2, type);
+        add(rowIdx, 2, jndiName);
+        add(rowIdx, 3, type);
     }
     
     /**

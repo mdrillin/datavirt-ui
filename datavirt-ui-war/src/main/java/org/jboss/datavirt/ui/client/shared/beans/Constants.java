@@ -21,6 +21,8 @@ package org.jboss.datavirt.ui.client.shared.beans;
  */
 public class Constants {
 
+	public static final String SOURCE_VDB_PREFIX = "DataVirtUI";
+	
     public static final String SORT_COLID_NAME = "name"; //$NON-NLS-1$
     public static final String SORT_COLID_MODIFIED_ON = "lastModifiedTimestamp"; //$NON-NLS-1$
 

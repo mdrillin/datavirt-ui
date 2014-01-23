@@ -37,7 +37,7 @@ import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceSummaryBean;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
-import org.jboss.datavirt.ui.client.shared.services.StringUtil;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.errai.ui.nav.client.local.DefaultPage;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
@@ -317,7 +317,7 @@ public class DataSourcesPage extends AbstractPage {
         // SearchBox text
         String searchBoxText = this.searchBox.getText();
         // Search if different
-        if(!StringUtil.equals(appFilterText, searchBoxText)) {
+        if(!StringUtils.equals(appFilterText, searchBoxText)) {
         	doDataSourceSearch();
         }    	
     }

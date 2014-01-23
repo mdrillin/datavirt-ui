@@ -54,7 +54,7 @@ public interface IVdbService {
 
     public void createAndDeployDynamicVdb(String vdbName) throws DataVirtUiException;
 
-    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String dataSourceName, String translator) throws DataVirtUiException;
+    public VdbDetailsBean deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String modelName, String dataSourceName, String translator) throws DataVirtUiException;
 
     public VdbDetailsBean addOrReplaceViewModelAndRedeploy(String vdbName, int modelsPageNumber, String viewModelName, String ddlString) throws DataVirtUiException;
 

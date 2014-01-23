@@ -102,12 +102,12 @@ public class VdbRpcService {
         }
     }
 
-    public void deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String dataSourceName, String translator, 
+    public void deploySourceVDBAddImportAndRedeploy(String vdbName, int modelsPageNumber, String sourceVDBName, String modelName, String dataSourceName, String translator, 
     		final IRpcServiceInvocationHandler<VdbDetailsBean> handler) {
         RemoteCallback<VdbDetailsBean> successCallback = new DelegatingRemoteCallback<VdbDetailsBean>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteVdbService.call(successCallback, errorCallback).deploySourceVDBAddImportAndRedeploy(vdbName, modelsPageNumber,sourceVDBName, dataSourceName, translator);
+        	remoteVdbService.call(successCallback, errorCallback).deploySourceVDBAddImportAndRedeploy(vdbName, modelsPageNumber, sourceVDBName, modelName, dataSourceName, translator);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }

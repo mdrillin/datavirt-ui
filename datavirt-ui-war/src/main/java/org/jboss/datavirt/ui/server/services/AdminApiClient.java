@@ -25,7 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
-import org.jboss.datavirt.ui.client.shared.services.StringUtil;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.jboss.datavirt.ui.server.services.util.VdbHelper;
 import org.overlord.sramp.atom.err.SrampAtomException;
@@ -36,6 +36,7 @@ import org.teiid.adminapi.AdminFactory;
 import org.teiid.adminapi.PropertyDefinition;
 import org.teiid.adminapi.Translator;
 import org.teiid.adminapi.VDB;
+import org.teiid.adminapi.impl.VDBImportMetadata;
 import org.teiid.adminapi.impl.VDBMetaData;
 
 /**
@@ -47,6 +48,7 @@ public class AdminApiClient {
 
     private static final String DRIVER_KEY = "driver-name";
     private static final String CLASSNAME_KEY = "class-name";
+    private static final String JNDINAME_KEY = "jndi-name";
 
 	private Admin admin;
 	private String endpoint;
@@ -137,9 +139,19 @@ public class AdminApiClient {
 		// For each datasource, get the 'summary' properties
 		for(String sourceName : sourceNames) {
 			Properties summaryProperties = new Properties();
+			// DataSource name
 			summaryProperties.put("name", sourceName);
-			String sourceType = getDataSourceType(sourceName);
+			
+			Properties dsProps = getDataSourceProperties(sourceName);
+			
+			// DataSource jndiName
+			String jndiName = getDataSourceJndiName(dsProps); 
+		    summaryProperties.put("jndi-name", jndiName);
+			
+			// DataSource type
+			String sourceType = getDataSourceType(dsProps);
 			summaryProperties.put("type",sourceType);
+			
 			dsSummaryPropCollection.add(summaryProperties);
 		}
 		
@@ -271,13 +283,24 @@ public class AdminApiClient {
 
 		String driverName = dsProps.getProperty(DRIVER_KEY);
 		// If driver-name not found, look for class name and match up the .rar
-		if(StringUtil.isEmpty(driverName)) {
+		if(StringUtils.isEmpty(driverName)) {
 			String className = dsProps.getProperty(CLASSNAME_KEY);
-			if(!StringUtil.isEmpty(className)) {
+			if(!StringUtils.isEmpty(className)) {
 				driverName = TranslatorHelper.getDriverNameForClass(className);
 			}
 		}
 		return driverName;
+	}
+
+	/*
+	 * Get the source jndiName from the provided properties
+	 * @param dsProps the data source properties
+	 * @return the dataSource jndi name
+	 */
+	private String getDataSourceJndiName(Properties dsProps) {
+		if(dsProps==null) return "unknown";
+
+		return dsProps.getProperty(JNDINAME_KEY);
 	}
 	    
     /*
@@ -536,14 +559,32 @@ public class AdminApiClient {
      * @param vdbName name of the VDB to delete
      */
 	public void deleteVDB(String vdbName) throws AdminApiClientException {
-		String deploymentName = getDeploymentNameForVDB(vdbName,1);
+		VDBMetaData vdb = getVDB(vdbName,1);
+		
+		// Get the VDB deployment name
+		VdbHelper vdbHelper = VdbHelper.getInstance();
+		String deploymentName = vdbHelper.getVdbDeploymentName(vdb);
+		
+		// Make list of the src model vdb names
+		List<VDBImportMetadata> importVdbs = vdb.getVDBImports();
+		List<String> srcModelVdbDeploymentNames = new ArrayList<String>(importVdbs.size());
+		for(VDBImportMetadata importVdb : importVdbs) {
+			String srcVdbDeploymentName = importVdb.getName()+"-vdb.xml";
+			srcModelVdbDeploymentNames.add(srcVdbDeploymentName);
+		}
+		
 		if(deploymentName!=null) {                        
 			try {
 				// Undeploy the VDB
 				this.admin.undeploy(deploymentName);
+				
+				// Undeploy its Imported Source VDBs
+				for(String srcModelVdbDeploymentName : srcModelVdbDeploymentNames) {
+					this.admin.undeploy(srcModelVdbDeploymentName);
+				}
 
-				// Delete the VDB Source
-				//deleteDataSource(vdbName);
+				// Delete the VDB DataSource
+				deleteDataSource(vdbName);
 			} catch (Exception e) {
 				throw new AdminApiClientException(e.getMessage());
 			}
@@ -581,20 +622,6 @@ public class AdminApiClient {
 //		return vdbName;
 //	}
     
-    /*
-     * Find the Deployment Name for the provided VdbName and Version
-     * @param deploymentName
-     * @return the VDB Name
-     */
-	private String getDeploymentNameForVDB(String vdbName, int vdbVersion) throws AdminApiClientException {
-		String deploymentName = null;
-		VDBMetaData vdbMeta = getVDB(vdbName,vdbVersion);
-		if(vdbMeta!=null) {
-			deploymentName = vdbMeta.getPropertyValue("deployment-name");
-		}
-		return deploymentName;
-	}
-
 	/**
      * Constructor.
      * @param endpoint

@@ -3,7 +3,7 @@ package org.jboss.datavirt.ui.server.services.util;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-import org.jboss.datavirt.ui.client.shared.services.StringUtil;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 
 public class FilterUtil {
 
@@ -19,7 +19,7 @@ public class FilterUtil {
 		if (inputStr == null)
 			return false;
 		
-		if(StringUtil.isEmpty(filter)) {
+		if(StringUtils.isEmpty(filter)) {
 			filter = "*";
 		} else {
 			if(!filter.endsWith("*")) {

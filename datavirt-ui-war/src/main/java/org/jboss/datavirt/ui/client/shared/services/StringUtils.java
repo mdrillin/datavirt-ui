@@ -1,6 +1,8 @@
 package org.jboss.datavirt.ui.client.shared.services;
 
-public final class StringUtil {
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
+
+public final class StringUtils {
 
 	/**
 	 * <p>
@@ -45,4 +47,13 @@ public final class StringUtil {
 		return thisString.equals(thatString);
 	}
 	
+    /**
+     * Construct a Source VDBName to be used as VDB Import
+     * @param vdbName the VDB name
+     * @param modelName the Model name
+     */
+    public static String getSourceVDBName(String vdbName, String modelName) {
+    	return Constants.SOURCE_VDB_PREFIX + "-" + vdbName + "-" + modelName;
+    }
+    
 }

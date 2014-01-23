@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.VdbDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbModelBean;
 import org.jboss.datavirt.ui.client.shared.exceptions.DataVirtUiException;
@@ -97,13 +98,14 @@ public class VdbHelper {
 	/**
 	 * Create a Source Model
 	 * @param modelName the name of the Model
-	 * @param sourceName the name of the jndi source
+	 * @param sourceName the name of the source
+	 * @param jndiName the jndi name
 	 * @param translator the translator name
 	 * @return the ModelMetaData
 	 */
-	public ModelMetaData createSourceModel(String modelName, String sourceName, String translator) {
+	public ModelMetaData createSourceModel(String modelName, String sourceName, String jndiName, String translator) {
 		ModelMetaData modelMetaData = new ModelMetaData();
-		modelMetaData.addSourceMapping(sourceName, translator, "java:/"+sourceName);
+		modelMetaData.addSourceMapping(sourceName, translator, jndiName);
 		modelMetaData.setName(modelName);
 		return modelMetaData;
 	}
@@ -236,6 +238,28 @@ public class VdbHelper {
 		}
 
 		return vdbDetailsBean;
+	}
+	
+    /**
+     * Construct a Source VDBName to be used as VDB Import
+     * @param vdbName the VDB name
+     * @param modelName the Model name
+     */
+    public String getSourceVDBName(String vdbName, String modelName) {
+    	return Constants.SOURCE_VDB_PREFIX + "-" + vdbName + "-" + modelName;
+    }
+    
+	/**
+	 * Get the VDB Deployment name
+	 * @param vdb the VDBMetaData
+	 * @return the deployment name
+	 */
+	public String getVdbDeploymentName(VDBMetaData vdb) {
+		String deploymentName = null;
+		if(vdb!=null) {
+			deploymentName = vdb.getPropertyValue("deployment-name");
+		}
+		return deploymentName;
 	}
 	
 	/**

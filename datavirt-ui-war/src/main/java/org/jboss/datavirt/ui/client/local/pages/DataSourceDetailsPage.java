@@ -91,6 +91,8 @@ public class DataSourceDetailsPage extends AbstractPage {
 
     @Inject @DataField("datasourcedetails-pagetitle")
     protected Label pageTitle;
+    @Inject @DataField("datasourcedetails-jndiname")
+    protected Label jndiLabel;
 
     @Inject @DataField("datavirt-datasourcedetails-status")
     protected Label statusMessage;
@@ -199,6 +201,8 @@ public class DataSourceDetailsPage extends AbstractPage {
             	currentDataSourceDetails = dsDetailsBean;
             	String title = "Data Source : "+dsDetailsBean.getName();
             	pageTitle.setText(title);
+            	String jndiStr = "JNDI : "+dsDetailsBean.getJndiName();
+            	jndiLabel.setText(jndiStr);   
             	
             	populateCorePropertiesTable(dsDetailsBean);
             	populateAdvancedPropertiesTable(dsDetailsBean);
@@ -329,6 +333,7 @@ public class DataSourceDetailsPage extends AbstractPage {
     	
     	DataSourceDetailsBean resultBean = new DataSourceDetailsBean();
     	resultBean.setName(currentDataSourceDetails.getName());
+    	resultBean.setJndiName(currentDataSourceDetails.getJndiName());
     	resultBean.setType(currentDataSourceDetails.getType());
     	
     	List<DataSourcePropertyBean> props = new ArrayList<DataSourcePropertyBean>();

@@ -32,7 +32,7 @@ import org.jboss.datavirt.ui.client.shared.beans.DataSourceTypeBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceTypeResultSetBean;
 import org.jboss.datavirt.ui.client.shared.exceptions.DataVirtUiException;
 import org.jboss.datavirt.ui.client.shared.services.IDataSourceService;
-import org.jboss.datavirt.ui.client.shared.services.StringUtil;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
 import org.jboss.datavirt.ui.server.services.util.FilterUtil;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
@@ -118,6 +118,7 @@ public class DataSourceService implements IDataSourceService {
         			String thisDsName = dsProps.getProperty("name");
         			if(thisDsName.equalsIgnoreCase(dsName)) {
         				summaryBean.setName(thisDsName);
+        				summaryBean.setJndiName(dsProps.getProperty("jndi-name"));
         				summaryBean.setType(dsProps.getProperty("type"));
         				rows.add(summaryBean);
         				break;
@@ -207,6 +208,9 @@ public class DataSourceService implements IDataSourceService {
 		} catch (AdminApiClientException e) {
 			throw new DataVirtUiException(e.getMessage());
 		}
+
+    	// Set jndi name
+    	dsDetailsBean.setJndiName(dsProps.getProperty("jndi-name"));
 
     	// Determine type/driver from properties
     	String dsType = getDataSourceType(dsProps);
@@ -399,7 +403,7 @@ public class DataSourceService implements IDataSourceService {
 				// Set Connection URL to template if available and value was null
 			} else if(displayName.equalsIgnoreCase(CONNECTION_URL_DISPLAYNAME)) {
 				String urlTemplate = TranslatorHelper.getUrlTemplate(typeName);
-				if(!StringUtil.isEmpty(urlTemplate)) {
+				if(!StringUtils.isEmpty(urlTemplate)) {
 					propBean.setValue(urlTemplate);
 					propBean.setOriginalValue(urlTemplate);
 				}
@@ -429,7 +433,7 @@ public class DataSourceService implements IDataSourceService {
      */
     private boolean isRarDriver(String driverName) {
     	boolean isRarDriver = false;
-    	if(!StringUtil.isEmpty(driverName)) {
+    	if(!StringUtils.isEmpty(driverName)) {
     		if( driverName.equals(TranslatorHelper.TEIID_FILE_DRIVER) || driverName.equals(TranslatorHelper.TEIID_GOOGLE_DRIVER)
     				|| driverName.equals(TranslatorHelper.TEIID_INFINISPAN_DRIVER) || driverName.equals(TranslatorHelper.TEIID_LDAP_DRIVER)
     				|| driverName.equals(TranslatorHelper.TEIID_MONGODB_DRIVER) || driverName.equals(TranslatorHelper.TEIID_SALESORCE_DRIVER)

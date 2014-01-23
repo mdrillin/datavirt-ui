@@ -44,6 +44,7 @@ import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbModelBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbModelBeanComparator;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.PageState;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
@@ -290,25 +291,28 @@ public class VdbDetailsPage extends AbstractPage {
     @EventHandler("btn-add-source")
     protected void onAddSourceClick(ClickEvent event) {
         AddSourceModelDialog dialog = addSourceModelDialogFactory.get();
+    	dialog.setCurrentModelNames(currentVdbDetails.getModelNames());
         dialog.addValueChangeHandler(new ValueChangeHandler<Map<String,String>>() {
             @Override
             public void onValueChange(ValueChangeEvent<Map<String, String>> event) {
                 Map<String, String> value = event.getValue();
                 if (value != null) {
+                	String modelName = value.get("modelNameKey");
                 	String dsName = value.get("dataSourceNameKey");
                 	String translator = value.get("translatorNameKey");
-                	doAddSourceModel(dsName,translator);
+                	doAddSourceModel(modelName,dsName,translator);
                 }
             }
         });
         dialog.show();
     }
     
-    private void doAddSourceModel(String dsName, String translator) {
+    private void doAddSourceModel(String modelName, String dsName, String translator) {
         onAddModelsStarting();
         
-        String sourceVDBName = "VDBMgr-"+dsName+"-"+translator;
-        vdbService.deploySourceVDBAddImportAndRedeploy(vdbname, currentPage, sourceVDBName, dsName, translator, new IRpcServiceInvocationHandler<VdbDetailsBean>() {
+        String sourceVDBName = StringUtils.getSourceVDBName(currentVdbDetails.getName(), modelName);
+        
+        vdbService.deploySourceVDBAddImportAndRedeploy(vdbname, currentPage, sourceVDBName, modelName, dsName, translator, new IRpcServiceInvocationHandler<VdbDetailsBean>() {
             @Override
             public void onReturn(VdbDetailsBean vdbDetailsBean) {            	
             	currentVdbDetails = vdbDetailsBean;
