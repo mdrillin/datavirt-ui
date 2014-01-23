@@ -33,6 +33,7 @@ import org.jboss.datavirt.ui.client.local.services.ApplicationStateService;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
 import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceTypeBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceTypeResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
@@ -149,10 +150,10 @@ public class DataSourceTypesPage extends AbstractPage {
             }
         });
 
-        this.rangeSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan2.setInnerText("?"); //$NON-NLS-1$
+        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
 
     /**
@@ -297,10 +298,10 @@ public class DataSourceTypesPage extends AbstractPage {
         this.searchInProgressMessage.setVisible(true);
         this.dataSourceTypesTable.setVisible(false);
         this.noDataMessage.setVisible(false);
-        this.rangeSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan2.setInnerText("?"); //$NON-NLS-1$
+        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
 
     /**

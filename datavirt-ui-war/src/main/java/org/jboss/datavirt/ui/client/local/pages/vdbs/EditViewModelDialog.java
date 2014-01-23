@@ -23,6 +23,7 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.jboss.datavirt.ui.client.local.ClientMessages;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -141,7 +142,7 @@ public class EditViewModelDialog extends ModalDialog implements HasValueChangeHa
      */
     private boolean validateDialogSelections( ) {
     	boolean isValid = true;
-    	String statusStr = "OK";
+    	String statusStr = Constants.OK;
 
     	// Make sure Model DDL is not empty
     	String ddl = getDDL();
@@ -151,7 +152,7 @@ public class EditViewModelDialog extends ModalDialog implements HasValueChangeHa
     	}
     	
     	// Update the status label
-    	if(!statusStr.equals("OK")) {
+    	if(!statusStr.equals(Constants.OK)) {
     		statusLabel.setText(statusStr);
     	} else {
     		statusLabel.setText(i18n.format("editViewModelDialog.statusClickOkToAccept"));

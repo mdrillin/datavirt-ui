@@ -22,8 +22,16 @@ package org.jboss.datavirt.ui.client.shared.beans;
 public class Constants {
 
 	public static final String SOURCE_VDB_PREFIX = "DataVirtUI";
-	
-    public static final String SORT_COLID_NAME = "name"; //$NON-NLS-1$
+
+	public static final String OK = "OK";
+	public static final String QUESTION_MARK = "?";
+	public static final String SUCCESS = "success";
+	public static final String PHYSICAL = "PHYSICAL";
+	public static final String VIRTUAL = "VIRTUAL";
+		
+	public static final String NO_TYPE_SELECTION = "[Select a Type]";
+
+	public static final String SORT_COLID_NAME = "name"; //$NON-NLS-1$
     public static final String SORT_COLID_MODIFIED_ON = "lastModifiedTimestamp"; //$NON-NLS-1$
 
     public static final String VDB_STATUS_URL_ACTIVE_16PX = "images/StatusIcon_ok_16x16.png";

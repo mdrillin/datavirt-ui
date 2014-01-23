@@ -32,6 +32,7 @@ import org.jboss.datavirt.ui.client.local.services.ApplicationStateService;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
 import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
 import org.jboss.datavirt.ui.client.shared.beans.NotificationBean;
@@ -225,7 +226,7 @@ public class DataSourceDetailsPage extends AbstractPage {
     	// Set status message
     	// ------------------
     	String overallStatus = this.dataSourceCorePropertiesTable.getStatus();
-    	if(overallStatus.equalsIgnoreCase("OK")) {
+    	if(overallStatus.equalsIgnoreCase(Constants.OK)) {
     		overallStatus = this.dataSourceAdvancedPropertiesTable.getStatus();
     	}
 
@@ -233,7 +234,7 @@ public class DataSourceDetailsPage extends AbstractPage {
     	boolean advTableHasChanges = this.dataSourceAdvancedPropertiesTable.anyPropertyHasChanged();
     	boolean propertiesChangedAndValid = false;
     	
-    	if(overallStatus.equalsIgnoreCase("OK")) {
+    	if(overallStatus.equalsIgnoreCase(Constants.OK)) {
     		// Determine if any property changes
     		if(!coreTableHasChanges && !advTableHasChanges) {
         		statusMessage.setText(i18n.format("datasourcedetails.statusMessage-nochanges"));

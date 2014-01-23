@@ -348,7 +348,7 @@ public class VdbHelper {
 		
 		// First Check the VDB being added. If it has errors, dont add
 //		String sourceStatus = getVDBStatusMessage(importVdbName);
-//		if(!sourceStatus.equals("success")) {
+//		if(!sourceStatus.equals(Constants.SUCCESS)) {
 //			return "<bold>Import Source has errors and was not added:</bold><br>"+sourceStatus;
 //		}
 
@@ -483,7 +483,7 @@ public class VdbHelper {
 		List<String> removeImportNameList = new ArrayList<String>();
 		for(String modelName : removeModelNameAndTypeMap.keySet()) {
 			String modelType = removeModelNameAndTypeMap.get(modelName);
-			if(modelType.equalsIgnoreCase("VIRTUAL")) {
+			if(modelType.equalsIgnoreCase(Constants.VIRTUAL)) {
 				removeViewModelNameList.add(modelName);
 			} else {
 				removeImportNameList.add(modelName);
@@ -543,7 +543,7 @@ public class VdbHelper {
     			}
     		}
     	}
-    	return "success";
+    	return Constants.SUCCESS;
     }
 	
 	private void clearModelMessages(List<ModelMetaData> models) {

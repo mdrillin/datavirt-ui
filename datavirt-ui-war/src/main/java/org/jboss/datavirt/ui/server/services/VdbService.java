@@ -28,6 +28,7 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.VdbDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
@@ -399,7 +400,7 @@ public class VdbService implements IVdbService {
 
         	if(sourceVdb!=null) {
         		String sourceVdbStatus = getVDBStatusMessage(sourceVDBName);
-        		if(!sourceVdbStatus.equals("success")) {
+        		if(!sourceVdbStatus.equals(Constants.SUCCESS)) {
         			return "<bold>The Source could not be added: <br> - Error deploying Source VDB '"+
         					dataSourceName+"', with translator '"+translator+"'</bold><br><br>"+sourceVdbStatus;
         		}
@@ -429,10 +430,10 @@ public class VdbService implements IVdbService {
 
         	// Get deployed VDB and return status
         	String vdbStatus = getVDBStatusMessage(sourceVDBName);
-        	if(!vdbStatus.equals("success")) {
+        	if(!vdbStatus.equals(Constants.SUCCESS)) {
         		return "<bold>Error deploying VDB "+sourceVDBName+"</bold><br>"+vdbStatus;
         	}
-        	return "success";
+        	return Constants.SUCCESS;
     	} catch (Exception e) {
 			throw new DataVirtUiException(e.getMessage());
     	}
@@ -465,7 +466,7 @@ public class VdbService implements IVdbService {
     			}
     		}
     	}
-    	return "success";
+    	return Constants.SUCCESS;
     }
     
     /*
@@ -545,7 +546,7 @@ public class VdbService implements IVdbService {
     public String addImportAndRedeploy(String vdbName, String importVdbName, int importVdbVersion) throws DataVirtUiException {
     	// First Check the VDB being added. If it has errors, dont add
     	String sourceStatus = getVDBStatusMessage(importVdbName);
-    	if(!sourceStatus.equals("success")) {
+    	if(!sourceStatus.equals(Constants.SUCCESS)) {
     		return "<bold>Import Source has errors and was not added:</bold><br>"+sourceStatus;
     	}
     	
@@ -564,10 +565,10 @@ public class VdbService implements IVdbService {
 
     	// Get deployed VDB and return status
     	String vdbStatus = getVDBStatusMessage(vdbName);
-    	if(!vdbStatus.equals("success")) {
+    	if(!vdbStatus.equals(Constants.SUCCESS)) {
     		return "<bold>Error deploying VDB "+vdbName+"</bold><br>"+vdbStatus;
     	}
-    	return "success";
+    	return Constants.SUCCESS;
     }
     
     /*
@@ -614,12 +615,35 @@ public class VdbService implements IVdbService {
     	}
 
     	VDBMetaData newVdb = vdbHelper.removeModels(theVDB, removeModelNameAndTypeMap);
+    	
+    	List<String> srcModelVdbDeploymentNames = getSrcVdbsToUndeploy(removeModelNameAndTypeMap);
 
     	// Re-Deploy the VDB
     	redeployVDB(vdbName, newVdb);
 
+    	// Undeploy the Source Model VDBs - if necessary
+		for(String srcModelVdbDeploymentName : srcModelVdbDeploymentNames) {
+	    	try {
+				clientAccessor.getClient().undeploy(srcModelVdbDeploymentName);
+	    	} catch (AdminApiClientException e) {
+	    		throw new DataVirtUiException(e.getMessage());
+	    	}
+		}
+    	
     	// Return details
     	return getVdbDetails(vdbName, modelsPageNumber);
+    }
+
+    private List<String> getSrcVdbsToUndeploy(Map<String,String> removeModelNameAndTypeMap) {
+    	List<String> srcVdbsToUndeploy = new ArrayList<String>();
+    	for(String modelName : removeModelNameAndTypeMap.keySet()) {
+    		String modelType = removeModelNameAndTypeMap.get(modelName);
+    		if(modelType.equalsIgnoreCase(Constants.PHYSICAL)) {
+    			String srcVdbDeploymentName = modelName+"-vdb.xml";
+    			srcVdbsToUndeploy.add(srcVdbDeploymentName);
+    		}
+    	}
+    	return srcVdbsToUndeploy;
     }
     
 }

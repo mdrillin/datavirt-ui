@@ -144,7 +144,7 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable impl
      */
     public String getStatus() {
     	// Assume 'OK' until a problem is found
-    	String status = "OK";
+    	String status = Constants.OK;
 
     	for(DataSourcePropertyBean propBean : rowBeanMap.values()) {
     		String propName = propBean.getName();

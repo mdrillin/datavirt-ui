@@ -25,6 +25,7 @@ import javax.inject.Inject;
 
 import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.services.VdbRpcService;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -117,7 +118,7 @@ public class NewVdbDialog extends ModalDialog implements HasValueChangeHandlers<
      */
     private boolean validateVdbName( ) {
     	boolean isValid = true;
-    	String statusStr = "OK";
+    	String statusStr = Constants.OK;
 
     	// Validate the entered name
     	String vdbNameStr = vdbName.getText();
@@ -137,7 +138,7 @@ public class NewVdbDialog extends ModalDialog implements HasValueChangeHandlers<
     	}
 
     	// Update the status label
-    	if(!statusStr.equals("OK")) {
+    	if(!statusStr.equals(Constants.OK)) {
     		statusLabel.setText(statusStr);
     	} else {
     		statusLabel.setText(i18n.format("newVdbDialog.statusClickOkToAccept"));

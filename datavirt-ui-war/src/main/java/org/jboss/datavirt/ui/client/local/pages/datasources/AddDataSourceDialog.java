@@ -28,6 +28,7 @@ import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
 import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
+import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourceDetailsBean;
 import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
 import org.jboss.datavirt.ui.client.shared.beans.PropertyBeanComparator;
@@ -61,8 +62,6 @@ import com.google.gwt.user.client.ui.TextBox;
 @Dependent
 public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHandlers<DataSourceDetailsBean> {
 
-	private static final String NO_SELECTION = "[Select a Type]";
-	
     @Inject
     protected ClientMessages i18n;
     @Inject
@@ -184,7 +183,7 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
     	// Make sure clear first
     	sourceTypeListBox.clear();
 
-    	sourceTypeListBox.insertItem(NO_SELECTION, 0);
+    	sourceTypeListBox.insertItem(Constants.NO_TYPE_SELECTION, 0);
     	
     	// Repopulate the ListBox. The actual names 
     	int i = 1;
@@ -202,7 +201,7 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
      * @param selectedType the selected SourceType
      */
     protected void doPopulatePropertiesTable(String selectedType) {
-        if(selectedType.equals(NO_SELECTION)) {
+        if(selectedType.equals(Constants.NO_TYPE_SELECTION)) {
         	dataSourceCorePropertiesTable.clear();
         	dataSourceAdvancedPropertiesTable.clear();
         	return;
@@ -314,11 +313,11 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
      */
     private boolean validateSourceProperties( ) {
     	boolean isValid = true;
-    	String statusStr = "OK";
+    	String statusStr = Constants.OK;
 
     	// Make sure source type is selected
 		String selectedType = getDialogSourceType();                                
-    	if(NO_SELECTION.equals(selectedType)) {
+    	if(Constants.NO_TYPE_SELECTION.equals(selectedType)) {
     		statusStr = i18n.format("addDataSourceDialog.statusSelectDSType");
     		isValid = false;
     	}
@@ -343,17 +342,17 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
     	// Validate the Properties Tables
     	if(isValid) {
         	statusStr = this.dataSourceCorePropertiesTable.getStatus();
-        	if(statusStr.equalsIgnoreCase("OK")) {
+        	if(statusStr.equalsIgnoreCase(Constants.OK)) {
         		statusStr = this.dataSourceAdvancedPropertiesTable.getStatus();
         	}
     		
-    		if(!statusStr.equals("OK")) {
+    		if(!statusStr.equals(Constants.OK)) {
     			isValid = false;
     		} 
     	}
     	
     	// Update the status label
-    	if(!statusStr.equals("OK")) {
+    	if(!statusStr.equals(Constants.OK)) {
     		statusLabel.setText(statusStr);
     	} else {
     		statusLabel.setText(i18n.format("addDataSourceDialog.statusClickOkToAccept"));

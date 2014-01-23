@@ -155,6 +155,8 @@ public class VdbDetailsPage extends AbstractPage {
     protected HtmlSnippet datasourceLoading;
 
     private int currentPage = 1;
+    private int pgrStartIndex = 1;
+    private int pgrEndIndex = 1;
     protected VdbDetailsBean currentVdbDetails;
         
 	/**
@@ -193,10 +195,10 @@ public class VdbDetailsPage extends AbstractPage {
             }
         });
         
-        this.rangeSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan2.setInnerText("?"); //$NON-NLS-1$
+        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
 
     }
 
@@ -242,9 +244,9 @@ public class VdbDetailsPage extends AbstractPage {
             	
             	setVdbStatus(vdbDetailsBean);
             	
+                updatePager(vdbDetailsBean);
                 updateVdbModelsTable(vdbDetailsBean);
                 updateDownloadVdbLink(vdbDetailsBean);
-                updatePager(vdbDetailsBean);
                 doSetButtonEnablements();
             }
             @Override
@@ -317,8 +319,8 @@ public class VdbDetailsPage extends AbstractPage {
             public void onReturn(VdbDetailsBean vdbDetailsBean) {            	
             	currentVdbDetails = vdbDetailsBean;
             	setVdbStatus(vdbDetailsBean);
-                updateVdbModelsTable(vdbDetailsBean);
                 updatePager(vdbDetailsBean);
+                updateVdbModelsTable(vdbDetailsBean);
                 doSetButtonEnablements();
             }
             @Override
@@ -360,8 +362,8 @@ public class VdbDetailsPage extends AbstractPage {
             public void onReturn(VdbDetailsBean vdbDetailsBean) {            	
             	currentVdbDetails = vdbDetailsBean;
             	setVdbStatus(vdbDetailsBean);
-                updateVdbModelsTable(vdbDetailsBean);
                 updatePager(vdbDetailsBean);
+                updateVdbModelsTable(vdbDetailsBean);
                 doSetButtonEnablements();
             }
             @Override
@@ -384,7 +386,7 @@ public class VdbDetailsPage extends AbstractPage {
     	String modelType = vdbModelsTable.getSelectedModelNameAndTypeMap().get(modelName);
     	
        	// View Model
-    	if(modelType.equalsIgnoreCase("VIRTUAL")) {
+    	if(modelType.equalsIgnoreCase(Constants.VIRTUAL)) {
     		EditViewModelDialog dialog = editViewModelDialogFactory.get();
     		dialog.setModelName(modelName);
         	String ddl = getModelDdl(modelName,currentVdbDetails);
@@ -439,7 +441,6 @@ public class VdbDetailsPage extends AbstractPage {
      */
     private void onDeleteModelConfirm() {
     	Map<String,String> modelNameAndTypeMap = this.vdbModelsTable.getSelectedModelNameAndTypeMap();
-    	Map<String,String> modelNameAndTranslatorMap = this.vdbModelsTable.getSelectedModelNameAndTranslatorMap();
     	String modelText = null;
     	if(modelNameAndTypeMap.size()==1) {
     		modelText = "Model "+modelNameAndTypeMap.keySet().iterator().next();
@@ -448,13 +449,13 @@ public class VdbDetailsPage extends AbstractPage {
     	}
     	final String modelTextFinal = modelText;
     	
-    	// Adjust the Map Entries for the View 'Import' names
+    	// Adjust the Map Entries for the Physical 'Import' names
     	Map<String,String> adjustedNameTypeMap = new HashMap<String,String>(modelNameAndTypeMap.size());
     	for(String modelName : modelNameAndTypeMap.keySet()) {
     		String type = modelNameAndTypeMap.get(modelName);
-    		String translator = modelNameAndTranslatorMap.get(modelName);
-    		if(type.equalsIgnoreCase("PHYSICAL")) {
-    			adjustedNameTypeMap.put("VDBMgr-"+modelName+"-"+translator, type);
+    		if(type.equalsIgnoreCase(Constants.PHYSICAL)) {
+    			String srcVdbName = StringUtils.getSourceVDBName(currentVdbDetails.getName(), modelName);
+    			adjustedNameTypeMap.put(srcVdbName, type);
     		} else {
     			adjustedNameTypeMap.put(modelName, type);
     		}
@@ -473,8 +474,8 @@ public class VdbDetailsPage extends AbstractPage {
             	currentVdbDetails = vdbDetailsBean;
             	setVdbStatus(vdbDetailsBean);
             	
-                updateVdbModelsTable(vdbDetailsBean);
                 updatePager(vdbDetailsBean);
+                updateVdbModelsTable(vdbDetailsBean);
                 doSetButtonEnablements();
             }
             @Override
@@ -517,7 +518,7 @@ public class VdbDetailsPage extends AbstractPage {
     	    if(selectedRows==1) {
     	    	String modelName = this.vdbModelsTable.getSelectedModelNameAndTypeMap().keySet().iterator().next();
     	    	String modelType = this.vdbModelsTable.getSelectedModelNameAndTypeMap().get(modelName);
-    	    	if(modelType.equalsIgnoreCase("VIRTUAL")) {
+    	    	if(modelType.equalsIgnoreCase(Constants.VIRTUAL)) {
     	    		editModelButton.setEnabled(true);
     	    	} else {
     	    		editModelButton.setEnabled(false);
@@ -556,9 +557,12 @@ public class VdbDetailsPage extends AbstractPage {
         	// Sort by name in the desired order
         	Collections.sort(vdbModelList,new VdbModelBeanComparator(!currentSortColumn.ascending));
 
-            for (VdbModelBean vdbModelBean : vdbModelList) {
+        	int startIndx = pgrStartIndex-1;
+        	int endIndx = pgrEndIndex;
+        	for(int i=startIndx; i<endIndx; i++) {
+        		VdbModelBean vdbModelBean = vdbModelList.get(i);
                 this.vdbModelsTable.addRow(vdbModelBean);
-            }
+        	}
             this.noDataMessage.setVisible(false);
             this.vdbModelsTable.setVisible(true);
         } else {
@@ -579,10 +583,10 @@ public class VdbDetailsPage extends AbstractPage {
         this.addModelInProgressMessage.setVisible(false);
         this.vdbModelsTable.setVisible(false);
         this.noDataMessage.setVisible(false);
-        this.rangeSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan2.setInnerText("?"); //$NON-NLS-1$
+        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
 
     /**
@@ -597,10 +601,10 @@ public class VdbDetailsPage extends AbstractPage {
         this.getModelsInProgressMessage.setVisible(false);
         this.vdbModelsTable.setVisible(false);
         this.noDataMessage.setVisible(false);
-        this.rangeSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan1.setInnerText("?"); //$NON-NLS-1$
-        this.totalSpan2.setInnerText("?"); //$NON-NLS-1$
+        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
     
     /**
@@ -618,12 +622,12 @@ public class VdbDetailsPage extends AbstractPage {
         int startIndex = data.getStartIndex();
         int endBatchIndx = startIndex + data.getModelsPerPage();
         int endAllIndx = data.getTotalModels();
-        int endIndex = (endBatchIndx <= endAllIndx) ? endBatchIndx : endAllIndx;
+        pgrEndIndex = (endBatchIndx <= endAllIndx) ? endBatchIndx : endAllIndx;
         
         // reset start index to zero if end index is zero
-        startIndex = (endIndex==0) ? endIndex : startIndex+1;
+        pgrStartIndex = (pgrEndIndex==0) ? pgrEndIndex : startIndex+1;
         
-        String rangeText = "" + startIndex + "-" + endIndex; //$NON-NLS-1$ //$NON-NLS-2$
+        String rangeText = "" + pgrStartIndex + "-" + pgrEndIndex; //$NON-NLS-1$ //$NON-NLS-2$
         String totalText = String.valueOf(data.getTotalModels());
         this.rangeSpan1.setInnerText(rangeText);
         this.rangeSpan2.setInnerText(rangeText);
