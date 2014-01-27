@@ -19,7 +19,6 @@ import javax.inject.Singleton;
 
 import org.apache.commons.configuration.Configuration;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
-import org.jboss.datavirt.ui.server.i18n.Messages;
 import org.overlord.commons.config.ConfigurationFactory;
 
 /**
@@ -30,26 +29,27 @@ import org.overlord.commons.config.ConfigurationFactory;
 @Singleton
 public class DataVirtUIConfig {
 
-    public static final String SRAMP_UI_CONFIG_FILE_NAME     = "sramp-ui.config.file.name"; //$NON-NLS-1$
-    public static final String SRAMP_UI_CONFIG_FILE_REFRESH  = "sramp-ui.config.file.refresh"; //$NON-NLS-1$
+    public static final String DATAVIRT_UI_CONFIG_FILE_NAME     = "datavirt-ui.config.file.name"; //$NON-NLS-1$
+    public static final String DATAVIRT_UI_CONFIG_FILE_REFRESH  = "datavirt-ui.config.file.refresh"; //$NON-NLS-1$
 
-    public static final String SRAMP_API_ENDPOINT = "s-ramp-ui.atom-api.endpoint"; //$NON-NLS-1$
-    public static final String SRAMP_API_VALIDATING = "s-ramp-ui.atom-api.validating"; //$NON-NLS-1$
-    public static final String SRAMP_API_AUTH_PROVIDER = "s-ramp-ui.atom-api.authentication.provider"; //$NON-NLS-1$
-    public static final String SRAMP_API_BASIC_AUTH_USER = "s-ramp-ui.atom-api.authentication.basic.user"; //$NON-NLS-1$
-    public static final String SRAMP_API_BASIC_AUTH_PASS = "s-ramp-ui.atom-api.authentication.basic.password"; //$NON-NLS-1$
-    public static final String SRAMP_API_SAML_AUTH_ISSUER = "s-ramp-ui.atom-api.authentication.saml.issuer"; //$NON-NLS-1$
-    public static final String SRAMP_API_SAML_AUTH_SERVICE = "s-ramp-ui.atom-api.authentication.saml.service"; //$NON-NLS-1$
-    public static final String SRAMP_API_SAML_AUTH_SIGN_ASSERTIONS = "s-ramp-ui.atom-api.authentication.saml.sign-assertions"; //$NON-NLS-1$
-    public static final String SRAMP_API_SAML_AUTH_KEYSTORE = "s-ramp-ui.atom-api.authentication.saml.keystore"; //$NON-NLS-1$
-    public static final String SRAMP_API_SAML_AUTH_KEYSTORE_PASSWORD = "s-ramp-ui.atom-api.authentication.saml.keystore-password"; //$NON-NLS-1$
-    public static final String SRAMP_API_SAML_AUTH_KEY_ALIAS = "s-ramp-ui.atom-api.authentication.saml.key-alias"; //$NON-NLS-1$
-    public static final String SRAMP_API_SAML_AUTH_KEY_PASSWORD = "s-ramp-ui.atom-api.authentication.saml.key-password"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_ENDPOINT = "datvirt-ui.api.endpoint"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_VALIDATING = "datavirt-ui.api.validating"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_AUTH_PROVIDER = "datavirt-ui.api.authentication.provider"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_BASIC_AUTH_USER = "datavirt-ui.api.authentication.basic.user"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_BASIC_AUTH_PASS = "datavirt-ui.api.authentication.basic.password"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_SAML_AUTH_ISSUER = "datavirt-ui.api.authentication.saml.issuer"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_SAML_AUTH_SERVICE = "datavirt-ui.api.authentication.saml.service"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_SAML_AUTH_SIGN_ASSERTIONS = "datavirt-ui.api.authentication.saml.sign-assertions"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_SAML_AUTH_KEYSTORE = "datavirt-ui.api.authentication.saml.keystore"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_SAML_AUTH_KEYSTORE_PASSWORD = "datavirt-ui.api.authentication.saml.keystore-password"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_SAML_AUTH_KEY_ALIAS = "datavirt-ui.api.authentication.saml.key-alias"; //$NON-NLS-1$
+    public static final String DATAVIRT_API_SAML_AUTH_KEY_PASSWORD = "datavirt-ui.api.authentication.saml.key-password"; //$NON-NLS-1$
 
     public static Configuration config;
     static {
-        String configFile = System.getProperty(SRAMP_UI_CONFIG_FILE_NAME);
-        String refreshDelayStr = System.getProperty(SRAMP_UI_CONFIG_FILE_REFRESH);
+    	// These are overrides - if the system config file name is set.  otherwise loads server configuration
+        String configFile = System.getProperty(DATAVIRT_UI_CONFIG_FILE_NAME);
+        String refreshDelayStr = System.getProperty(DATAVIRT_UI_CONFIG_FILE_REFRESH);
         Long refreshDelay = 5000l;
         if (refreshDelayStr != null) {
             refreshDelay = new Long(refreshDelayStr);
@@ -61,7 +61,6 @@ public class DataVirtUIConfig {
                 refreshDelay,
                 "/META-INF/config/org.jboss.datavirt.ui.server.api.properties", //$NON-NLS-1$
                 AdminApiClientAccessor.class);
-        System.out.println(Messages.i18n.format("Config.Loaded", DataVirtUIConfig.config.getString(SRAMP_API_ENDPOINT))); //$NON-NLS-1$
     }
 
     /**

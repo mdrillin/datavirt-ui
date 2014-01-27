@@ -27,10 +27,12 @@ import java.util.Properties;
 
 import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.services.StringUtils;
+import org.jboss.datavirt.ui.server.api.BasicAuthenticationProvider;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.jboss.datavirt.ui.server.services.util.VdbHelper;
 import org.overlord.sramp.atom.err.SrampAtomException;
 import org.overlord.sramp.client.SrampClientException;
+import org.overlord.sramp.client.auth.AuthenticationProvider;
 import org.teiid.adminapi.Admin;
 import org.teiid.adminapi.AdminException;
 import org.teiid.adminapi.AdminFactory;
@@ -47,30 +49,67 @@ import org.teiid.adminapi.impl.VDBMetaData;
  */
 public class AdminApiClient {
 
+    private static final String LOCALHOST = "127.0.0.1";
     private static final String DRIVER_KEY = "driver-name";
     private static final String CLASSNAME_KEY = "class-name";
     private static final String JNDINAME_KEY = "jndi-name";
 
 	private Admin admin;
-	private String endpoint;
 	private boolean validating;
-	//private AuthenticationProvider authProvider;
+	private AuthenticationProvider authProvider;
 	private Locale locale;
+    private String serverHost;
 
 	/**
 	 * Constructor.
 	 * @param endpoint
 	 */
-	public AdminApiClient() {
-		if(admin==null) {
-		    try {
-				admin = getAdminApi("localhost",9999,"admin","1admin1!");
+//	public AdminApiClient() {
+//		if(admin==null) {
+//		    try {
+//				admin = getAdminApi("localhost",9999,"admin","1admin1!");
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}	
+//		}
+//	}
+	
+    /**
+     * Constructor.
+     * @param endpoint
+     * @param username
+     * @param password
+     * @param validating
+     * @throws SrampClientException
+     * @throws SrampAtomException
+     */
+    public AdminApiClient(final String username, final String password, final boolean validating) throws AdminApiClientException {
+        this(new BasicAuthenticationProvider(), validating);
+    }
+
+    /**
+     * Constructor.
+     * @param endpoint
+     * @param authenticationProvider
+     * @param validating
+     * @throws AdminApiClientException
+     */
+    public AdminApiClient(AuthenticationProvider authenticationProvider, final boolean validating) throws AdminApiClientException {
+        // Establish serverHost this is running on
+        if(this.serverHost==null) establishServerHost();
+
+        this.authProvider = authenticationProvider;
+        this.validating = validating;
+        if (this.validating) {
+			try {
+	        	this.admin = getAdminApi(this.serverHost,9999,"admin","admin");
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
-		}
-	}
+				throw new AdminApiClientException(e.getMessage());
+			}
+//            discoverAvailableFeatures();
+        }
+    }
 	
     /**
      * Get an admin api connection with the supplied credentials
@@ -94,38 +133,40 @@ public class AdminApiClient {
                     
                     throw new Exception(sb.toString());
             }
+         
             return admin;
     }
+    
+    /**
+     * Establish the serverHost this is running on. Only need to do this once.
+     */
+    private void establishServerHost() {
+    	serverHost = LOCALHOST;
 
-	/**
-	 * Constructor.
-	 * @param endpoint
-	 */
-	public AdminApiClient(String endpoint) {
-		this.endpoint = endpoint;
-		if (this.endpoint.endsWith("/")) { //$NON-NLS-1$
-			this.endpoint = this.endpoint.substring(0, this.endpoint.length()-1);
-		}
-		if (!this.endpoint.endsWith("/s-ramp")) { //$NON-NLS-1$
-		    this.endpoint += "/s-ramp"; //$NON-NLS-1$
-		}
-	}
+    	// First priority is use OpenShift - if running on OpenShift.
+    	// Try both the JBOSSEAP and JBOSSAS system vars. Also try OPENSHIFT_TEIID_ID and OPENSHIFT_DV_IP (Cartridges)
+    	String serverIP = System.getenv("OPENSHIFT_JBOSSEAP_IP");
+    	if(serverIP==null || serverIP.trim().isEmpty()) {
+    		serverIP = System.getenv("OPENSHIFT_JBOSSAS_IP");
+    	}
+    	if(serverIP==null || serverIP.trim().isEmpty()) {
+    		serverIP = System.getenv("OPENSHIFT_TEIID_IP");
+    	}
+    	if(serverIP==null || serverIP.trim().isEmpty()) {
+    		serverIP = System.getenv("OPENSHIFT_DV_IP");
+    	}
 
-	/**
-	 * Constructor.
-	 * @param endpoint
-	 * @param validating
-	 * @throws SrampClientException
-	 * @throws SrampAtomException
-	 */
-	public AdminApiClient(String endpoint, boolean validating) {
-		this(endpoint);
-		this.validating = validating;
-		if (this.validating) {
-			//discoverAvailableFeatures();
-		}
-	}
-	
+    	if(serverIP==null || serverIP.trim().isEmpty()) {
+    		// Lookup the server ip address for the server this is running on.
+    		serverIP = System.getProperty("jboss.bind.address");
+    	}
+
+    	// If the server bind address is set, override the default 'localhost'
+    	if(serverIP!=null && !serverIP.trim().isEmpty()) {
+    		serverHost = serverIP;
+    	}
+    }
+
     /*
      * Get the Collection of DataSource Summary properties
      * @return the Map of DataSource name - type
@@ -623,83 +664,6 @@ public class AdminApiClient {
 //		return vdbName;
 //	}
     
-	/**
-     * Constructor.
-     * @param endpoint
-     * @param username
-     * @param password
-     * @param validating
-     * @throws SrampClientException
-     */
-//    public AdminApiClient(final String endpoint, final String username, final String password,
-//            final boolean validating) throws SrampClientException {
-//        this(endpoint, new BasicAuthenticationProvider(username, password), validating);
-//    }
-
-    /**
-     * Constructor.
-     * @param endpoint
-     * @param authenticationProvider
-     * @param validating
-     * @throws SrampClientException
-     * @throws SrampAtomException
-     */
-//    public AdminApiClient(final String endpoint, AuthenticationProvider authenticationProvider,
-//            final boolean validating) {
-//        this(endpoint);
-//        this.authProvider = authenticationProvider;
-//        this.validating = validating;
-//        if (this.validating) {
-//            //discoverAvailableFeatures();
-//        }
-//    }
-
-	/**
-	 * @return the s-ramp endpoint
-	 */
-	public String getEndpoint() {
-		return this.endpoint;
-	}
-
-
-//    /**
-//     * Creates the RESTEasy client request object, configured appropriately.
-//     * @param atomUrl
-//     */
-//    protected ClientRequest createClientRequest(String atomUrl) {
-//        ClientExecutor executor = createClientExecutor();
-//        ClientRequest request = new ClientRequest(atomUrl, executor);
-//        return request;
-//    }
-//
-//    /**
-//     * Creates the client executor that will be used by RESTEasy when
-//     * making the request.
-//     */
-//    private ClientExecutor createClientExecutor() {
-//        // TODO I think the http client is thread safe - so let's try to create just one of these
-//        DefaultHttpClient httpClient = new DefaultHttpClient();
-//        httpClient.addRequestInterceptor(new HttpRequestInterceptor() {
-//            @Override
-//            public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-//                Locale l = getLocale();
-//                if (l == null) {
-//                    l = Locale.getDefault();
-//                }
-//                request.addHeader("Accept-Language", l.toString()); //$NON-NLS-1$
-//            }
-//        });
-//        if (this.authProvider != null) {
-//            httpClient.addRequestInterceptor(new HttpRequestInterceptor() {
-//                @Override
-//                public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-//                    authProvider.provideAuthentication(request);
-//                }
-//            });
-//        }
-//        return new ApacheHttpClient4Executor(httpClient);
-//    }
-
     /**
      * @return the locale
      */

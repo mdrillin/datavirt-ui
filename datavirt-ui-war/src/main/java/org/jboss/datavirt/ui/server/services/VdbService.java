@@ -68,7 +68,7 @@ public class VdbService implements IVdbService {
      * @see org.jboss.datavirt.ui.client.shared.services.IDataSourceSearchService#search(java.lang.String, int, java.lang.String, boolean)
      */
     @Override
-    public VdbResultSetBean search(String searchText, int page, String sortColumnId, boolean sortAscending) throws DataVirtUiException {
+    public VdbResultSetBean search(String searchText, int page, boolean showDataVirtUiVDBs, String sortColumnId, boolean sortAscending) throws DataVirtUiException {
         int pageSize = 15;
         
         VdbResultSetBean data = new VdbResultSetBean();
@@ -87,9 +87,14 @@ public class VdbService implements IVdbService {
         for(Properties vdbProps : vdbPropsList) {
             String vdbName = vdbProps.getProperty("name");
             if(!StringUtils.isEmpty(vdbName)) {
-            	allVdbNames.add(vdbName);
-            	if ( FilterUtil.matchFilter(vdbName, searchText) ) {
-            		allVdbNamesSort.add(vdbName.toLowerCase());
+            	// If not showing the DataVirtUi created VDBS, then skip them
+            	if(!showDataVirtUiVDBs && vdbName.startsWith(Constants.SOURCE_VDB_PREFIX)) {
+            		continue;
+            	} else {
+            		allVdbNames.add(vdbName);
+            		if ( FilterUtil.matchFilter(vdbName, searchText) ) {
+            			allVdbNamesSort.add(vdbName.toLowerCase());
+            		}
             	}
             }
         }

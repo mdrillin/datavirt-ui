@@ -348,7 +348,7 @@ public class VirtualDatabasesPage extends AbstractPage {
         stateService.put(ApplicationStateKeys.VDBS_PAGE, currentPage);
         stateService.put(ApplicationStateKeys.VDBS_SORT_COLUMN, currentSortColumn);
         
-        vdbService.search(filterText, page, currentSortColumn.columnId, !currentSortColumn.ascending,
+        vdbService.search(filterText, page, false, currentSortColumn.columnId, !currentSortColumn.ascending,
 		        new IRpcServiceInvocationHandler<VdbResultSetBean>() {
             @Override
             public void onReturn(VdbResultSetBean data) {

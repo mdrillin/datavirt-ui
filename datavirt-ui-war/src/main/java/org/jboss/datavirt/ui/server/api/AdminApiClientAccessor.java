@@ -22,6 +22,7 @@ import javax.inject.Singleton;
 
 import org.jboss.datavirt.ui.server.DataVirtUIConfig;
 import org.jboss.datavirt.ui.server.services.AdminApiClient;
+import org.overlord.sramp.client.auth.AuthenticationProvider;
 
 /**
  * The class used whenever an Atom API request for data needs to be made.
@@ -54,20 +55,19 @@ public class AdminApiClientAccessor {
      * @param config
      */
     protected AdminApiClient createClient() {
-    	return new AdminApiClient();
-//        String endpoint = config.getConfig().getString(DataVirtUIConfig.SRAMP_API_ENDPOINT);
-//        boolean validating = "true".equals(config.getConfig().getString(DataVirtUIConfig.SRAMP_API_VALIDATING)); //$NON-NLS-1$
-//        AuthenticationProvider authProvider = null;
-//        String authProviderClass = config.getConfig().getString(DataVirtUIConfig.SRAMP_API_AUTH_PROVIDER);
-//        try {
-//            if (authProviderClass != null && authProviderClass.trim().length() > 0) {
-//                Class<?> c = Class.forName(authProviderClass);
-//                authProvider = (AuthenticationProvider) c.newInstance();
-//            }
-//            return new SrampAtomApiClient(endpoint, authProvider, validating);
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+        boolean validating = "true".equals(config.getConfig().getString(DataVirtUIConfig.DATAVIRT_API_VALIDATING)); //$NON-NLS-1$
+        AuthenticationProvider authProvider = null;
+        String authProviderClass = config.getConfig().getString(DataVirtUIConfig.DATAVIRT_API_AUTH_PROVIDER);
+        try {
+            if (authProviderClass != null && authProviderClass.trim().length() > 0) {
+                Class<?> c = Class.forName(authProviderClass);
+                authProvider = (AuthenticationProvider) c.newInstance();
+            }
+            return new AdminApiClient((AuthenticationProvider)authProvider, validating);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+//    	return new AdminApiClient();
     }
 
 	/**

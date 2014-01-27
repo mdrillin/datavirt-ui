@@ -35,11 +35,12 @@ public interface IVdbService {
      * Get the Data Sources using the provided info.
      * @param searchText
      * @param page
+     * @param showDataVirtUiVDBs
      * @param sortColumnId
      * @param sortAscending
      * @throws DataVirtUiException
      */
-    public VdbResultSetBean search(String searchText, int page, String sortColumnId, boolean sortAscending) throws DataVirtUiException;
+    public VdbResultSetBean search(String searchText, int page, boolean showDataVirtUiVDBs, String sortColumnId, boolean sortAscending) throws DataVirtUiException;
 
     /**
      * Gets the VDB Details for the supplied vdb name

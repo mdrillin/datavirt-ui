@@ -29,8 +29,8 @@ public class BasicAuthenticationProvider extends org.overlord.sramp.client.auth.
      * Constructor.
      */
     public BasicAuthenticationProvider() {
-        super(DataVirtUIConfig.config.getString(DataVirtUIConfig.SRAMP_API_BASIC_AUTH_USER),
-                DataVirtUIConfig.config.getString(DataVirtUIConfig.SRAMP_API_BASIC_AUTH_PASS));
+        super(DataVirtUIConfig.config.getString(DataVirtUIConfig.DATAVIRT_API_BASIC_AUTH_USER),
+                DataVirtUIConfig.config.getString(DataVirtUIConfig.DATAVIRT_API_BASIC_AUTH_PASS));
     }
 
 }

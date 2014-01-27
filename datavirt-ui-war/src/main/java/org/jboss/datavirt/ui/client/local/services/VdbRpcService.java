@@ -58,7 +58,7 @@ public class VdbRpcService {
      * @param sortAscending
      * @param handler
      */
-    public void search(String searchText, int page, String sortColumnId, boolean sortAscending,
+    public void search(String searchText, int page, boolean showDataVirtUiVDBs, String sortColumnId, boolean sortAscending,
             final IRpcServiceInvocationHandler<VdbResultSetBean> handler) {
         // TODO only allow one search at a time.  If another search comes in before the previous one
         // finished, cancel the previous one.  In other words, only return the results of the *last*
@@ -66,7 +66,7 @@ public class VdbRpcService {
         RemoteCallback<VdbResultSetBean> successCallback = new DelegatingRemoteCallback<VdbResultSetBean>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
         try {
-        	remoteVdbService.call(successCallback, errorCallback).search(searchText, page, sortColumnId, sortAscending);
+        	remoteVdbService.call(successCallback, errorCallback).search(searchText, page, showDataVirtUiVDBs, sortColumnId, sortAscending);
         } catch (DataVirtUiException e) {
             errorCallback.error(null, e);
         }
