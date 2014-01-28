@@ -30,8 +30,6 @@ import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.datavirt.ui.server.api.BasicAuthenticationProvider;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.jboss.datavirt.ui.server.services.util.VdbHelper;
-import org.overlord.sramp.atom.err.SrampAtomException;
-import org.overlord.sramp.client.SrampClientException;
 import org.overlord.sramp.client.auth.AuthenticationProvider;
 import org.teiid.adminapi.Admin;
 import org.teiid.adminapi.AdminException;
@@ -81,8 +79,7 @@ public class AdminApiClient {
      * @param username
      * @param password
      * @param validating
-     * @throws SrampClientException
-     * @throws SrampAtomException
+     * @throws AdminApiClientException
      */
     public AdminApiClient(final String username, final String password, final boolean validating) throws AdminApiClientException {
         this(new BasicAuthenticationProvider(), validating);

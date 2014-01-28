@@ -47,8 +47,8 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet>
-    <servlet-name>OverlordHeaderDataJS</servlet-name>
-    <servlet-class>org.jboss.datavirt.commons.ui.header.OverlordHeaderDataJS</servlet-class>
+    <servlet-name>DataVirtHeaderDataJS</servlet-name>
+    <servlet-class>org.jboss.datavirt.commons.ui.header.DataVirtHeaderDataJS</servlet-class>
     <init-param>
         <param-name>app-id</param-name>
         <param-value>datavirt-ui</param-value>
@@ -67,8 +67,8 @@
     <url-pattern>*.erraiBus</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>OverlordHeaderDataJS</servlet-name>
-    <url-pattern>/js/overlord-header-data.js</url-pattern>
+    <servlet-name>DataVirtHeaderDataJS</servlet-name>
+    <url-pattern>/js/datavirt-header-data.js</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>DataVirtDownload</servlet-name>
