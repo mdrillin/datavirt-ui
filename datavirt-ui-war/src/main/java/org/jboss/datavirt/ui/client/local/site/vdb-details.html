@@ -71,18 +71,12 @@
             <!-- Actions Bar -->
             <div class="row-fluid sramp-artifacts">
               <div class="span12 sramp-artifacts-actions">
-                <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload" data-i18n-key="addSource">Add Source</button>
-                <button data-field="btn-add-view" id="btn-add-view" class="btn btn-focus requires-fileupload" data-i18n-key="addView">Add View</button>
-                <button data-field="btn-edit" id="btn-edit" class="btn btn-focus requires-fileupload" data-i18n-key="edit">Edit</button>
-                <button data-field="btn-remove" id="btn-remove" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
-                <a data-field="link-download-dynamicvdb" data-i18n-key="download-vdb">Download VDB...</a>
                 <button data-field="btn-refresh" class="btn pull-right"><i class="icon-refresh"></i></button>
-                <div class="pull-right sramp-sp4n-label desktop-only">
-                  <span data-i18n-key="displaying">Displaying</span>
-                  <span data-field="datavirt-vdbmodels-range-1" data-role="dummy">1-11</span>
-                  <span data-i18n-key="of">of</span>
-                  <span data-field="datavirt-vdbmodels-total-1" data-role="dummy">37</span>
-                </div>
+                <button data-field="btn-download" id="btn-download" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="download-vdb">Download</button>
+                <button data-field="btn-remove" id="btn-remove" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="remove">Remove</button>
+                <button data-field="btn-edit" id="btn-edit" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="edit">Edit</button>
+                <button data-field="btn-add-view" id="btn-add-view" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="addView">Add View</button>
+                <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="addSource">Add Source</button>
               </div>
             </div>
             
@@ -138,12 +132,6 @@
             </table>
               
             <!-- Pager -->
-            <div class="mobile-only" style="padding: 0px; margin: 0px">
-              <span data-i18n-key="displaying">Displaying</span>
-              <span data-field="datavirt-vdbmodels-range-2" data-role="dummy">1-11</span>
-              <span data-i18n-key="of">of</span>
-              <span data-field="datavirt-vdbmodels-total-2" data-role="dummy">37</span>
-            </div>
             <div data-field="datavirt-vdbmodels-pager" class="pagination" data-role="dummy">
               <ul>
                 <li class="disabled"><a>&#x00AB;</a></li>

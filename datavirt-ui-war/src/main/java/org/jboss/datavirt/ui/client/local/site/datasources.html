@@ -55,38 +55,17 @@
         
           <!-- The DataSources table -->
           <div class="span9">
-              <!-- Search Box -->
-              <div class="row-fluid">
-                <div class="span12 sramp-search">
-                  <input data-field="datasource-search-box" id="datasource-search-box" type="text" class="span12 datavirt-search-box" placeholder="Filter..."></input>
-                </div>
-              </div>
-              
+
               <!-- Actions Bar -->
               <div class="row-fluid sramp-artifacts">
                 <div class="span12 sramp-artifacts-actions">
-                  <div class="btn-group hide" style="margin-right: 10px">
-                    <button class="btn" data-i18n-key="actions">Actions</button>
-                    <button class="btn dropdown-toggle" data-toggle="dropdown">
-                      <span class="caret"></span>
-                    </button>
-                    <ul data-role="dummy" class="dropdown-menu">
-                      <li><a>Download Selected</a></li>
-                      <li><a>Add to Favorites</a></li>
-                      <li><a>Properties</a></li>
-                      <li><a>Categories</a></li>
-                    </ul>
+                  <div class="span6 sramp-search">
+                    <input data-field="datasource-search-box" id="datasource-search-box" type="text" class="span6 datavirt-search-box" placeholder="Filter..."></input>
                   </div>
-                  <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload" data-i18n-key="add">Add</button>
-                  <button data-field="btn-remove-source" id="btn-remove-source" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
-                  <button data-field="btn-test-source" id="btn-test-source" class="btn btn-focus requires-fileupload" data-i18n-key="test">Test</button>
                   <button data-field="btn-refresh" class="btn pull-right"><i class="icon-refresh"></i></button>
-                  <div class="pull-right sramp-sp4n-label desktop-only">
-                    <span data-i18n-key="displaying">Displaying</span>
-                    <span data-field="datavirt-datasources-range-1" data-role="dummy">1-11</span>
-                    <span data-i18n-key="of">of</span>
-                    <span data-field="datavirt-datasources-total-1" data-role="dummy">37</span>
-                  </div>
+                  <button data-field="btn-test-source" id="btn-test-source" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="test">Test</button>
+                  <button data-field="btn-remove-source" id="btn-remove-source" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="remove">Remove</button>
+                  <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="add">Add</button>
                 </div>
               </div>
               
@@ -155,12 +134,6 @@
               </table>
               
               <!-- Pager -->
-              <div class="mobile-only" style="padding: 0px; margin: 0px">
-                <span data-i18n-key="displaying">Displaying</span>
-                <span data-field="datavirt-datasources-range-2" data-role="dummy">1-11</span>
-                <span data-i18n-key="of">of</span>
-                <span data-field="datavirt-datasources-total-2" data-role="dummy">37</span>
-              </div>
               <div data-field="datavirt-datasources-pager" class="pagination" data-role="dummy">
                 <ul>
                   <li class="disabled"><a>&#x00AB;</a></li>

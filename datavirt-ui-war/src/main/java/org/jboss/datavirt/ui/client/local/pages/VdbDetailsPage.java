@@ -29,6 +29,7 @@ import javax.inject.Inject;
 
 import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent;
+import org.jboss.datavirt.ui.client.local.pages.datasources.DVPager;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.AddSourceModelDialog;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.AddViewModelDialog;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.DeleteVdbModelDialog;
@@ -52,18 +53,15 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.overlord.sramp.ui.client.local.events.TableSortEvent;
-import org.overlord.sramp.ui.client.local.widgets.bootstrap.Pager;
 import org.overlord.sramp.ui.client.local.widgets.common.HtmlSnippet;
 import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidgetTable.SortColumn;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -121,8 +119,8 @@ public class VdbDetailsPage extends AbstractPage {
     protected Button removeModelButton;
     @Inject @DataField("btn-refresh")
     protected Button refreshButton;
-    @Inject @DataField("link-download-dynamicvdb")
-    protected Anchor downloadDynamicVdbLink;
+    @Inject @DataField("btn-download")
+    protected Button downloadButton;
 
     @Inject
     DeleteVdbModelDialog deleteVdbModelDialog;
@@ -143,15 +141,7 @@ public class VdbDetailsPage extends AbstractPage {
     protected VdbModelsTable vdbModelsTable;
 
     @Inject @DataField("datavirt-vdbmodels-pager")
-    protected Pager pager;
-    @DataField("datavirt-vdbmodels-range-1")
-    protected SpanElement rangeSpan1 = Document.get().createSpanElement();
-    @DataField("datavirt-vdbmodels-total-1")
-    protected SpanElement totalSpan1 = Document.get().createSpanElement();
-    @DataField("datavirt-vdbmodels-range-2")
-    protected SpanElement rangeSpan2 = Document.get().createSpanElement();
-    @DataField("datavirt-vdbmodels-total-2")
-    protected SpanElement totalSpan2 = Document.get().createSpanElement();
+    protected DVPager pager;
     
     @Inject @DataField("vdbdetails-loading-spinner")
     protected HtmlSnippet datasourceLoading;
@@ -197,11 +187,6 @@ public class VdbDetailsPage extends AbstractPage {
             }
         });
         
-        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-
     }
 
     /**
@@ -248,7 +233,6 @@ public class VdbDetailsPage extends AbstractPage {
             	
                 updatePager(vdbDetailsBean);
                 updateVdbModelsTable(vdbDetailsBean);
-                updateDownloadVdbLink(vdbDetailsBean);
                 doSetButtonEnablements();
             }
             @Override
@@ -281,13 +265,17 @@ public class VdbDetailsPage extends AbstractPage {
     		vdbStatusImage.setUrl(Constants.VDB_STATUS_URL_LOADING_32PX);
     	}
     }
-    
-    private void updateDownloadVdbLink(VdbDetailsBean vdbDetailsBean) {
-    	String contentUrl = GWT.getModuleBaseURL() + "services/dataVirtDownload?vdbname="+vdbDetailsBean.getName(); //$NON-NLS-1$
-    	downloadDynamicVdbLink.setHref(contentUrl);
-    	downloadDynamicVdbLink.setVisible(true);
+
+    /**
+     * Called when the user clicks the Download button.
+     * @param event
+     */
+    @EventHandler("btn-download")
+    protected void onDownloadClick(ClickEvent event) {
+    	String contentUrl = GWT.getModuleBaseURL() + "services/dataVirtDownload?vdbname="+currentVdbDetails.getName(); //$NON-NLS-1$
+   	    Window.Location.assign(contentUrl);
     }
-    
+
     /**
      * Called when the user clicks the Add Source Model button.
      * @param event
@@ -506,13 +494,11 @@ public class VdbDetailsPage extends AbstractPage {
     	    addViewButton.setVisible(false);
     	    editModelButton.setVisible(false);
     	    removeModelButton.setVisible(false);
-    	    downloadDynamicVdbLink.setVisible(false);
     	} else {
     	    addSourceButton.setVisible(true);
     	    addViewButton.setVisible(true);
     	    editModelButton.setVisible(true);
     	    removeModelButton.setVisible(true);
-    	    downloadDynamicVdbLink.setVisible(true);
 
     	    // Get number of rows selected
     		int selectedRows = this.vdbModelsTable.getSelectedModelNameAndTypeMap().size();
@@ -586,10 +572,6 @@ public class VdbDetailsPage extends AbstractPage {
         this.addModelInProgressMessage.setVisible(false);
         this.vdbModelsTable.setVisible(false);
         this.noDataMessage.setVisible(false);
-        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
 
     /**
@@ -604,10 +586,6 @@ public class VdbDetailsPage extends AbstractPage {
         this.getModelsInProgressMessage.setVisible(false);
         this.vdbModelsTable.setVisible(false);
         this.noDataMessage.setVisible(false);
-        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
     
     /**
@@ -617,25 +595,21 @@ public class VdbDetailsPage extends AbstractPage {
     protected void updatePager(VdbDetailsBean data) {
         int numPages = ((int) (data.getTotalModels() / data.getModelsPerPage())) + (data.getTotalModels() % data.getModelsPerPage() == 0 ? 0 : 1);
         int thisPage = (data.getStartIndex() / data.getModelsPerPage()) + 1;
+        
+        long totalResults = data.getTotalModels();
+        
         this.pager.setNumPages(numPages);
+        this.pager.setPageSize(Constants.VDBS_TABLE_PAGE_SIZE);
+        this.pager.setTotalItems(totalResults);
+        
+        // setPage is last - does render
         this.pager.setPage(thisPage);
-        if (numPages > 1)
-            this.pager.setVisible(true);
-
-        int startIndex = data.getStartIndex();
-        int endBatchIndx = startIndex + data.getModelsPerPage();
-        int endAllIndx = data.getTotalModels();
-        pgrEndIndex = (endBatchIndx <= endAllIndx) ? endBatchIndx : endAllIndx;
         
-        // reset start index to zero if end index is zero
-        pgrStartIndex = (pgrEndIndex==0) ? pgrEndIndex : startIndex+1;
-        
-        String rangeText = "" + pgrStartIndex + "-" + pgrEndIndex; //$NON-NLS-1$ //$NON-NLS-2$
-        String totalText = String.valueOf(data.getTotalModels());
-        this.rangeSpan1.setInnerText(rangeText);
-        this.rangeSpan2.setInnerText(rangeText);
-        this.totalSpan1.setInnerText(totalText);
-        this.totalSpan2.setInnerText(totalText);
+        if(data.getModels().isEmpty()) {
+        	this.pager.setVisible(false);
+        } else {
+        	this.pager.setVisible(true);
+        }
     }
 
 }

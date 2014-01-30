@@ -27,6 +27,7 @@ import javax.inject.Inject;
 
 import org.jboss.datavirt.ui.client.local.ClientMessages;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent;
+import org.jboss.datavirt.ui.client.local.pages.datasources.DVPager;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.DeleteVdbDialog;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.IImportCompletionHandler;
 import org.jboss.datavirt.ui.client.local.pages.vdbs.ImportVdbDialog;
@@ -48,12 +49,9 @@ import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.overlord.sramp.ui.client.local.events.TableSortEvent;
-import org.overlord.sramp.ui.client.local.widgets.bootstrap.Pager;
 import org.overlord.sramp.ui.client.local.widgets.common.HtmlSnippet;
 import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidgetTable.SortColumn;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -120,15 +118,7 @@ public class VirtualDatabasesPage extends AbstractPage {
     protected VdbsTable vdbsTable;
 
     @Inject @DataField("datavirt-virtualdatabases-pager")
-    protected Pager pager;
-    @DataField("datavirt-virtualdatabases-range-1")
-    protected SpanElement rangeSpan1 = Document.get().createSpanElement();
-    @DataField("datavirt-virtualdatabases-total-1")
-    protected SpanElement totalSpan1 = Document.get().createSpanElement();
-    @DataField("datavirt-virtualdatabases-range-2")
-    protected SpanElement rangeSpan2 = Document.get().createSpanElement();
-    @DataField("datavirt-virtualdatabases-total-2")
-    protected SpanElement totalSpan2 = Document.get().createSpanElement();
+    protected DVPager pager;
 
     private int currentPage = 1;
     private Collection<String> allVdbNames = new ArrayList<String>();
@@ -175,10 +165,6 @@ public class VirtualDatabasesPage extends AbstractPage {
            }
        });
        
-        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
 
     /**
@@ -393,10 +379,6 @@ public class VirtualDatabasesPage extends AbstractPage {
         this.searchInProgressMessage.setVisible(true);
         this.vdbsTable.setVisible(false);
         this.noDataMessage.setVisible(false);
-        this.rangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.rangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.totalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
 
     /**
@@ -417,29 +399,27 @@ public class VirtualDatabasesPage extends AbstractPage {
     }
 
     /**
-     * Updates the pager with the given data.
+     * Updates the columns pager with the given data.
      * @param data
      */
     protected void updatePager(VdbResultSetBean data) {
         int numPages = ((int) (data.getTotalResults() / data.getItemsPerPage())) + (data.getTotalResults() % data.getItemsPerPage() == 0 ? 0 : 1);
         int thisPage = (data.getStartIndex() / data.getItemsPerPage()) + 1;
-        this.pager.setNumPages(numPages);
-        this.pager.setPage(thisPage);
-        if (numPages > 1)
-            this.pager.setVisible(true);
-
-        int startIndex = data.getStartIndex();
-        int endIndex = startIndex + data.getVdbs().size();
         
-        // reset start index to zero if end index is zero
-        startIndex = (endIndex==0) ? endIndex : startIndex+1;
-
-        String rangeText = "" + startIndex + "-" + endIndex; //$NON-NLS-1$ //$NON-NLS-2$
-        String totalText = String.valueOf(data.getTotalResults());
-        this.rangeSpan1.setInnerText(rangeText);
-        this.rangeSpan2.setInnerText(rangeText);
-        this.totalSpan1.setInnerText(totalText);
-        this.totalSpan2.setInnerText(totalText);
+        long totalResults = data.getTotalResults();
+        
+        this.pager.setNumPages(numPages);
+        this.pager.setPageSize(Constants.VDBS_TABLE_PAGE_SIZE);
+        this.pager.setTotalItems(totalResults);
+        
+        // setPage is last - does render
+        this.pager.setPage(thisPage);
+        
+        if(data.getVdbs().isEmpty()) {
+        	this.pager.setVisible(false);
+        } else {
+        	this.pager.setVisible(true);
+        }
     }
 
 }

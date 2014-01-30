@@ -30,7 +30,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
- * Implements a bootstrap style pager.
+ * DataVirtualization pager.
  *
  * @author mdrillin@redhat.com
  */
@@ -68,7 +68,7 @@ public class DVPager extends FlowPanel implements HasValueChangeHandlers<Integer
 		});
 		
         rangeText = new InlineLabel();
-		rangeText.setWidth("80px");
+		rangeText.setWidth("120px");
 		
 		goFwdOnePage = new Anchor(SimpleHtmlSanitizer.sanitizeHtml("&#x203A;")); //$NON-NLS-1$
 		goFwdOnePage.addClickHandler(new ClickHandler() {
@@ -151,42 +151,6 @@ public class DVPager extends FlowPanel implements HasValueChangeHandlers<Integer
 	public void setTotalItems(long totalItems) {
 		this.totalItems = totalItems;
 	}
-
-//	/**
-//	 * Called to render the Pager.  This will update the range of pages
-//	 * available to the user, based on the current page selection and the
-//	 * number of possible pages.
-//	 */
-//	private void render() {
-//		this.ul.clear();
-//		this.ul.add(goToBeginning);
-//		if (this.currentPage == 1)
-//			this.ul.setLiClass(goToBeginning, "disabled"); //$NON-NLS-1$
-//		int fromPage = 1;
-//		int toPage = this.numPages;
-//		for (int page = fromPage; page <= toPage; page++) {
-//			Anchor a = new Anchor(String.valueOf(page));
-//			final int p = page;
-//			a.addClickHandler(new ClickHandler() {
-//				@Override
-//				public void onClick(ClickEvent event) {
-//					updatePageAndFireEvent(p);
-//				}
-//			});
-//			this.ul.add(a);
-//			if (this.currentPage == p) {
-//				this.ul.setLiClass(a, "disabled"); //$NON-NLS-1$
-//			}
-//		}
-//		if (toPage != this.numPages) {
-//			this.ul.add(goToMore);
-//			this.ul.setLiClass(goToMore, "disabled"); //$NON-NLS-1$
-//		}
-//		this.ul.add(goToEnd);
-//		if (this.currentPage == this.numPages) {
-//			this.ul.setLiClass(goToEnd, "disabled"); //$NON-NLS-1$
-//		}
-//	}
 	
 	/**
 	 * Called to render the Pager.  This will update the range of pages
@@ -229,7 +193,7 @@ public class DVPager extends FlowPanel implements HasValueChangeHandlers<Integer
         
         if(this.totalItems==0) page_startIndex = 0;
         
-		StringBuffer sb = new StringBuffer(page_startIndex+" - "+page_endIndex);
+		StringBuffer sb = new StringBuffer(page_startIndex+"-"+page_endIndex);
 		sb.append(" of ");
 		sb.append(this.totalItems);
 		return sb.toString();
