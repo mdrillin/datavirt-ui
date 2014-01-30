@@ -25,12 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingEnumeration;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.sql.rowset.serial.SerialBlob;
 
@@ -42,6 +37,8 @@ import org.jboss.datavirt.ui.client.shared.beans.QueryResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.QueryTableProcBean;
 import org.jboss.datavirt.ui.client.shared.exceptions.DataVirtUiException;
 import org.jboss.datavirt.ui.client.shared.services.IQueryService;
+import org.jboss.datavirt.ui.server.services.util.FilterUtil;
+import org.jboss.datavirt.ui.server.services.util.JdbcSourceHelper;
 import org.jboss.errai.bus.server.annotations.Service;
 
 /**
@@ -51,18 +48,6 @@ import org.jboss.errai.bus.server.annotations.Service;
  */
 @Service
 public class QueryService implements IQueryService {
-
-	private static final String WRAPPER_DS = "org.jboss.resource.adapter.jdbc.WrapperDataSource"; //$NON-NLS-1$
-	private static final String WRAPPER_DS_AS7 = "org.jboss.jca.adapters.jdbc.WrapperDataSource"; //$NON-NLS-1$
-	private static final String TEIID_DRIVER_PREFIX = "teiid";
-	private static final String JDBC_CONTEXT1 = "java:/"; //$NON-NLS-1$
-	private static final String JDBC_CONTEXT2 = "java:/datasources/"; //$NON-NLS-1$
-	private static final String JDBC_CONTEXT3 = "java:jboss/datasources/"; //$NON-NLS-1$
-	public static List<String> JDBC_CONTEXTS = new ArrayList<String>() { {
-		add(JDBC_CONTEXT1);
-		add(JDBC_CONTEXT2);
-		add(JDBC_CONTEXT3);
-	}};
 
 	private static final String UPDATE = "UPDATE";
 	private static final String INSERT = "INSERT";
@@ -77,8 +62,6 @@ public class QueryService implements IQueryService {
 	private static final String COLUMN_TYPE = "COLUMN_TYPE";
 	private static final String TYPE_NAME = "TYPE_NAME";
 
-	private InitialContext context;
-    
     /**
      * Constructor.
      */
@@ -86,11 +69,11 @@ public class QueryService implements IQueryService {
     }
     
     @Override
-    public QueryColumnResultSetBean getQueryColumnResultSet(int page, String dataSource, String fullTableName) throws DataVirtUiException {
+    public QueryColumnResultSetBean getQueryColumnResultSet(int page, String filterText, String dataSource, String fullTableName) throws DataVirtUiException {
     	int pageSize = Constants.QUERY_COLUMNS_TABLE_PAGE_SIZE;
         
-    	// Get DataSources Mape
-    	Map<String,DataSource> mDatasources = getDataSourceMap();
+    	// Get DataSources Map
+    	Map<String,DataSource> mDatasources = JdbcSourceHelper.getInstance().getDataSourceMap();
 
     	// Get a connection for the supplied data source name
     	Connection connection;
@@ -104,7 +87,10 @@ public class QueryService implements IQueryService {
         
         List<QueryColumnBean> allColumnBeans = getColumnsForTable(connection, fullTableName);
         allColumnBeans.addAll(getColumnsForProcedure(connection,fullTableName));
-           	
+
+        // Filter based on supplied filter text
+        filterColumns(allColumnBeans, filterText);
+        
         int totalCols = allColumnBeans.size();
         
         // Start and End Index for this page
@@ -135,15 +121,27 @@ public class QueryService implements IQueryService {
         return resultSetBean;
     }
 
+    private void filterColumns(List<QueryColumnBean> allColumnBeans, String filterText) {
+    	Iterator<QueryColumnBean> beanIter = allColumnBeans.iterator();
+    	while(beanIter.hasNext()) {
+    		QueryColumnBean bean = beanIter.next();
+    		String colName = bean.getName();
+    		if ( !FilterUtil.matchFilter(colName, filterText) ) {
+    			beanIter.remove();
+    		}    		
+    	}
+    }
+    
     /*
-     * Get List of all available Datasource Names. This will refresh the Map of datasources, then
-     * return the datasource names.
+     * Get List of all available Datasource Names. The 'Datasource Names' are the jndi names of the
+     * queryable jdbc sources on the server.
      * @param teiidOnly 'true' if only Teiid sources are to be returned, 'false' otherwise.
      * @return the list of datasource names
      */
     public List<String> getDataSourceNames(boolean teiidOnly) throws DataVirtUiException {
     	// Get DataSources Map
-    	Map<String,DataSource> mDatasources = getDataSourceMap();
+    	JdbcSourceHelper jdbcHelper = JdbcSourceHelper.getInstance();
+    	Map<String,DataSource> mDatasources = jdbcHelper.getDataSourceMap();
 
     	// Get DataSource names
     	List<String> resultList = new ArrayList<String>();
@@ -156,7 +154,7 @@ public class QueryService implements IQueryService {
     			DataSource ds = mDatasources.get(dsName);
     			if(!teiidOnly) {
     				resultList.add(dsName);
-    			} else if(isTeiidSource(ds)) {
+    			} else if(jdbcHelper.isTeiidSource(ds)) {
     				resultList.add(dsName);
     			}
     		}
@@ -172,7 +170,7 @@ public class QueryService implements IQueryService {
      */
     public List<QueryTableProcBean> getTablesAndProcedures(String dataSource) throws DataVirtUiException {
     	// Get DataSources Mape
-    	Map<String,DataSource> mDatasources = getDataSourceMap();
+    	Map<String,DataSource> mDatasources = JdbcSourceHelper.getInstance().getDataSourceMap();
 
     	// Get a connection for the supplied data source name
     	Connection connection;
@@ -209,7 +207,7 @@ public class QueryService implements IQueryService {
     	int pageSize = Constants.QUERY_RESULTS_TABLE_PAGE_SIZE;
     	
     	// Get DataSources Mape
-    	Map<String,DataSource> mDatasources = getDataSourceMap();
+    	Map<String,DataSource> mDatasources = JdbcSourceHelper.getInstance().getDataSourceMap();
 
     	// Get a connection for the supplied data source name
     	Connection connection;
@@ -369,36 +367,6 @@ public class QueryService implements IQueryService {
     		}
     	}
     	return type;
-    }
-
-    /*
-     * Determine if the data source is a Teiid source
-     * @param dataSource the data source
-     * @return 'true' if the source is a Teiid source
-     */
-    private boolean isTeiidSource(DataSource dataSource) {
-    	boolean isVdb = false;
-    	Connection conn = null;
-    	if(dataSource!=null) {
-    		try {
-    			conn = dataSource.getConnection();
-    			if(conn!=null) {
-    				String driverName = conn.getMetaData().getDriverName();
-    				if(driverName!=null && driverName.trim().toLowerCase().startsWith(TEIID_DRIVER_PREFIX)) {
-    					isVdb = true;
-    				}
-    			}
-    		} catch (SQLException e) {
-    		} finally {
-    			if(conn!=null) {
-    				try {
-    					conn.close();
-    				} catch (SQLException e) {
-    				}
-    			}
-    		}
-    	}
-    	return isVdb;
     }
 
     /*
@@ -665,66 +633,6 @@ public class QueryService implements IQueryService {
     	if(conn!=null) {
     		conn.close();
     	}
-    }
-
-    /*
-     * Refresh the DataSource Maps
-     */
-    private Map<String,DataSource> getDataSourceMap( ) {
-    	// Clear the DataSource Maps
-    	Map<String,DataSource> mDatasources = new TreeMap<String,DataSource>();
-    	Map<String,String> mDatasourceSchemas = new TreeMap<String,String>();
-
-    	// New Context
-    	if(context==null) {
-    		try {
-    			context = new InitialContext();
-    		} catch (Exception e) {
-    		}
-    	}
-    	
-    	if(context==null) return mDatasources;
-
-    	NamingEnumeration<javax.naming.NameClassPair> ne = null;
-    	// Try the list of possible context names
-    	for(String jdbcContext : JDBC_CONTEXTS) {
-    		try {
-    			Context theJdbcContext = (Context) context.lookup(jdbcContext);
-    			ne = theJdbcContext.list("");
-    		} catch (NamingException e1) {
-    			System.out.println("Error with lookup");
-    		}
-
-    		while (ne!=null && ne.hasMoreElements()) {
-    			javax.naming.NameClassPair o = (javax.naming.NameClassPair) ne.nextElement();
-    			Object bindingObject = null;
-
-    			try {
-    				if (o.getClassName().equals(WRAPPER_DS) || o.getClassName().equals(WRAPPER_DS_AS7)) {
-    					bindingObject = context.lookup(jdbcContext + o.getName());
-    				}
-    			} catch (NamingException e1) {
-    				System.out.println("Error with lookup of "+o.getName());
-    			}
-
-    			if(bindingObject!=null && bindingObject instanceof DataSource && !o.getName().equalsIgnoreCase("ModeShapeDS")) {
-    				// Put DataSource into datasource Map
-    				String key = jdbcContext.concat(o.getName());
-    				mDatasources.put(key, (DataSource)bindingObject);
-
-    				// Put Schema into schema Map
-    				String schema = null;
-    				try {
-    					schema = (String) context.lookup("java:comp/env/schema/" + key);
-    				} catch (NamingException e) {
-
-    				}
-    				mDatasourceSchemas.put(key, schema);
-    			}
-    		}
-    	}
-    	
-    	return mDatasources;
     }
     
 }

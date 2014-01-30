@@ -15,6 +15,7 @@
  */
 package org.jboss.datavirt.ui.client.local.pages.query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.enterprise.context.Dependent;
@@ -23,10 +24,14 @@ import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent.Handler;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent.HasTableRowSelectionHandlers;
 import org.jboss.datavirt.ui.client.shared.beans.QueryResultRowBean;
-import org.overlord.sramp.ui.client.local.widgets.common.TemplatedWidgetTable;
+import org.overlord.sramp.ui.client.local.widgets.common.WidgetTable;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * A table of the Query Columns.
@@ -34,7 +39,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author mdrillin@redhat.com
  */
 @Dependent
-public class QueryResultTable extends TemplatedWidgetTable implements HasTableRowSelectionHandlers {
+public class QueryResultTable extends WidgetTable implements HasTableRowSelectionHandlers {
 
     /**
      * Constructor.
@@ -42,9 +47,48 @@ public class QueryResultTable extends TemplatedWidgetTable implements HasTableRo
     public QueryResultTable() {
     }
 
+    /**
+     * @see com.google.gwt.user.client.ui.Panel#clear()
+     */
+    @Override
     public void clear() {
-    	super.clear();
+    	// Replace the header
+    	DOM.removeChild(getElement(), this.thead);
+        thead = Document.get().createTHeadElement().cast();
+        DOM.appendChild(getElement(), thead);
+    	
+        List<Widget> childrenClone = new ArrayList<Widget>(this.children);
+        for (Widget widget : childrenClone) {
+            this.remove(widget);
+        }
+        for (Element rowElem : this.rowElements) {
+            this.tbody.removeChild(rowElem);
+        }
+        this.rowElements.clear();
     }
+    
+//    /**
+//     * Init the thead and tbody.
+//     */
+//    protected void init() {
+//        thead = Document.get().createTHeadElement().cast();
+//        tbody = Document.get().createTBodyElement().cast();
+//        DOM.appendChild(getElement(), thead);
+//        DOM.appendChild(getElement(), tbody);
+//    }
+//
+//    /**
+//     * Creates the thead and th elements, with the given labels.
+//     * @param labels
+//     */
+//    public void setColumnLabels(String ... labels) {
+//        this.columnCount = labels.length;
+//        for (String label : labels) {
+//            Element thElement = Document.get().createTHElement().cast();
+//            thElement.setInnerText(label);
+//            DOM.appendChild(thead, thElement);
+//        }
+//    }
     
     /**
      * Adds a single row to the table.
@@ -54,8 +98,7 @@ public class QueryResultTable extends TemplatedWidgetTable implements HasTableRo
         int rowIdx = this.rowElements.size();
         
         List<String> rowValues = queryResultRowBean.getColumnResults();
-//        int nCols = rowValues.size();
-        int nCols = 2;
+        int nCols = rowValues.size();
         for(int i=0 ; i<nCols; i++) {
         	String value = rowValues.get(i);
             InlineLabel valueLabel = new InlineLabel(value);

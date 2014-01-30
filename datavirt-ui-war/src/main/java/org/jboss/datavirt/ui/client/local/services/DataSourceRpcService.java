@@ -114,7 +114,17 @@ public class DataSourceRpcService {
             errorCallback.error(null, e);
         }
     }
-    
+   
+    public void getQueryableDataSourceMap(final IRpcServiceInvocationHandler<Map<String,String>> handler) {
+        RemoteCallback<Map<String,String>> successCallback = new DelegatingRemoteCallback<Map<String,String>>(handler);
+        ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);
+        try {
+        	remoteDataSourceService.call(successCallback, errorCallback).getQueryableDataSourceMap();
+        } catch (DataVirtUiException e) {
+            errorCallback.error(null, e);
+        }
+    }
+
     public void getDefaultTranslatorMap(final IRpcServiceInvocationHandler<Map<String,String>> handler) {
         RemoteCallback<Map<String,String>> successCallback = new DelegatingRemoteCallback<Map<String,String>>(handler);
         ErrorCallback<?> errorCallback = new DelegatingErrorCallback(handler);

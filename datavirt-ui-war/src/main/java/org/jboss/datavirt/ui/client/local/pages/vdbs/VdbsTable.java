@@ -29,7 +29,6 @@ import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent.Handler;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent.HasTableRowSelectionHandlers;
 import org.jboss.datavirt.ui.client.local.pages.VdbDetailsPage;
-import org.jboss.datavirt.ui.client.local.pages.datasources.DataSourcesTable;
 import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchorFactory;

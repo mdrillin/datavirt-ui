@@ -18,6 +18,7 @@ package org.jboss.datavirt.ui.server.services;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -36,6 +37,7 @@ import org.jboss.datavirt.ui.client.shared.services.IDataSourceService;
 import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
 import org.jboss.datavirt.ui.server.services.util.FilterUtil;
+import org.jboss.datavirt.ui.server.services.util.JdbcSourceHelper;
 import org.jboss.datavirt.ui.server.services.util.TranslatorHelper;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.teiid.adminapi.PropertyDefinition;
@@ -52,7 +54,7 @@ public class DataSourceService implements IDataSourceService {
     private static final String CLASSNAME_KEY = "class-name";
     private static final String CONN_FACTORY_CLASS_KEY = "managedconnectionfactory-class";
     private static final String CONNECTION_URL_DISPLAYNAME = "connection-url";
-    
+
     @Inject
     private AdminApiClientAccessor clientAccessor;
 
@@ -238,28 +240,6 @@ public class DataSourceService implements IDataSourceService {
     	return dsDetailsBean;
     }
 
-//    /**
-//     * @see org.jboss.datavirt.ui.client.shared.services.IArtifactService#get(java.lang.String)
-//     */
-//    @Override
-//    public DataSourcePropertiesBean getDefaultProperties(String dsName) throws DataVirtUiException {
-//    	
-//    	DataSourcePropertiesBean dsPropsBean = new DataSourcePropertiesBean();
-//    	
-//    	Properties dsProps = null;
-//    	try {
-//			dsProps = clientAccessor.getClient().getDataSourceProperties(dsName);
-//		} catch (AdminApiClientException e) {
-//			throw new DataVirtUiException(e.getMessage());
-//		}
-//    	
-//    	if(dsProps!=null) {
-//    		//dsBean.setProperties(dsProps);
-//    	}
-//
-//    	return dsPropsBean;
-//    }
-
     /**
      * Gets the current DataSources
      * @throws DataVirtUiException
@@ -284,6 +264,41 @@ public class DataSourceService implements IDataSourceService {
 
     	return dsList;    	
    }
+
+    /**
+     * Gets the 'testable' DataSources - those that are jdbc sources
+     * @throws DataVirtUiException
+     */
+    public Map<String,String> getQueryableDataSourceMap( ) throws DataVirtUiException {
+        Collection<Properties> dsSummaryPropsCollection = null;
+        try {
+        	dsSummaryPropsCollection = clientAccessor.getClient().getDataSourceSummaryPropsCollection();
+		} catch (AdminApiClientException e) {
+			throw new DataVirtUiException(e.getMessage());
+		}
+        
+        // Create a Map of *all* Datasources and their jndi names
+        Map<String,String> allSourcesToJndiMap = new HashMap<String,String>();
+        for(Properties dsProps : dsSummaryPropsCollection) {
+            String sourceName = dsProps.getProperty("name");
+            String jndiName = dsProps.getProperty("jndi-name");
+            if( !StringUtils.isEmpty(sourceName) && !StringUtils.isEmpty(sourceName) ) {
+            	allSourcesToJndiMap.put(sourceName, jndiName);
+            }
+        }
+        
+        // Gets jdbc Jndi names available on the server
+        List<String> jdbcJndiNames = JdbcSourceHelper.getInstance().getJdbcSourceNames(false);
+        
+        Map<String,String> resultMap = new HashMap<String,String>();
+        for(String allDsName : allSourcesToJndiMap.keySet()) {
+        	if(jdbcJndiNames.contains(allSourcesToJndiMap.get(allDsName))) {
+        		resultMap.put(allDsName,allSourcesToJndiMap.get(allDsName));
+        	}
+        }
+        
+        return resultMap;
+    }
 
     /**
      * Gets the current Translators
@@ -539,5 +554,5 @@ public class DataSourceService implements IDataSourceService {
 			throw new DataVirtUiException(e.getMessage());
 		}
     }
-
+    
 }

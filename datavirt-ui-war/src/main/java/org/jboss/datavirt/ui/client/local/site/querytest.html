@@ -148,47 +148,17 @@
                <span data-i18n-key="query-results-title">Query Results</span>
             </div>
             <div class="row-fluid sramp-artifacts">
-              <div class="span12 sramp-artifacts-actions">
-                <div class="pull-right sramp-sp4n-label desktop-only">
-                  <span data-i18n-key="displaying">Displaying</span>
-                  <span data-field="query-results-range-1" data-role="dummy">1-11</span>
-                  <span data-i18n-key="of">of</span>
-                  <span data-field="query-results-total-1" data-role="dummy">37</span>
-                </div>
+              <div data-field="query-results-execute-to-fetch" style="display:none" class="sramp-artifacts-none">
+                <span data-i18n-key="execute-to-fetch">Submit a query to fetch the results.</span>
               </div>
               <div data-field="query-results-none" style="display:none" class="sramp-artifacts-none">
-                <span data-i18n-key="no-results">Currently no results to display.</span>
+                <span data-i18n-key="no-results">The query returned with zero rows.</span>
               </div>
               <div data-field="query-results-fetching" style="display:none" class="sramp-artifacts-searching">
                 <span class="spinner" data-i18n-key="fetching-results">Fetching results, please wait...</span>
               </div>
-              <table data-field="query-results-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
-              <thead>
-                <tr>
-                  <th data-i18n-key="name">Column Name</th>
-                  <th data-i18n-key="type">Type</th>
-                </tr>
-              </thead>
-              <tbody data-role="dummy">
-                <tr>
-                  <td>Col1</td>
-                  <td>string</td>
-                </tr>
-                <tr>
-                  <td>Col2</td>
-                  <td>string</td>
-                </tr>
-                <tr>
-                  <td>Col3</td>
-                  <td>integer</td>
-                </tr>
-              </tbody>
-              </table>
-              <div class="mobile-only" style="padding: 0px; margin: 0px">
-                <span data-i18n-key="displaying">Displaying</span>
-                <span data-field="query-results-range-2" data-role="dummy">1-11</span>
-                <span data-i18n-key="of">of</span>
-                <span data-field="query-results-total-2" data-role="dummy">37</span>
+			  <div style="height:300px;border:1px solid #ccc;overflow:auto;">
+              	<span data-field="query-results-table" class="sramp-artifacts-table table table-striped table-condensed table-hover" />
               </div>
               <div data-field="query-results-pager" class="pagination" data-role="dummy">
                 <ul>
@@ -228,3 +198,7 @@
 
   </body>
 </html>
+
+<div style="height:120px;width:120px;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;">
+As you can see, once there's enough text in this box, the box will grow scroll bars... that's why we call it a scroll box! You could also place an image into the scroll box.
+</div>

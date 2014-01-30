@@ -113,5 +113,9 @@
   "editViewModelDialog.statusEnterModelDDL" : "Please enter the model DDL",
   "newVdbDialog.statusEnterVdbName" : "Please enter a name for the VDB",
   "newVdbDialog.statusVdbNameAlreadyExists" : "A VDB with this name already exists",
-  "newVdbDialog.statusClickOkToAccept" : "Click Create to create the VDB"
+  "newVdbDialog.statusClickOkToAccept" : "Click Create to create the VDB",
+  "queryTest.error-populating-sources" : "Error populating the sources listbox",
+  "queryTest.error-populating-tables" : "Error populating the tables listbox",
+  "queryTest.error-fetching-columns" : "Error fetching the columns",
+  "queryTest.error-executing-query" : "Query execution error"  
 }

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -30,6 +31,7 @@ import org.jboss.datavirt.ui.client.local.pages.query.QueryColumnsTable;
 import org.jboss.datavirt.ui.client.local.pages.query.QueryResultTable;
 import org.jboss.datavirt.ui.client.local.services.ApplicationStateKeys;
 import org.jboss.datavirt.ui.client.local.services.ApplicationStateService;
+import org.jboss.datavirt.ui.client.local.services.DataSourceRpcService;
 import org.jboss.datavirt.ui.client.local.services.NotificationService;
 import org.jboss.datavirt.ui.client.local.services.QueryRpcService;
 import org.jboss.datavirt.ui.client.local.services.rpc.IRpcServiceInvocationHandler;
@@ -39,16 +41,14 @@ import org.jboss.datavirt.ui.client.shared.beans.QueryColumnResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.QueryResultRowBean;
 import org.jboss.datavirt.ui.client.shared.beans.QueryResultSetBean;
 import org.jboss.datavirt.ui.client.shared.beans.QueryTableProcBean;
+import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.overlord.sramp.ui.client.local.widgets.bootstrap.Pager;
 import org.overlord.sramp.ui.client.local.widgets.common.HtmlSnippet;
 
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -83,6 +83,8 @@ public class QueryTestPage extends AbstractPage {
     @Inject
     protected ClientMessages i18n;
     @Inject
+    protected DataSourceRpcService dataSourceService;
+    @Inject
     protected QueryRpcService queryService;
     @Inject
     protected NotificationService notificationService;
@@ -113,20 +115,14 @@ public class QueryTestPage extends AbstractPage {
     protected QueryColumnsTable columnsTable;
 
     @Inject @DataField("query-results-pager")
-    protected Pager queryResultsPager;
-    @DataField("query-results-range-1")
-    protected SpanElement queryResultsRangeSpan1 = Document.get().createSpanElement();
-    @DataField("query-results-total-1")
-    protected SpanElement queryResultsTotalSpan1 = Document.get().createSpanElement();
-    @DataField("query-results-range-2")
-    protected SpanElement queryResultsRangeSpan2 = Document.get().createSpanElement();
-    @DataField("query-results-total-2")
-    protected SpanElement queryResultsTotalSpan2 = Document.get().createSpanElement();
+    protected DVPager queryResultsPager;
 
+    @Inject @DataField("query-results-execute-to-fetch")
+    protected HtmlSnippet queryResultsMessageExecuteToFetch;
     @Inject @DataField("query-results-none")
-    protected HtmlSnippet noQueryResultsMessage;
+    protected HtmlSnippet queryResultsMessageNoResults;
     @Inject @DataField("query-results-fetching")
-    protected HtmlSnippet queryResultsFetchInProgressMessage;
+    protected HtmlSnippet queryResultsMessageFetchInProgress;
     @Inject @DataField("query-results-table")
     protected QueryResultTable queryResultsTable;
 
@@ -137,6 +133,7 @@ public class QueryTestPage extends AbstractPage {
     private int currentQueryColumnsPage = 1;
     private int currentQueryResultsPage = 1;
     private Map<String,String> tableTypeMap = new HashMap<String,String>();
+    private Map<String,String> sourceNameToJndiMap = new HashMap<String,String>();
     
     /**
      * Constructor.
@@ -151,6 +148,13 @@ public class QueryTestPage extends AbstractPage {
     protected void postConstruct() {
         querySubmitButton.setEnabled(false);
 
+        columnsFilterBox.addKeyUpHandler(new KeyUpHandler() {
+            @Override
+            public void onKeyUp(KeyUpEvent event) {
+            	filterColumnsTable();
+            }
+        });
+        
         columnsPager.addValueChangeHandler(new ValueChangeHandler<Integer>() {
             @Override
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -171,9 +175,14 @@ public class QueryTestPage extends AbstractPage {
         	// Changing the DataSource selection will set the best guess translator and default the model name if empty
         	public void onChange(ChangeEvent event)
         	{
-        		String selectedSource = getSelectedSource();
+        		// Clear SQL Text
+        		clearQueryTextArea();
+        		
+        		// Clear query results
+        		clearQueryResultsTable();
         		
         		// Populate the Tables ListBox
+        		String selectedSource = getSelectedSource();
         		doPopulateTablesListBox(selectedSource);
         		
         		clearColumnsTable();
@@ -187,7 +196,14 @@ public class QueryTestPage extends AbstractPage {
         	// Changing the Type selection will re-populate property table with defaults for that type
         	public void onChange(ChangeEvent event)
         	{
-                // Populate TableColumns table
+        		// Clear query results
+        		clearQueryResultsTable();
+
+        		// Reset filter on Table selection changed
+        		columnsFilterBox.setText("");
+                stateService.put(ApplicationStateKeys.QUERY_COLUMNS_FILTER_TEXT, "");
+
+        		// Populate TableColumns table
             	doGetTableColumns();
             	
             	// Update SQL area
@@ -204,11 +220,6 @@ public class QueryTestPage extends AbstractPage {
             	clearQueryResultsTable();
             }
         });
-    	
-        this.queryResultsRangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.queryResultsRangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.queryResultsTotalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.queryResultsTotalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
     }
 
     /**
@@ -237,16 +248,28 @@ public class QueryTestPage extends AbstractPage {
      * Populate the DataSource ListBox
      */
     protected void doPopulateSourceListBox(boolean teiidOnly) {
-        queryService.getDataSourceNames(teiidOnly, new IRpcServiceInvocationHandler<List<String>>() {
+        dataSourceService.getQueryableDataSourceMap(new IRpcServiceInvocationHandler<Map<String,String>>() {
             @Override
-            public void onReturn(List<String> sources) {
-                populateSourceListBox(sources);
+            public void onReturn(Map<String,String> sourceToJndiMap) {
+            	sourceNameToJndiMap.clear();
+            	sourceNameToJndiMap.putAll(sourceToJndiMap);
+                populateSourceListBox(sourceToJndiMap.keySet());
             }
             @Override
             public void onError(Throwable error) {
                 notificationService.sendErrorNotification(i18n.format("queryTest.error-populating-sources"), error); //$NON-NLS-1$
             }
         });
+//        queryService.getDataSourceNames(teiidOnly, new IRpcServiceInvocationHandler<List<String>>() {
+//            @Override
+//            public void onReturn(List<String> sources) {
+//                populateSourceListBox(sources);
+//            }
+//            @Override
+//            public void onError(Throwable error) {
+//                notificationService.sendErrorNotification(i18n.format("queryTest.error-populating-sources"), error); //$NON-NLS-1$
+//            }
+//        });
     }
 
     /**
@@ -257,7 +280,7 @@ public class QueryTestPage extends AbstractPage {
     		List<QueryTableProcBean> noTables = Collections.emptyList();
     		populateTablesListBox(noTables);
     	} else {
-    		queryService.getTablesAndProcedures(sourceName, new IRpcServiceInvocationHandler<List<QueryTableProcBean>>() {
+    		queryService.getTablesAndProcedures(sourceNameToJndiMap.get(sourceName), new IRpcServiceInvocationHandler<List<QueryTableProcBean>>() {
     			@Override
     			public void onReturn(List<QueryTableProcBean> tablesAndProcs) {
     				populateTablesListBox(tablesAndProcs);
@@ -278,7 +301,7 @@ public class QueryTestPage extends AbstractPage {
      * @param translatorName the translator name
      * @param propsMap the property Map of name-value pairs
      */
-    private void populateSourceListBox(List<String> sources) {
+    private void populateSourceListBox(Set<String> sources) {
     	// Make sure clear first
     	sourceListBox.clear();
 
@@ -332,6 +355,11 @@ public class QueryTestPage extends AbstractPage {
     	}
     }
 
+    private void clearQueryTextArea() {
+    	queryTextArea.setText("");
+    	querySubmitButton.setEnabled(false);
+    }
+    
     private void setSubmitButtonState() {
     	boolean enable = false;
     	String sqlText = queryTextArea.getText();
@@ -361,9 +389,23 @@ public class QueryTestPage extends AbstractPage {
     	return tablesListBox.getItemText(selectedIndex);
     }
     
+    /**
+     * Filter the columns table if filterBox text is different than application state
+     */
+    private void filterColumnsTable() {
+    	// Current Filter Text state
+        String appFilterText = (String) stateService.get(ApplicationStateKeys.QUERY_COLUMNS_FILTER_TEXT, ""); //$NON-NLS-1$
+        // SearchBox text
+        String filterColsText = this.columnsFilterBox.getText();
+        // Search if different
+        if(!StringUtils.equals(appFilterText, filterColsText)) {
+        	stateService.put(ApplicationStateKeys.QUERY_COLUMNS_FILTER_TEXT, filterColsText);
+        	doGetTableColumns();
+        }    	
+    }
+        
     protected void doGetTableColumns() {
-    	// Resets queryCols page and filter
-    	stateService.put(ApplicationStateKeys.QUERY_COLUMNS_FILTER_TEXT, "");
+    	// Resets queryCols page
     	stateService.put(ApplicationStateKeys.QUERY_COLUMNS_PAGE, 1);
     	
         doGetTableColumns(1);
@@ -377,6 +419,7 @@ public class QueryTestPage extends AbstractPage {
     	onQueryColumnsFetchStarting();
     	currentQueryColumnsPage = page;
 
+    	String filterText = (String)stateService.get(ApplicationStateKeys.QUERY_COLUMNS_FILTER_TEXT,"");
         stateService.put(ApplicationStateKeys.QUERY_COLUMNS_PAGE, currentQueryColumnsPage);
         
         String source = getSelectedSource();
@@ -385,7 +428,7 @@ public class QueryTestPage extends AbstractPage {
         if(table!=null && table.equalsIgnoreCase(NO_TABLES_FOUND)) {
         	clearColumnsTable();
         } else {
-        	queryService.getQueryColumnResultSet(page, source, table,
+        	queryService.getQueryColumnResultSet(page, filterText, sourceNameToJndiMap.get(source), table,
         			new IRpcServiceInvocationHandler<QueryColumnResultSetBean>() {
         		@Override
         		public void onReturn(QueryColumnResultSetBean data) {
@@ -394,9 +437,9 @@ public class QueryTestPage extends AbstractPage {
         		}
         		@Override
         		public void onError(Throwable error) {
-        			//                notificationService.sendErrorNotification(i18n.format("datasource-types.error-searching"), error); //$NON-NLS-1$
-        			//                noDataMessage.setVisible(true);
-        			//                searchInProgressMessage.setVisible(false);
+        			notificationService.sendErrorNotification(i18n.format("queryTest.error-fetching-columns"), error); //$NON-NLS-1$
+        		    noColumnsMessage.setVisible(true);
+        		    columnFetchInProgressMessage.setVisible(false);
         		}
         	});
         }
@@ -423,7 +466,7 @@ public class QueryTestPage extends AbstractPage {
     	resultSetBean.setTotalResults(0);
     	resultSetBean.setItemsPerPage(7);
     	resultSetBean.setStartIndex(0);
-    	updateQueryResultsTable(resultSetBean);
+    	updateQueryResultsTable(resultSetBean,true);
     	updateQueryResultsPager(resultSetBean);
     }
     
@@ -482,18 +525,19 @@ public class QueryTestPage extends AbstractPage {
     	// Get SQL
     	String sql = queryTextArea.getText();
 
-    	queryService.executeSql(page, source, sql,
+    	queryService.executeSql(page, sourceNameToJndiMap.get(source), sql,
     			new IRpcServiceInvocationHandler<QueryResultSetBean>() {
     		@Override
     		public void onReturn(QueryResultSetBean data) {
-    			updateQueryResultsTable(data);
+    			updateQueryResultsTable(data,false);
     			updateQueryResultsPager(data);
     		}
     		@Override
     		public void onError(Throwable error) {
-    			//                notificationService.sendErrorNotification(i18n.format("datasource-types.error-searching"), error); //$NON-NLS-1$
-    			//                noDataMessage.setVisible(true);
-    			//                searchInProgressMessage.setVisible(false);
+    			notificationService.sendErrorNotification(i18n.format("queryTest.error-executing-query"), error); //$NON-NLS-1$
+    		    queryResultsMessageExecuteToFetch.setVisible(true);
+    		    queryResultsMessageNoResults.setVisible(false);
+    		    queryResultsMessageFetchInProgress.setVisible(false);
     		}
     	});
     }
@@ -513,14 +557,11 @@ public class QueryTestPage extends AbstractPage {
      */
     protected void onQueryResultsFetchStarting() {
         this.queryResultsPager.setVisible(false);
-        this.queryResultsFetchInProgressMessage.setVisible(true);
         this.queryResultsTable.setVisible(false);
-        this.noQueryResultsMessage.setVisible(false);
-        
-        this.queryResultsRangeSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.queryResultsRangeSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.queryResultsTotalSpan1.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
-        this.queryResultsTotalSpan2.setInnerText(Constants.QUESTION_MARK); //$NON-NLS-1$
+
+	    queryResultsMessageExecuteToFetch.setVisible(false);
+	    queryResultsMessageNoResults.setVisible(false);
+	    queryResultsMessageFetchInProgress.setVisible(true);
     }
     
     /**
@@ -542,7 +583,7 @@ public class QueryTestPage extends AbstractPage {
     }
     
     /**
-     * Updates the columns pager with the given data.
+     * Updates the Columns table pager with the given data.
      * @param data
      */
     protected void updateQueryColumnsPager(QueryColumnResultSetBean data) {
@@ -569,46 +610,55 @@ public class QueryTestPage extends AbstractPage {
      * Updates the table of QueryColumns with the given data.
      * @param data
      */
-    protected void updateQueryResultsTable(QueryResultSetBean data) {
-        this.queryResultsTable.clear();
-        this.queryResultsFetchInProgressMessage.setVisible(false);
+    protected void updateQueryResultsTable(QueryResultSetBean data, boolean showInitMessageForNoRows) {
+    	this.queryResultsTable.clear();
+        this.queryResultsMessageFetchInProgress.setVisible(false);
         if (data.getResultRows().size() > 0) {
+        	List<String> colNames = data.getResultColumnNames();
+        	String[] colArray = colNames.toArray(new String[colNames.size()]);
+        	
+        	this.queryResultsTable.setColumnLabels(colArray);
+        	
             for (QueryResultRowBean queryRowBean : data.getResultRows()) {
                 this.queryResultsTable.addRow(queryRowBean);
             }
             this.queryResultsTable.setVisible(true);
         } else {
-            this.noQueryResultsMessage.setVisible(true);
+        	// Initial Message
+        	if(showInitMessageForNoRows) {
+        	    queryResultsMessageNoResults.setVisible(false);
+        	    queryResultsMessageExecuteToFetch.setVisible(true);
+        	// Message after query execution with no rows
+        	} else {
+        	    queryResultsMessageExecuteToFetch.setVisible(false);
+        	    queryResultsMessageNoResults.setVisible(true);
+        	}
             this.queryResultsTable.setVisible(false);
         }
     }
     
     /**
-     * Updates the columns pager with the given data.
+     * Updates the Query results table pager with the given data.
      * @param data
      */
     protected void updateQueryResultsPager(QueryResultSetBean data) {
         int numPages = ((int) (data.getTotalResults() / data.getItemsPerPage())) + (data.getTotalResults() % data.getItemsPerPage() == 0 ? 0 : 1);
         int thisPage = (data.getStartIndex() / data.getItemsPerPage()) + 1;
-        this.queryResultsPager.setNumPages(numPages);
-        this.queryResultsPager.setPage(thisPage);
-        if (numPages > 1) {
-            this.queryResultsPager.setVisible(true);
-        } else {
-            this.queryResultsPager.setVisible(false);
-        }
-
-        int startIndex = data.getStartIndex();
-        int endIndex = startIndex + data.getResultRows().size();
-        // reset start index to zero if end index is zero
-        startIndex = (endIndex==0) ? endIndex : startIndex+1;
         
-        String rangeText = "" + startIndex + "-" + endIndex; //$NON-NLS-1$ //$NON-NLS-2$
-        String totalText = String.valueOf(data.getTotalResults());
-        this.queryResultsRangeSpan1.setInnerText(rangeText);
-        this.queryResultsRangeSpan2.setInnerText(rangeText);
-        this.queryResultsTotalSpan1.setInnerText(totalText);
-        this.queryResultsTotalSpan2.setInnerText(totalText);
+        long totalResults = data.getTotalResults();
+        
+        this.queryResultsPager.setNumPages(numPages);
+        this.queryResultsPager.setPageSize(Constants.QUERY_RESULTS_TABLE_PAGE_SIZE);
+        this.queryResultsPager.setTotalItems(totalResults);
+        
+        // setPage is last - does render
+        this.queryResultsPager.setPage(thisPage);
+        
+        if(data.getResultRows().isEmpty()) {
+        	this.queryResultsPager.setVisible(false);
+        } else {
+        	this.queryResultsPager.setVisible(true);
+        }
     }
 
 }

@@ -52,6 +52,8 @@ public interface IDataSourceService {
 
     public List<String> getTranslators( ) throws DataVirtUiException;
 
+    public Map<String,String> getQueryableDataSourceMap( ) throws DataVirtUiException;
+
     public Map<String,String> getDefaultTranslatorMap() throws DataVirtUiException;
     
     public DataSourceTypeResultSetBean getDataSourceTypeResultSet(int page, String sortColumnId, boolean sortAscending) throws DataVirtUiException;

@@ -25,8 +25,8 @@ public class Constants {
 	public static final int DATASOURCE_TYPES_TABLE_PAGE_SIZE = 15;
 	public static final int VDBS_TABLE_PAGE_SIZE = 15;
 	public static final int VDB_MODELS_TABLE_PAGE_SIZE = 15;
-	public static final int QUERY_RESULTS_TABLE_PAGE_SIZE = 8;
-	public static final int QUERY_COLUMNS_TABLE_PAGE_SIZE = 7;
+	public static final int QUERY_RESULTS_TABLE_PAGE_SIZE = 15;
+	public static final int QUERY_COLUMNS_TABLE_PAGE_SIZE = 6;
 	
 	public static final String SOURCE_VDB_PREFIX = "DataVirtUI";
 
