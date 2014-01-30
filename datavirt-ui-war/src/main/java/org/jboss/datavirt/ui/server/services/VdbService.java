@@ -69,7 +69,7 @@ public class VdbService implements IVdbService {
      */
     @Override
     public VdbResultSetBean search(String searchText, int page, boolean showDataVirtUiVDBs, String sortColumnId, boolean sortAscending) throws DataVirtUiException {
-        int pageSize = 15;
+        int pageSize = Constants.VDBS_TABLE_PAGE_SIZE; 
         
         VdbResultSetBean data = new VdbResultSetBean();
         
@@ -144,7 +144,7 @@ public class VdbService implements IVdbService {
     
     @Override
     public VdbDetailsBean getVdbDetails(String vdbName, int page) throws DataVirtUiException {
-        int pageSize = 15;
+        int pageSize = Constants.VDB_MODELS_TABLE_PAGE_SIZE;
     	
     	VDBMetaData vdb = null;
 

@@ -16,8 +16,10 @@
 package org.jboss.datavirt.ui.client.local.pages.vdbs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.Dependent;
@@ -27,6 +29,7 @@ import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent.Handler;
 import org.jboss.datavirt.ui.client.local.events.TableRowSelectionEvent.HasTableRowSelectionHandlers;
 import org.jboss.datavirt.ui.client.local.pages.VdbDetailsPage;
+import org.jboss.datavirt.ui.client.local.pages.datasources.DataSourcesTable;
 import org.jboss.datavirt.ui.client.shared.beans.Constants;
 import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchorFactory;
@@ -53,6 +56,8 @@ public class VdbsTable extends SortableTemplatedWidgetTable implements HasTableR
 
     private Map<Integer,CheckBox> rowSelectionMap = new HashMap<Integer,CheckBox>();
     private Map<Integer,String> rowNameMap = new HashMap<Integer,String>();
+
+    private List<String> builtInVdbs = Arrays.asList("ModeShape");
 
     /**
      * Constructor.
@@ -94,18 +99,22 @@ public class VdbsTable extends SortableTemplatedWidgetTable implements HasTableR
         int rowIdx = this.rowElements.size();
 //        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
 
-        CheckBox checkbox = new CheckBox();
-        checkbox.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-            	TableRowSelectionEvent.fire(VdbsTable.this, getSelectedVdbs().size());
-            }
-        });
-        
-        add(rowIdx,0,checkbox);
-        rowSelectionMap.put(rowIdx,checkbox);
-        rowNameMap.put(rowIdx,vdbSummaryBean.getName());
-        
+        String dsName = vdbSummaryBean.getName();
+        if(!builtInVdbs.contains(dsName)) {
+        	CheckBox checkbox = new CheckBox();
+        	checkbox.addClickHandler(new ClickHandler() {
+        		@Override
+        		public void onClick(ClickEvent event) {
+        			TableRowSelectionEvent.fire(VdbsTable.this, getSelectedVdbs().size());
+        		}
+        	});
+
+        	add(rowIdx,0,checkbox);
+        	rowSelectionMap.put(rowIdx,checkbox);
+        	rowNameMap.put(rowIdx,vdbSummaryBean.getName());
+        } else {
+        	add(rowIdx,0,new InlineLabel(""));
+        }
         Anchor name = toDetailsPageLinkFactory.get("vdbname", vdbSummaryBean.getName()); //$NON-NLS-1$
         name.setText(vdbSummaryBean.getName());
         InlineLabel type = new InlineLabel(vdbSummaryBean.getType());

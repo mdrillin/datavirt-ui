@@ -67,7 +67,7 @@ public class DataSourceService implements IDataSourceService {
      */
     @Override
     public DataSourceResultSetBean search(String searchText, int page, String sortColumnId, boolean sortAscending) throws DataVirtUiException {
-        int pageSize = 15;
+        int pageSize = Constants.DATASOURCES_TABLE_PAGE_SIZE; 
         
         DataSourceResultSetBean data = new DataSourceResultSetBean();
         
@@ -138,7 +138,7 @@ public class DataSourceService implements IDataSourceService {
     
     @Override
     public DataSourceTypeResultSetBean getDataSourceTypeResultSet(int page, String sortColumnId, boolean sortAscending) throws DataVirtUiException {
-        int pageSize = 15;
+        int pageSize = Constants.DATASOURCE_TYPES_TABLE_PAGE_SIZE; 
         
         DataSourceTypeResultSetBean data = new DataSourceTypeResultSetBean();
         

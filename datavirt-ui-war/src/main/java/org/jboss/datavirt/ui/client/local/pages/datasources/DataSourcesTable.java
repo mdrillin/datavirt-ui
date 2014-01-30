@@ -16,8 +16,10 @@
 package org.jboss.datavirt.ui.client.local.pages.datasources;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.context.Dependent;
@@ -53,6 +55,8 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
     private Map<Integer,CheckBox> rowSelectionMap = new HashMap<Integer,CheckBox>();
     private Map<Integer,String> rowNameMap = new HashMap<Integer,String>();
     
+    private List<String> builtInSources = Arrays.asList("DashboardDS","ModeShapeDS");
+
     /**
      * Constructor.
      */
@@ -93,17 +97,22 @@ public class DataSourcesTable extends SortableTemplatedWidgetTable implements Ha
         int rowIdx = this.rowElements.size();
 //        DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/yyyy"); //$NON-NLS-1$
 
-        CheckBox checkbox = new CheckBox();
-        checkbox.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-            	TableRowSelectionEvent.fire(DataSourcesTable.this, getSelectedDataSources().size());
-            }
-        });
-        
-        add(rowIdx,0,checkbox);
-        rowSelectionMap.put(rowIdx,checkbox);
-        rowNameMap.put(rowIdx,dataSourceSummaryBean.getName());
+        String dsName = dataSourceSummaryBean.getName();
+        if(!builtInSources.contains(dsName)) {
+            CheckBox checkbox = new CheckBox();
+            checkbox.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                	TableRowSelectionEvent.fire(DataSourcesTable.this, getSelectedDataSources().size());
+                }
+            });
+            
+            add(rowIdx,0,checkbox);
+            rowSelectionMap.put(rowIdx,checkbox);
+            rowNameMap.put(rowIdx,dataSourceSummaryBean.getName());        	
+        } else {
+        	add(rowIdx,0,new InlineLabel(""));
+        }
         
         Anchor name = toDetailsPageLinkFactory.get("name", dataSourceSummaryBean.getName()); //$NON-NLS-1$
         name.setText(dataSourceSummaryBean.getName());

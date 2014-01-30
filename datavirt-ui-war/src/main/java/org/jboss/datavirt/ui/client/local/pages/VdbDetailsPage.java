@@ -85,6 +85,8 @@ public class VdbDetailsPage extends AbstractPage {
     private TransitionAnchor<DataSourceTypesPage> toDataSourceTypesPage;
     @Inject @DataField("to-vdbs-page")
     private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
+    @Inject @DataField("to-querytest-page")
+    private TransitionAnchor<QueryTestPage> toQueryTestPage;
 
     @Inject
     protected ClientMessages i18n;

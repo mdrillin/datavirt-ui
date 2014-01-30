@@ -16,11 +16,18 @@
 package org.jboss.datavirt.ui.client.shared.beans;
 
 /**
- * Contains a number of helpful static constants.
- * @author eric.wittmann@redhat.com
+ * Application constants
+ * @author mdrillin@redhat.com
  */
 public class Constants {
 
+	public static final int DATASOURCES_TABLE_PAGE_SIZE = 15;
+	public static final int DATASOURCE_TYPES_TABLE_PAGE_SIZE = 15;
+	public static final int VDBS_TABLE_PAGE_SIZE = 15;
+	public static final int VDB_MODELS_TABLE_PAGE_SIZE = 15;
+	public static final int QUERY_RESULTS_TABLE_PAGE_SIZE = 8;
+	public static final int QUERY_COLUMNS_TABLE_PAGE_SIZE = 7;
+	
 	public static final String SOURCE_VDB_PREFIX = "DataVirtUI";
 
 	public static final String OK = "OK";
