@@ -25,128 +25,222 @@
   <body>
     <div id="page" data-field="page">
 
+      <!-- Common Tab Bar -->
+      <ul id="appNavTabs" class="nav nav-tabs sramp-nav-tabs">
+        <li class="active"><a data-field="to-datasources-page" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a></li>
+        <li class=""><a data-field="to-vdbs-page" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a></li>
+        <li class=""><a data-field="to-querytest-page" href="querytest.html"><span data-i18n-key="querytest">Test</span></a></li>
+      </ul>
+  
       <!-- Content area with footer-->
       <div id="page-content" class="container-fluid">
       
-        <!-- Common Tab Bar -->
-        <div class="row-fluid sramp-artifacts">
-          <div class="span12 sramp-artifacts-actions">
-            <a data-field="to-datasources-page" class="btn focus" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a>
-            <a data-field="to-datasource-types-page" class="btn focus" href="datasourcetypes.html"><span data-i18n-key="datasourcetypes">Data Source Types</span></a>
-            <a data-field="to-vdbs-page" class="btn focus" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a>
-            <a data-field="to-querytest-page" class="btn focus" href="querytest.html"><span data-i18n-key="querytest">Test</span></a>
-          </div>
-        </div>
-  
-        <!-- Breadcrumbs -->
-        <div class="row-fluid">
-          <ul class="breadcrumb">
-            <li data-i18n-key="breadcrumb.datasources" class="active">Data Sources</li>
-          </ul>
-        </div>
-          
-        <!-- Page Title Info -->
-        <div class="span12">
-            <h2 data-i18n-key="datasources.page.title">Data Sources</h2>
-            <p data-i18n-key="datasources.page.description">
-              Data Sources are your local or cloud-based data stores that you want to be able to virtualize.  See our list of <a href="http://www.jboss.org/products/datavirt.html">supported data sources.</a>
-            </p>
-        </div>
-        
-          <!-- The DataSources table -->
-          <div class="span9">
-
-              <!-- Actions Bar -->
-              <div class="row-fluid sramp-artifacts">
-                <div class="span12 sramp-artifacts-actions">
-                  <div class="span6 sramp-search">
-                    <input data-field="datasource-search-box" id="datasource-search-box" type="text" class="span6 datavirt-search-box" placeholder="Filter..."></input>
-                  </div>
-                  <button data-field="btn-refresh" class="btn pull-right"><i class="icon-refresh"></i></button>
-                  <button data-field="btn-test-source" id="btn-test-source" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="test">Test</button>
-                  <button data-field="btn-remove-source" id="btn-remove-source" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="remove">Remove</button>
-                  <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="add">Add</button>
-                </div>
-              </div>
-              
-              <!-- Messages -->
-              <div data-field="datavirt-datasources-none" style="display:none" class="sramp-artifacts-none">
-                <span data-i18n-key="no-artifacts">No Data Sources found.</span>
-              </div>
-              <div data-field="datavirt-datasources-searching" style="display:none" class="sramp-artifacts-searching">
-                <span class="spinner" data-i18n-key="finding-datasources">Finding DataSources, please wait...</span>
-              </div>
-
-              <!-- Sources Table -->
-              <table data-field="datavirt-datasources-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
-                <thead>
-                  <tr>
-                    <th data-i18n-key="select"></th>
-                    <th data-i18n-key="name">Name</th>
-                    <th data-i18n-key="jndiname">JNDI Name</th>
-                    <th data-i18n-key="type">Source Type</th>
-                  </tr>
-                </thead>
-                <tbody data-role="dummy">
-                  <tr>
-                    <td></td>
-                    <td><a href="artifact-details.html">DataSource 1</a></td>
-                    <td>jndi name1</td>
-                    <td>h2</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td><a href="artifact-details.html">DataSource 2</a></td>
-                    <td>jndi name2</td>
-                    <td>modeshape</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td><a href="artifact-details.html">DataSource 3</a></td>
-                    <td>jndi name3</td>
-                    <td>webservice</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td><a href="artifact-details.html">DataSource 4</a></td>
-                    <td>jndi name4</td>
-                    <td>salesforce</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td><a href="artifact-details.html">DataSource 5</a></td>
-                    <td>jndi name5</td>
-                    <td>mongodb</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td><a href="artifact-details.html">DataSource 6</a></td>
-                    <td>jndi name6</td>
-                    <td>odaa</td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td><a href="artifact-details.html">DataSource 7</a></td>
-                    <td>jndi name7</td>
-                    <td>webservice</td>
-                  </tr>
-                </tbody>
-              </table>
-              
-              <!-- Pager -->
-              <div data-field="datavirt-datasources-pager" class="pagination" data-role="dummy">
-                <ul>
-                  <li class="disabled"><a>&#x00AB;</a></li>
-                  <li class="active"><a>1</a></li>
-                  <li><a>2</a></li>
-                  <li><a>3</a></li>
-                  <li><a>4</a></li>
-                  <li><a>&#x00BB;</a></li>
-                </ul>
-              </div>
+        <!-- Tabs -->
+        <div class="row-fluid"> <!-- Start Tabs Row -->
+          <div class="span12 sramp-artifact-tabs"> <!-- Start Tabs -->
             
-          </div>
-        </div>
+            <!-- Tab Defns -->
+            <ul id="myTab" class="nav nav-tabs sramp-nav-tabs">
+              <li class="active"><a onclick="$(this).blur();" href="#datasources" data-toggle="tab" data-i18n-key="tab.datasources">Data Sources </a></li>
+              <li class=""><a onclick="$(this).blur();" href="#datasourcetypes" data-field="sramp-artifact-tabs-relationships" data-toggle="tab" data-i18n-key="tab.datasource-types">Data Source Types</a></li>
+            </ul>
+            
+            <!-- Tab Content -->
+            <div id="tabContent" class="tab-content sramp-tab-content"> <!-- Start Tab Content -->
+
+              <!-- Datasource Tab -->
+              <div class="tab-pane fade in active container-fluid" id="datasources">
+
+                <!-- Page Title Info -->
+                <div class="span9">
+                    <h2 data-i18n-key="datasources.page.title">Data Sources</h2>
+                    <p data-i18n-key="datasources.page.description">
+                      Data Sources are your local or cloud-based data stores that you want to be able to virtualize.  See our list of <a href="http://www.jboss.org/products/datavirt.html">supported data sources.</a>
+                    </p>
+                </div>
+                <!-- The DataSources table -->
+                <div class="span6">
+
+                    <!-- Actions Bar -->
+                    <div class="row-fluid sramp-artifacts">
+                      <div class="span12 sramp-artifacts-actions">
+                        <div class="span6 sramp-search">
+                          <input data-field="datasource-search-box" id="datasource-search-box" type="text" class="span6 datavirt-search-box" placeholder="Filter..."></input>
+                        </div>
+                        <div class="pull-right">
+                          <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload" data-i18n-key="add">Add</button>
+                          <button data-field="btn-remove-source" id="btn-remove-source" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
+                          <button data-field="btn-test-source" id="btn-test-source" class="btn btn-focus requires-fileupload" data-i18n-key="test">Test</button>
+                          <button data-field="btn-refresh-sources" class="btnt"><i class="icon-refresh"></i></button>
+                        </div>
+                      </div>
+                    </div>
+              
+                    <!-- Messages -->
+                    <div data-field="datavirt-datasources-none" style="display:none" class="sramp-artifacts-none">
+                      <span data-i18n-key="no-artifacts">No Data Sources found.</span>
+                    </div>
+                    <div data-field="datavirt-datasources-searching" style="display:none" class="sramp-artifacts-searching">
+                      <span class="spinner" data-i18n-key="finding-datasources">Finding DataSources, please wait...</span>
+                    </div>
+
+                    <!-- Sources Table -->
+                    <table data-field="datavirt-datasources-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+                      <thead>
+                        <tr>
+                          <th data-i18n-key="select"></th>
+                          <th data-i18n-key="name">Name</th>
+                          <th data-i18n-key="jndiname">JNDI Name</th>
+                          <th data-i18n-key="type">Source Type</th>
+                        </tr>
+                      </thead>
+                      <tbody data-role="dummy">
+                        <tr>
+                          <td></td>
+                          <td><a href="artifact-details.html">DataSource 1</a></td>
+                          <td>jndi name1</td>
+                          <td>h2</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td><a href="artifact-details.html">DataSource 2</a></td>
+                          <td>jndi name2</td>
+                          <td>modeshape</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td><a href="artifact-details.html">DataSource 3</a></td>
+                          <td>jndi name3</td>
+                          <td>webservice</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td><a href="artifact-details.html">DataSource 4</a></td>
+                          <td>jndi name4</td>
+                          <td>salesforce</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td><a href="artifact-details.html">DataSource 5</a></td>
+                          <td>jndi name5</td>
+                          <td>mongodb</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td><a href="artifact-details.html">DataSource 6</a></td>
+                          <td>jndi name6</td>
+                          <td>odaa</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td><a href="artifact-details.html">DataSource 7</a></td>
+                          <td>jndi name7</td>
+                          <td>webservice</td>
+                        </tr>
+                      </tbody>
+                    </table>
+              
+                    <!-- Pager -->
+                    <div data-field="datavirt-datasources-pager" class="pagination" data-role="dummy">
+                      <ul>
+                        <li class="disabled"><a>&#x00AB;</a></li>
+                        <li class="active"><a>1</a></li>
+                        <li><a>2</a></li>
+                        <li><a>3</a></li>
+                        <li><a>4</a></li>
+                        <li><a>&#x00BB;</a></li>
+                      </ul>
+                    </div>
+            
+                </div> <!-- End Datasources Table -->
+
+              </div>  <!-- End Datasources Tab -->
+              
+              <!-- DataSource Types Tab -->
+              <div class="tab-pane fade container-fluid" id="datasourcetypes">
+                <!-- Page Title Info -->
+                <div class="span12">
+                    <h2 data-i18n-key="datasourcetypes.page.title">Data Source Types</h2>
+                    <p data-i18n-key="datasourcetypes.page.description">
+                      Data source types currently available on your Data Virtualization instance.  You can use our built-in types or upload your own JDBC Type4 drivers.
+                    </p>
+                </div>
+                <!-- The DataSource Types table -->
+                <div class="span3">
+                    <!-- Actions Bar -->
+                    <div class="row-fluid sramp-artifacts">
+                      <div class="span12 sramp-artifacts-actions"> 
+                        <div class="pull-right">
+                          <button data-field="btn-add-source-type" id="btn-add-source-type" class="btn btn-focus requires-fileupload" data-i18n-key="add">Add</button>
+                          <button data-field="btn-remove-source-type" id="btn-remove-source-type" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
+                          <button data-field="btn-refresh-source-types" class="btn"><i class="icon-refresh"></i></button>
+                        </div>
+                      </div>
+                    </div>
+              
+                    <!-- Messages -->
+                    <div data-field="datavirt-datasource-types-none" style="display:none" class="sramp-artifacts-none">
+                      <span data-i18n-key="no-artifacts">No Data Source types found.</span>
+                    </div>
+                    <div data-field="datavirt-datasource-types-searching" style="display:none" class="sramp-artifacts-searching">
+                      <span class="spinner" data-i18n-key="finding-datasource-types">Finding DataSource Types, please wait...</span>
+                    </div>
+
+                    <!-- Sources Table -->
+                    <table data-field="datavirt-datasource-types-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+                      <thead>
+                        <tr>
+                          <th data-i18n-key="select"></th>
+                          <th data-i18n-key="name">Name</th>
+                        </tr>
+                      </thead>
+                      <tbody data-role="dummy">
+                        <tr>
+                          <td></td>
+                          <td>DataSource 1</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>DataSource 2</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>DataSource 3</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>DataSource 4</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>DataSource 5</td>
+                        </tr>
+                        <tr>
+                          <td></td>
+                          <td>DataSource 6</td>
+                        </tr>
+                      </tbody>
+                    </table>
+              
+                    <!-- Pager -->
+                    <div data-field="datavirt-datasource-types-pager" class="pagination" data-role="dummy">
+                      <ul>
+                        <li class="disabled"><a>&#x00AB;</a></li>
+                        <li class="active"><a>1</a></li>
+                        <li><a>2</a></li>
+                        <li><a>3</a></li>
+                        <li><a>4</a></li>
+                        <li><a>&#x00BB;</a></li>
+                      </ul>
+                    </div>
+            
+                </div> <!-- End Datasource Types Table Section -->
+              </div>  <!-- End Datasource Types Tab -->
+              
+            </div> <!-- End Tab Content -->
+
+          </div> <!-- End Tabs -->
+        </div> <!-- End Tabs Row -->
 
         <!-- Footer -->
         <footer>

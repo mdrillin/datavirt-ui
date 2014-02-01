@@ -67,8 +67,6 @@ public class DataSourceDetailsPage extends AbstractPage {
 
     @Inject @DataField("to-datasources-page")
     private TransitionAnchor<DataSourcesPage> toDataSourcesPage;
-    @Inject @DataField("to-datasource-types-page")
-    private TransitionAnchor<DataSourceTypesPage> toDataSourceTypesPage;
     @Inject @DataField("to-vdbs-page")
     private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
     @Inject @DataField("to-querytest-page")
@@ -92,6 +90,8 @@ public class DataSourceDetailsPage extends AbstractPage {
     @Inject @DataField("back-to-datasources")
     TransitionAnchor<DataSourcesPage> backToDataSources;
 
+    @Inject @DataField("datasourcedetails-breadcrumblabel")
+    protected Label breadcrumbLabel;
     @Inject @DataField("datasourcedetails-pagetitle")
     protected Label pageTitle;
     @Inject @DataField("datasourcedetails-jndiname")
@@ -204,6 +204,7 @@ public class DataSourceDetailsPage extends AbstractPage {
             	currentDataSourceDetails = dsDetailsBean;
             	String title = "Data Source : "+dsDetailsBean.getName();
             	pageTitle.setText(title);
+            	breadcrumbLabel.setText(title);
             	String jndiStr = "JNDI : "+dsDetailsBean.getJndiName();
             	jndiLabel.setText(jndiStr);   
             	
@@ -215,6 +216,7 @@ public class DataSourceDetailsPage extends AbstractPage {
             public void onError(Throwable error) {
                 notificationService.sendErrorNotification(i18n.format("datasourcedetails.error-retrieving"), error); //$NON-NLS-1$
                 pageTitle.setText("Data Source : Error retrieving");
+            	breadcrumbLabel.setText("Data Source : Error");
             }
         });       
         

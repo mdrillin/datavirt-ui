@@ -25,26 +25,16 @@
   <body>
     <div id="page" data-field="page">
 
+      <!-- Common Tab Bar -->
+      <ul id="appNavTabs" class="nav nav-tabs sramp-nav-tabs">
+        <li class=""><a data-field="to-datasources-page" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a></li>
+        <li class="active"><a data-field="to-vdbs-page" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a></li>
+        <li class=""><a data-field="to-querytest-page" href="querytest.html"><span data-i18n-key="querytest">Test</span></a></li>
+      </ul>
+      
       <!-- Content area with footer-->
       <div id="page-content" class="container-fluid">
       
-        <!-- Common Tab Bar -->
-        <div class="row-fluid sramp-artifacts">
-          <div class="span12 sramp-artifacts-actions">
-            <a data-field="to-datasources-page" class="btn focus" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a>
-            <a data-field="to-datasource-types-page" class="btn focus" href="datasourcetypes.html"><span data-i18n-key="datasourcetypes">Data Source Types</span></a>
-            <a data-field="to-vdbs-page" class="btn focus" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a>
-            <a data-field="to-querytest-page" class="btn focus" href="querytest.html"><span data-i18n-key="querytest">Test</span></a>
-          </div>
-        </div>
-  
-        <!-- Breadcrumbs -->
-        <div class="row-fluid">
-          <ul class="breadcrumb">
-            <li data-i18n-key="breadcrumb.virtualdatabases" class="active">Virtual Databases</li>
-          </ul>
-        </div>
-          
         <!-- Page Title Info -->
         <div class="span12">
             <h2 data-i18n-key="vdbs.page.title">Virtual Databases</h2>
@@ -62,11 +52,13 @@
                   <div class="span6 sramp-search">
                     <input data-field="vdb-search-box" id="vdb-search-box" type="text" class="span12 datavirt-search-box" placeholder="Filter..."></input>
                   </div>
-                  <button data-field="btn-refresh" class="btn pull-right"><i class="icon-refresh"></i></button>
-                  <button data-field="btn-test-vdb" id="btn-test-vdb" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="test">Test</button>
-                  <button data-field="btn-remove-vdb" id="btn-remove-vdb" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="remove">Remove</button>
-                  <button data-field="btn-upload-vdb" id="btn-upload-vdb" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="upload">Upload</button>
-                  <button data-field="btn-new-vdb" id="btn-new-vdb" class="btn btn-focus requires-fileupload pull-right" data-i18n-key="new">New</button>
+                  <div class="pull-right">
+                    <button data-field="btn-new-vdb" id="btn-new-vdb" class="btn btn-focus requires-fileupload" data-i18n-key="new">New</button>
+                    <button data-field="btn-upload-vdb" id="btn-upload-vdb" class="btn btn-focus requires-fileupload" data-i18n-key="upload">Upload</button>
+                    <button data-field="btn-remove-vdb" id="btn-remove-vdb" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
+                    <button data-field="btn-test-vdb" id="btn-test-vdb" class="btn btn-focus requires-fileupload" data-i18n-key="test">Test</button>
+                    <button data-field="btn-refresh" class="btn"><i class="icon-refresh"></i></button>
+                  </div>
                 </div>
               </div>
               

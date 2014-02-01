@@ -79,8 +79,6 @@ public class VdbDetailsPage extends AbstractPage {
 
     @Inject @DataField("to-datasources-page")
     private TransitionAnchor<DataSourcesPage> toDataSourcesPage;
-    @Inject @DataField("to-datasource-types-page")
-    private TransitionAnchor<DataSourceTypesPage> toDataSourceTypesPage;
     @Inject @DataField("to-vdbs-page")
     private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
     @Inject @DataField("to-querytest-page")
@@ -102,6 +100,8 @@ public class VdbDetailsPage extends AbstractPage {
     @Inject @DataField("back-to-vdbs")
     TransitionAnchor<VirtualDatabasesPage> backToVdbs;
 
+    @Inject @DataField("vdbdetails-breadcrumblabel")
+    protected Label breadcrumbLabel;
     @Inject @DataField("vdbdetails-pagetitle")
     protected Label pageTitle;
     @Inject @DataField("vdbdetails-vdbstatus")
@@ -228,7 +228,7 @@ public class VdbDetailsPage extends AbstractPage {
             	currentVdbDetails = vdbDetailsBean;
             	String title = "Virtual Database : "+vdbDetailsBean.getName();
             	pageTitle.setText(title);
-            	
+            	breadcrumbLabel.setText(title);            	
             	setVdbStatus(vdbDetailsBean);
             	
                 updatePager(vdbDetailsBean);
@@ -241,6 +241,7 @@ public class VdbDetailsPage extends AbstractPage {
                 noDataMessage.setVisible(true);
             	getModelsInProgressMessage.setVisible(false);
                 pageTitle.setText(Constants.STATUS_UNKNOWN);
+            	breadcrumbLabel.setText(Constants.STATUS_UNKNOWN);            	
                 vdbStatusLabel.setText(Constants.STATUS_UNKNOWN);
             }
         });       

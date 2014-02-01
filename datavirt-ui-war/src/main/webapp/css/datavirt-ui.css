@@ -21,6 +21,28 @@ a:hover {
   padding-left: 20px;
 }
 
+.dvbreadcrumb {
+  padding: 8px 15px;
+  margin: 0 0 20px;
+  list-style: none;
+}
+
+.dvbreadcrumb > li {
+  display: inline-block;
+  *display: inline;
+  text-shadow: 0 1px 0 #ffffff;
+  *zoom: 1;
+}
+
+.dvbreadcrumb > li > .divider {
+  padding: 0 5px;
+  color: #ccc;
+}
+
+.dvbreadcrumb > .active {
+  color: #999999;
+}
+
 .statusOkImg16
 {
   src: url("../images/StatusIcon_ok_16x16.png");
@@ -210,8 +232,7 @@ button.tree:hover {
 }
 
 .breadcrumb {
-  border: 1px solid rgb(211, 211, 211);
-  background-image: url("../images/datavirt-actions-bg.png");
+  background-color: transparent;
   background-position: top left;
   background-repeat: repeat-x;
 }
@@ -296,11 +317,37 @@ button.tree:hover {
   background-color: white;
 }
 
+.primary-nav-tabs {
+  margin-bottom: 0px;
+  border-left: 1px solid rgb(221, 221, 221);
+  border-right: 1px solid rgb(221, 221, 221);
+}
+
+.primary-nav-tabs li a {
+  color: #EEEEEE;
+  border-radius: 0px;
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 1px solid rgb(221, 221, 221);
+  border-bottom: 1px solid rgb(221, 221, 221);
+  margin-right: 0px;
+  background-color: rgb(34, 34, 34);
+}
+.primary-nav-tabs li a:hover {
+  border-right: 1px solid rgb(221, 221, 221);
+  background-color: rgb(34, 34, 34);
+  color: #AAAAAA;
+}
+.primary-nav-tabs .active a, .primary-nav-tabs .active a:hover {
+  border-top: 0px;
+  border-left: 0px;
+  border-right: 1px solid rgb(221, 221, 221);
+}
+
 .sramp-nav-tabs {
   margin-bottom: 0px;
   border-left: 1px solid rgb(221, 221, 221);
   border-right: 1px solid rgb(221, 221, 221);
-  background-color: white;
 }
 
 .sramp-nav-tabs li a {
@@ -322,7 +369,6 @@ button.tree:hover {
   border-top: 0px;
   border-left: 0px;
   border-right: 1px solid rgb(221, 221, 221);
-  background-color: white;
 }
 
 .sramp-tab-content {
@@ -330,7 +376,6 @@ button.tree:hover {
   border-right: 1px solid rgb(221, 221, 221);
   border-bottom: 1px solid rgb(221, 221, 221);
   padding-bottom: 15px;
-  background-color: white;
 }
 
 .artifact-details-loading {
@@ -363,28 +408,6 @@ button.tree:hover {
 
 .sramp-meta-data-section-value {
   float: left;
-}
-
-.sramp-relationship-type {
-  font-weight: bold;
-  font-size: 85%;
-  color: #666;
-  text-shadow: 0px 1px 0px white;
-  background-color: #f6f6f6;
-  background-image: url("../images/datavirt-table-subcat-bg.png");
-  background-repeat: repeat-x;
-}
-
-.sramp-relationship-table, .sramp-history-table {
-  margin-top: 15px;
-}
-
-.sramp-relationship-table thead th, .sramp-history-table thead th {
-  background-image: url("../images/datavirt-table-th-bg.png");
-  background-repeat: repeat-x;
-  color: #444;
-  text-shadow: 0px 1px 0px white;
-  padding-left: 8px;
 }
 
 .sramp-source-editor-wrapper {

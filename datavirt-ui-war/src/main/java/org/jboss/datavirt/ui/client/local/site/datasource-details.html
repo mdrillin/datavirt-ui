@@ -24,24 +24,21 @@
   <body>
     <div id="page" data-field="page">
 
+      <!-- Common Tab Bar -->
+      <ul id="appNavTabs" class="nav nav-tabs sramp-nav-tabs">
+        <li class="active"><a data-field="to-datasources-page" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a></li>
+        <li class=""><a data-field="to-vdbs-page" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a></li>
+        <li class=""><a data-field="to-querytest-page" href="querytest.html"><span data-i18n-key="querytest">Test</span></a></li>
+      </ul>
+      
       <!-- Content area with footer-->
       <div id="page-content" class="container-fluid">
-
-        <!-- Common Tab Bar -->
-        <div class="row-fluid sramp-artifacts">
-          <div class="span12 sramp-artifacts-actions">
-            <a data-field="to-datasources-page" class="btn focus" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a>
-            <a data-field="to-datasource-types-page" class="btn focus" href="datasourcetypes.html"><span data-i18n-key="datasourcetypes">Data Source Types</span></a>
-            <a data-field="to-vdbs-page" class="btn focus" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a>
-            <a data-field="to-querytest-page" class="btn focus" href="querytest.html"><span data-i18n-key="querytest">Test</span></a>
-          </div>
-        </div>
   
         <!-- Breadcrumbs -->
-        <div class="row-fluid">
-          <ul class="breadcrumb">
-            <li><a data-field="back-to-datasources" href="datasources.html" data-i18n-key="breadcrumb.datasources">Data Sources</a> <span class="divider">/<span data-role="dummy"/></span></li>
-            <li class="active" data-i18n-key="breadcrumb.datasource-details">Data Source Details</li>
+        <div class="span12">
+          <ul class="dvbreadcrumb">
+            <li><a data-field="back-to-datasources" href="datasources.html" data-i18n-key="breadcrumb.datasources">&#x00AB; Back to Data Sources</a> <span class="divider">/<span data-role="dummy"/></span></li>
+            <li class="active"><span data-field="datasourcedetails-breadcrumblabel" data-role="dummy">Data Source : MyDS</span></li>
           </ul>
         </div>
 
@@ -62,8 +59,10 @@
           <!-- Actions Bar -->
           <div class="row-fluid sramp-artifacts">
             <div class="span12 sramp-artifacts-actions">
-              <button data-field="btn-apply" id="btn-apply" class="btn btn-focus requires-fileupload" data-i18n-key="apply">Apply</button>
-              <button data-field="btn-reset" id="btn-reset" class="btn btn-focus requires-fileupload" data-i18n-key="reset">Reset</button>
+              <div class="pull-right">
+                <button data-field="btn-apply" id="btn-apply" class="btn btn-focus requires-fileupload" data-i18n-key="apply">Apply</button>
+                <button data-field="btn-reset" id="btn-reset" class="btn btn-focus requires-fileupload" data-i18n-key="reset">Reset</button>
+              </div>
             </div>
           </div>
           <!-- Messages -->
