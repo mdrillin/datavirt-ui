@@ -239,6 +239,7 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
     	for(DataSourcePropertyBean defn : corePropList) {
     		dataSourceCorePropertiesTable.addRow(defn);
     	}
+    	dataSourceCorePropertiesTable.setValueColTextBoxWidths();
     	dataSourceCorePropertiesTable.setVisible(true);
     }
 
@@ -257,6 +258,7 @@ public class AddDataSourceDialog extends ModalDialog implements HasValueChangeHa
     	for(DataSourcePropertyBean defn : advPropList) {
     		dataSourceAdvancedPropertiesTable.addRow(defn);
     	}
+    	dataSourceAdvancedPropertiesTable.setValueColTextBoxWidths();
     	dataSourceAdvancedPropertiesTable.setVisible(true);
     }
     

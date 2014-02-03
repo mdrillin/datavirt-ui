@@ -26,7 +26,7 @@
     <div id="page" data-field="page">
 
       <!-- Common Tab Bar -->
-      <ul id="appNavTabs" class="nav nav-tabs sramp-nav-tabs">
+      <ul id="appNavTabs" class="nav nav-tabs datavirt-nav-tabs">
         <li class="active"><a data-field="to-datasources-page" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a></li>
         <li class=""><a data-field="to-vdbs-page" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a></li>
         <li class=""><a data-field="to-querytest-page" href="querytest.html"><span data-i18n-key="querytest">Test</span></a></li>
@@ -37,16 +37,16 @@
       
         <!-- Tabs -->
         <div class="row-fluid"> <!-- Start Tabs Row -->
-          <div class="span12 sramp-artifact-tabs"> <!-- Start Tabs -->
+          <div class="span12 datavirt-item-tabs"> <!-- Start Tabs -->
             
             <!-- Tab Defns -->
-            <ul id="myTab" class="nav nav-tabs sramp-nav-tabs">
+            <ul id="myTab" class="nav nav-tabs datavirt-nav-tabs">
               <li class="active"><a onclick="$(this).blur();" href="#datasources" data-toggle="tab" data-i18n-key="tab.datasources">Data Sources </a></li>
-              <li class=""><a onclick="$(this).blur();" href="#datasourcetypes" data-field="sramp-artifact-tabs-relationships" data-toggle="tab" data-i18n-key="tab.datasource-types">Data Source Types</a></li>
+              <li class=""><a onclick="$(this).blur();" href="#datasourcetypes" data-field="datavirt-item-tabs-relationships" data-toggle="tab" data-i18n-key="tab.datasource-types">Data Source Types</a></li>
             </ul>
             
             <!-- Tab Content -->
-            <div id="tabContent" class="tab-content sramp-tab-content"> <!-- Start Tab Content -->
+            <div id="tabContent" class="tab-content datavirt-tab-content"> <!-- Start Tab Content -->
 
               <!-- Datasource Tab -->
               <div class="tab-pane fade in active container-fluid" id="datasources">
@@ -62,33 +62,33 @@
                 <div class="span6">
 
                     <!-- Actions Bar -->
-                    <div class="row-fluid sramp-artifacts">
-                      <div class="span12 sramp-artifacts-actions">
-                        <div class="span6 sramp-search">
+                    <div class="row-fluid datavirt-items">
+                      <div class="span12 datavirt-items-actions">
+                        <div class="span6 datavirt-search">
                           <input data-field="datasource-search-box" id="datasource-search-box" type="text" class="span6 datavirt-search-box" placeholder="Filter..."></input>
                         </div>
                         <div class="pull-right">
                           <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload" data-i18n-key="add">Add</button>
                           <button data-field="btn-remove-source" id="btn-remove-source" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
                           <button data-field="btn-test-source" id="btn-test-source" class="btn btn-focus requires-fileupload" data-i18n-key="test">Test</button>
-                          <button data-field="btn-refresh-sources" class="btnt"><i class="icon-refresh"></i></button>
+                          <button data-field="btn-refresh-sources" class="btn"><i class="icon-refresh"></i></button>
                         </div>
                       </div>
                     </div>
               
                     <!-- Messages -->
-                    <div data-field="datavirt-datasources-none" style="display:none" class="sramp-artifacts-none">
+                    <div data-field="datavirt-datasources-none" style="display:none" class="datavirt-items-none">
                       <span data-i18n-key="no-artifacts">No Data Sources found.</span>
                     </div>
-                    <div data-field="datavirt-datasources-searching" style="display:none" class="sramp-artifacts-searching">
+                    <div data-field="datavirt-datasources-searching" style="display:none" class="datavirt-items-searching">
                       <span class="spinner" data-i18n-key="finding-datasources">Finding DataSources, please wait...</span>
                     </div>
 
                     <!-- Sources Table -->
-                    <table data-field="datavirt-datasources-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+                    <table data-field="datavirt-datasources-table" class="datavirt-items-table table table-striped table-condensed table-hover">
                       <thead>
                         <tr>
-                          <th data-i18n-key="select"></th>
+                          <th style="width:20px" data-i18n-key="select"></th>
                           <th data-i18n-key="name">Name</th>
                           <th data-i18n-key="jndiname">JNDI Name</th>
                           <th data-i18n-key="type">Source Type</th>
@@ -168,8 +168,8 @@
                 <!-- The DataSource Types table -->
                 <div class="span3">
                     <!-- Actions Bar -->
-                    <div class="row-fluid sramp-artifacts">
-                      <div class="span12 sramp-artifacts-actions"> 
+                    <div class="row-fluid datavirt-items">
+                      <div class="span12 datavirt-items-actions"> 
                         <div class="pull-right">
                           <button data-field="btn-add-source-type" id="btn-add-source-type" class="btn btn-focus requires-fileupload" data-i18n-key="add">Add</button>
                           <button data-field="btn-remove-source-type" id="btn-remove-source-type" class="btn btn-focus requires-fileupload" data-i18n-key="remove">Remove</button>
@@ -179,18 +179,18 @@
                     </div>
               
                     <!-- Messages -->
-                    <div data-field="datavirt-datasource-types-none" style="display:none" class="sramp-artifacts-none">
+                    <div data-field="datavirt-datasource-types-none" style="display:none" class="datavirt-items-none">
                       <span data-i18n-key="no-artifacts">No Data Source types found.</span>
                     </div>
-                    <div data-field="datavirt-datasource-types-searching" style="display:none" class="sramp-artifacts-searching">
+                    <div data-field="datavirt-datasource-types-searching" style="display:none" class="datavirt-items-searching">
                       <span class="spinner" data-i18n-key="finding-datasource-types">Finding DataSource Types, please wait...</span>
                     </div>
 
                     <!-- Sources Table -->
-                    <table data-field="datavirt-datasource-types-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+                    <table data-field="datavirt-datasource-types-table" class="datavirt-items-table table table-striped table-condensed table-hover">
                       <thead>
                         <tr>
-                          <th data-i18n-key="select"></th>
+                          <th style="width:20px" data-i18n-key="select"></th>
                           <th data-i18n-key="name">Name</th>
                         </tr>
                       </thead>
@@ -256,7 +256,7 @@
     <!-- Some scripting to add functionality to the live template -->
     <script>
       $(document).ready(function() {
-    	  $('.sramp-date').datepicker({
+    	  $('.datavirt-date').datepicker({
     		  autoclose: true,
     		  todayBtn: true,
     		  todayHighlight: true

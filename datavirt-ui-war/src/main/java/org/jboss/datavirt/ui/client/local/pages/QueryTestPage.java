@@ -182,6 +182,8 @@ public class QueryTestPage extends AbstractPage {
         		// Populate the Tables ListBox
         		String selectedSource = getSelectedSource();
         		doPopulateTablesListBox(selectedSource);
+
+        		stateService.put(ApplicationStateKeys.QUERY_SOURCELIST_SELECTED, selectedSource);
         		
         		clearColumnsTable();
         		clearQueryResultsTable();
@@ -252,22 +254,34 @@ public class QueryTestPage extends AbstractPage {
             	sourceNameToJndiMap.clear();
             	sourceNameToJndiMap.putAll(sourceToJndiMap);
                 populateSourceListBox(sourceToJndiMap.keySet());
+                setSourceListSelection();
             }
             @Override
             public void onError(Throwable error) {
                 notificationService.sendErrorNotification(i18n.format("queryTest.error-populating-sources"), error); //$NON-NLS-1$
             }
         });
-//        queryService.getDataSourceNames(teiidOnly, new IRpcServiceInvocationHandler<List<String>>() {
-//            @Override
-//            public void onReturn(List<String> sources) {
-//                populateSourceListBox(sources);
-//            }
-//            @Override
-//            public void onError(Throwable error) {
-//                notificationService.sendErrorNotification(i18n.format("queryTest.error-populating-sources"), error); //$NON-NLS-1$
-//            }
-//        });
+    }
+    
+    private void setSourceListSelection() {
+    	// Current Source Selection
+        String listSelection = (String) stateService.get(ApplicationStateKeys.QUERY_SOURCELIST_SELECTED, ""); //$NON-NLS-1$
+
+        String selectedSrc = null;
+        int nItems = sourceListBox.getItemCount();
+        for(int i=0; i<nItems; i++) {
+        	String itemText = sourceListBox.getItemText(i);
+        	if( !StringUtils.isEmpty(itemText) && itemText.equalsIgnoreCase(listSelection) ) {
+        		sourceListBox.setSelectedIndex(i);
+        		selectedSrc = itemText;
+        		break;
+        	}
+        }
+        if(selectedSrc!=null) {
+        	doPopulateTablesListBox(selectedSrc);
+        } else {
+        	sourceListBox.setSelectedIndex(0);
+        }
     }
 
     /**
@@ -311,9 +325,6 @@ public class QueryTestPage extends AbstractPage {
     		sourceListBox.insertItem(source, i);
     		i++;
     	}
-
-    	// Initialize by setting the selection to the first item.
-    	sourceListBox.setSelectedIndex(0);
     }
     
     /*

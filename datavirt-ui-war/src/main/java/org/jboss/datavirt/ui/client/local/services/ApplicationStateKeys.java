@@ -43,6 +43,8 @@ public final class ApplicationStateKeys {
     public static final String ADD_DATASOURCE_DIALOG_SORT_COLUMN_CORE = "adddatasourcedialog.sort-column-core"; //$NON-NLS-1$
     public static final String ADD_DATASOURCE_DIALOG_SORT_COLUMN_ADV = "adddatasourcedialog.sort-column-adv"; //$NON-NLS-1$
     
+    public static final String QUERY_SOURCELIST_SELECTED = "querytest.sourcelist.selected"; //$NON-NLS-1$
+    
     public static final String QUERY_COLUMNS_FILTER_TEXT = "querytest.columns.filter-text"; //$NON-NLS-1$
     public static final String QUERY_COLUMNS_PAGE = "querytest.columns.page"; //$NON-NLS-1$
 

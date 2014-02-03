@@ -26,7 +26,7 @@
     <div id="page" data-field="page">
 
       <!-- Common Tab Bar -->
-      <ul id="appNavTabs" class="nav nav-tabs sramp-nav-tabs">
+      <ul id="appNavTabs" class="nav nav-tabs datavirt-nav-tabs">
         <li class=""><a data-field="to-datasources-page" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a></li>
         <li class="active"><a data-field="to-vdbs-page" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a></li>
         <li class=""><a data-field="to-querytest-page" href="querytest.html"><span data-i18n-key="querytest">Test</span></a></li>
@@ -47,9 +47,9 @@
           <div class="span9">
                         
               <!-- Actions Bar -->
-              <div class="row-fluid sramp-artifacts">
-                <div class="span12 sramp-artifacts-actions">
-                  <div class="span6 sramp-search">
+              <div class="row-fluid datavirt-items">
+                <div class="span12 datavirt-items-actions">
+                  <div class="span6 datavirt-search">
                     <input data-field="vdb-search-box" id="vdb-search-box" type="text" class="span12 datavirt-search-box" placeholder="Filter..."></input>
                   </div>
                   <div class="pull-right">
@@ -63,18 +63,18 @@
               </div>
               
               <!-- Messages -->
-              <div data-field="datavirt-virtualdatabases-none" style="display:none" class="sramp-artifacts-none">
+              <div data-field="datavirt-virtualdatabases-none" style="display:none" class="datavirt-items-none">
                 <span data-i18n-key="no-virtualdatabases">No Virtual Databases found.</span>
               </div>
-              <div data-field="datavirt-virtualdatabases-searching" style="display:none" class="sramp-artifacts-searching">
+              <div data-field="datavirt-virtualdatabases-searching" style="display:none" class="datavirt-items-searching">
                 <span class="spinner" data-i18n-key="finding-virtualdatabases">Finding Virtual DBs, please wait...</span>
               </div>
 
               <!-- VDBs Table -->
-              <table data-field="datavirt-virtualdatabases-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+              <table data-field="datavirt-virtualdatabases-table" class="datavirt-items-table table table-striped table-condensed table-hover">
                 <thead>
                   <tr>
-                    <th data-i18n-key="select"></th>
+                    <th style="width:20px" data-i18n-key="select"></th>
                     <th data-i18n-key="name">Name</th>
                     <th data-i18n-key="type">VDB Type</th>
                     <th data-i18n-key="status">Status</th>
@@ -131,7 +131,7 @@
     <!-- Some scripting to add functionality to the live template -->
     <script>
       $(document).ready(function() {
-    	  $('.sramp-date').datepicker({
+    	  $('.datavirt-date').datepicker({
     		  autoclose: true,
     		  todayBtn: true,
     		  todayHighlight: true

@@ -25,7 +25,7 @@ body.no-fileupload .requires-fileupload {
     padding-top: 0px;
     padding-bottom: 10px;
   }
-  .sramp-navbar-fixed-top {
+  .datavirt-navbar-fixed-top {
     top: 0px;
     position: fixed;
     right: 0px;
@@ -33,7 +33,7 @@ body.no-fileupload .requires-fileupload {
     z-index: 1030;
     margin-bottom: 0px;
   }
-  .sramp-navbar-fixed-top .navbar-inner {
+  .datavirt-navbar-fixed-top .navbar-inner {
     box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
     padding-right: 0px;
     padding-left: 0px;
@@ -67,21 +67,21 @@ body.no-fileupload .requires-fileupload {
     padding: 5px;
   }
 
-  .sramp-settings .sramp-settings-sh {
+  .datavirt-settings .datavirt-settings-sh {
     padding: 5px 10px 5px 10px;
     line-height: normal;
   }
   
-  .sramp-settings-header {
+  .datavirt-settings-header {
     margin-bottom: 3px;
   }
 
-  .row-fluid .sramp-settings-property-list {
+  .row-fluid .datavirt-settings-property-list {
     border-bottom: 1px solid #d3d3d3;
     min-height: 0px;
   }
   
-  .sramp-tab-content {
+  .datavirt-tab-content {
     padding-left: 8px;
     padding-right: 8px;
   }

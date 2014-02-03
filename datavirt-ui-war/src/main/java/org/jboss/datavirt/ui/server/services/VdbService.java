@@ -37,6 +37,7 @@ import org.jboss.datavirt.ui.client.shared.services.IVdbService;
 import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.datavirt.ui.server.api.AdminApiClientAccessor;
 import org.jboss.datavirt.ui.server.services.util.FilterUtil;
+import org.jboss.datavirt.ui.server.services.util.JdbcSourceHelper;
 import org.jboss.datavirt.ui.server.services.util.VdbHelper;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.teiid.adminapi.VDB;
@@ -116,6 +117,9 @@ public class VdbService implements IVdbService {
         	page_endIndex = totalVdbs-1;
         }
         
+        // Gets jdbc Jndi names available on the server
+        List<String> jdbcJndiNames = JdbcSourceHelper.getInstance().getJdbcSourceNames(false);
+
         List<VdbSummaryBean> rows = new ArrayList<VdbSummaryBean>();
         if(!allVdbNamesSort.isEmpty()) {
         	for(int i=page_startIndex; i<=page_endIndex; i++) {
@@ -127,6 +131,9 @@ public class VdbService implements IVdbService {
         				summaryBean.setName(thisVdbName);
         				summaryBean.setType(vdbProps.getProperty("type"));
         				summaryBean.setStatus(vdbProps.getProperty("status"));
+        				if(jdbcJndiNames.contains("java:/"+thisVdbName)) {
+        					summaryBean.setTestable(true);
+        				}
         				rows.add(summaryBean);
         				break;
         			}

@@ -25,7 +25,7 @@
     <div id="page" data-field="page">
 
       <!-- Common Tab Bar -->
-      <ul id="appNavTabs" class="nav nav-tabs sramp-nav-tabs">
+      <ul id="appNavTabs" class="nav nav-tabs datavirt-nav-tabs">
         <li class="active"><a data-field="to-datasources-page" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a></li>
         <li class=""><a data-field="to-vdbs-page" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a></li>
         <li class=""><a data-field="to-querytest-page" href="querytest.html"><span data-i18n-key="querytest">Test</span></a></li>
@@ -43,7 +43,7 @@
         </div>
 
         <!-- Loading spinner -->
-        <div data-field="datasource-details-loading-spinner" class="spinner artifact-details-loading hide" data-i18n-key="loading-datasources">Loading datasource, please wait...</div>
+        <div data-field="datasource-details-loading-spinner" class="spinner datavirt-details-loading hide" data-i18n-key="loading-datasources">Loading datasource, please wait...</div>
 
         <!-- Page Title Info -->
         <div class="span12">
@@ -57,8 +57,8 @@
         <!-- The DataSources table -->
         <div class="span9">
           <!-- Actions Bar -->
-          <div class="row-fluid sramp-artifacts">
-            <div class="span12 sramp-artifacts-actions">
+          <div class="row-fluid datavirt-items">
+            <div class="span12 datavirt-items-actions">
               <div class="pull-right">
                 <button data-field="btn-apply" id="btn-apply" class="btn btn-focus requires-fileupload" data-i18n-key="apply">Apply</button>
                 <button data-field="btn-reset" id="btn-reset" class="btn btn-focus requires-fileupload" data-i18n-key="reset">Reset</button>
@@ -66,16 +66,16 @@
             </div>
           </div>
           <!-- Messages -->
-          <div style="display:inline" class="sramp-artifacts-none">
+          <div style="display:inline" class="datavirt-items-none">
             <span data-field="datavirt-datasourcedetails-status">Click to accept property changes</span>
           </div>
         <!-- Core Properties Table -->
         <p>
-          <table data-field="datasource-core-properties-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+          <table data-field="datasource-core-properties-table" class="datavirt-items-table table table-striped table-condensed table-hover">
             <thead>
               <tr>
-                <th data-i18n-key="name">Name</th>
-                <th data-i18n-key="type">Value</th>
+                <th style="width:20%" data-i18n-key="name">Name</th>
+                <th style="width:80%" data-i18n-key="type">Value</th>
               </tr>
             </thead>
             <tbody data-role="dummy">
@@ -88,25 +88,25 @@
         </p>   
         <p>
           <!-- Advanced Properties -->
-          <div id="sramp-filters" class="row-fluid close-on-mobile closed-on-mobile open-on-desktop">
+          <div id="datavirt-filters" class="row-fluid close-on-mobile closed-on-mobile open-on-desktop">
             <div class="span12">
               <!-- Filter Accordian -->
               <div class="" id="accordion-filters">
               
                 <!-- Advanced Properties -->
-                <div class="sramp-filter-group">
-                  <div class="s-ramp-filter-header">
-                    <a class="sramp-filter-toggle" data-toggle="slide" data-target="#accordion-filters-properties">
+                <div class="datavirt-filter-group">
+                  <div class="datavirt-filter-header">
+                    <a class="datavirt-filter-toggle" data-toggle="slide" data-target="#accordion-filters-properties">
                       <span data-i18n-key="filters.custom-properties-header">Advanced Properties</span>
                     </a>
                   </div>
-                  <div id="accordion-filters-properties" class="sramp-filter-body closed">
-                    <div class="sramp-filter-inner">
-                       <table data-field="datasource-advanced-properties-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+                  <div id="accordion-filters-properties" class="datavirt-filter-body open">
+                    <div class="datavirt-filter-inner">
+                       <table data-field="datasource-advanced-properties-table" class="datavirt-items-table table table-striped table-condensed table-hover">
                          <thead>
                            <tr>
-                             <th data-i18n-key="name">Name</th>
-                             <th data-i18n-key="type">Value</th>
+                             <th style="width:20%" data-i18n-key="name">Name</th>
+                             <th style="width:80%" data-i18n-key="type">Value</th>
                            </tr>
                          </thead>
                          <tbody data-role="dummy">
@@ -117,16 +117,16 @@
                          </tbody>
                        </table>
                     </div>
-                    <div class="s-ramp-filter-footer">
-                      <a class="sramp-filter-toggle dropup" data-toggle="slide" data-target="#accordion-filters-properties">
+                    <div class="datavirt-filter-footer">
+                      <a class="datavirt-filter-toggle dropup" data-toggle="slide" data-target="#accordion-filters-properties">
                         <span class="pull-right caret"></span>
                       </a>
                     </div>
                   </div> <!-- accordion-filters-properties -->
-                </div> <!-- sramp-filter-group -->
+                </div> <!-- datavirt-filter-group -->
               </div> <!-- accordian-filters -->
             </div> <!-- span12 -->
-          </div> <!-- sramp-filters -->
+          </div> <!-- datavirt-filters -->
         </p>   
         </div>
         </div>
@@ -147,10 +147,10 @@
         editor.setTheme("ace/theme/eclipse");
         editor.getSession().setMode("ace/mode/xml");
       });
-      $('.sramp-artifact-actions ul li:nth-child(3)').click(function() {
+      $('.datavirt-item-actions ul li:nth-child(3)').click(function() {
         $('#delete-dialog-derived').modal();
       });
-      $('.sramp-artifact-actions ul li:nth-child(4)').click(function() {
+      $('.datavirt-item-actions ul li:nth-child(4)').click(function() {
         $('#delete-dialog-referenced').modal();
       });
     </script>

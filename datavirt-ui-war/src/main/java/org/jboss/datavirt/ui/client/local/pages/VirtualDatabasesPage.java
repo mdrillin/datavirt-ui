@@ -17,6 +17,7 @@ package org.jboss.datavirt.ui.client.local.pages;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -45,6 +46,7 @@ import org.jboss.datavirt.ui.client.shared.beans.VdbSummaryBean;
 import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.jboss.errai.ui.nav.client.local.Page;
 import org.jboss.errai.ui.nav.client.local.TransitionAnchor;
+import org.jboss.errai.ui.nav.client.local.TransitionAnchorFactory;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
@@ -77,6 +79,8 @@ public class VirtualDatabasesPage extends AbstractPage {
     private TransitionAnchor<VirtualDatabasesPage> toVDBsPage;
     @Inject @DataField("to-querytest-page")
     private TransitionAnchor<QueryTestPage> toQueryTestPage;
+    @Inject
+    protected TransitionAnchorFactory<VdbDetailsPage> toDetailsPageLinkFactory;
 
     @Inject
     protected ClientMessages i18n;
@@ -120,6 +124,7 @@ public class VirtualDatabasesPage extends AbstractPage {
 
     private int currentPage = 1;
     private Collection<String> allVdbNames = new ArrayList<String>();
+    private Map<String, Boolean> vdbTestableMap = new HashMap<String,Boolean>();
     
    /**
      * Constructor.
@@ -256,7 +261,12 @@ public class VirtualDatabasesPage extends AbstractPage {
      * @param event
      */
     @EventHandler("btn-test-vdb")
-    public void onTestSourceClick(ClickEvent event) {
+    public void onTestVdbClick(ClickEvent event) {
+    	// Get the selected source - set the application state.  Then go to Test page.
+    	String selectedSource = vdbsTable.getSelectedVdbs().iterator().next();
+		stateService.put(ApplicationStateKeys.QUERY_SOURCELIST_SELECTED, selectedSource);
+		
+		toQueryTestPage.click();
     }
 
     /**
@@ -287,9 +297,6 @@ public class VirtualDatabasesPage extends AbstractPage {
     }
 
     private void doSetButtonEnablements() {
-    	// Test Button Disabled for now
-    	testVdbButton.setEnabled(false);
-    	
     	newVdbButton.setEnabled(true);
     	uploadVdbButton.setEnabled(true);
     	
@@ -299,6 +306,15 @@ public class VirtualDatabasesPage extends AbstractPage {
     		removeVdbButton.setEnabled(false);
     	} else {
     		removeVdbButton.setEnabled(true);
+    	}
+    	
+    	// Test Vdb Button - enabled if only one row is selected - and vdb is testable
+    	if(selectedRows==1) {
+    		String selectedSource = this.vdbsTable.getSelectedVdbs().iterator().next();
+    		boolean isTestable = this.vdbTestableMap.get(selectedSource);
+    		testVdbButton.setEnabled(isTestable);
+    	} else {
+    		testVdbButton.setEnabled(false);
     	}
     }
     
@@ -353,12 +369,13 @@ public class VirtualDatabasesPage extends AbstractPage {
 
     }
     
-    protected void doCreateDynamicVdb(String deploymentName) {
+    protected void doCreateDynamicVdb(final String deploymentName) {
  	   
     	vdbService.createAndDeployDynamicVdb(deploymentName, new IRpcServiceInvocationHandler<Void>() {
             @Override
             public void onReturn(Void data) {
-                doVdbSearch(currentPage);
+                TransitionAnchor<VdbDetailsPage> detailsLink = toDetailsPageLinkFactory.get("vdbname", deploymentName); //$NON-NLS-1$
+                detailsLink.click();
             }
             @Override
             public void onError(Throwable error) {
@@ -380,15 +397,21 @@ public class VirtualDatabasesPage extends AbstractPage {
     }
 
     /**
-     * Updates the table of VDBs with the given data.
+     * Updates the table of VDBs with the given data.  Also updated Vdb testable map
      * @param data
      */
     protected void updateVdbsTable(VdbResultSetBean data) {
         this.vdbsTable.clear();
+        this.vdbTestableMap.clear();
         this.searchInProgressMessage.setVisible(false);
         if (data.getVdbs().size() > 0) {
             for (VdbSummaryBean vdbSummaryBean : data.getVdbs()) {
                 this.vdbsTable.addRow(vdbSummaryBean);
+                if(vdbSummaryBean.isTestable()) {
+                	this.vdbTestableMap.put(vdbSummaryBean.getName(), true);
+                } else {
+                	this.vdbTestableMap.put(vdbSummaryBean.getName(), false);
+                }
             }
             this.vdbsTable.setVisible(true);
         } else {

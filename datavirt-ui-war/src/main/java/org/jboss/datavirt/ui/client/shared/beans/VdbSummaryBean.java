@@ -41,7 +41,8 @@ public class VdbSummaryBean {
     private Date createdOn;
     private Date updatedOn;
     private Map<String, String> properties = new HashMap<String, String>();
-
+    private boolean testable = false;
+    
     /**
      * Constructor.
      */
@@ -118,6 +119,13 @@ public class VdbSummaryBean {
      */
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    /**
+     * @return the isTestable state
+     */
+    public boolean isTestable() {
+        return testable;
     }
 
     /**
@@ -205,6 +213,13 @@ public class VdbSummaryBean {
      */
     public Set<String> getPropertyNames() {
         return this.properties.keySet();
+    }
+
+    /**
+     * @param testable 'true' if testable on test page
+     */
+    public void setTestable(boolean testable) {
+        this.testable = testable;
     }
 
     /**

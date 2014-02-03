@@ -27,12 +27,14 @@ import org.jboss.datavirt.ui.client.shared.beans.DataSourcePropertyBean;
 import org.jboss.datavirt.ui.client.shared.services.StringUtils;
 import org.overlord.sramp.ui.client.local.widgets.common.SortableTemplatedWidgetTable;
 
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -109,6 +111,19 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable impl
         
         rowNameMap.put(rowIdx,valueTextBox);
         rowBeanMap.put(rowIdx,dataSourcePropertyBean);
+        
+    }
+    
+    /**
+     * Sets value column TextBoxes all to the width of the value column header
+     */
+    public void setValueColTextBoxWidths() {
+        NodeList<com.google.gwt.dom.client.Element> elementsByTagName = this.thead.getElementsByTagName("th"); //$NON-NLS-1$
+        Element thElement = elementsByTagName.getItem(1).cast();
+        int width = thElement.getClientWidth();
+    	for(TextBox textBox : rowNameMap.values()) {
+    		textBox.setWidth(width+"px");
+    	}
     }
     
     public void updatePropertyValues() {

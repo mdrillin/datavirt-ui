@@ -25,7 +25,7 @@
     <div id="page" data-field="page">
 
       <!-- Common Tab Bar -->
-      <ul id="appNavTabs" class="nav nav-tabs sramp-nav-tabs">
+      <ul id="appNavTabs" class="nav nav-tabs datavirt-nav-tabs">
         <li class=""><a data-field="to-datasources-page" href="datasources.html"><span data-i18n-key="datasources">Data Sources</span></a></li>
         <li class="active"><a data-field="to-vdbs-page" href="virtualdatabases.html"><span data-i18n-key="vdbs">Virtual Databases</span></a></li>
         <li class=""><a data-field="to-querytest-page" href="querytest.html"><span data-i18n-key="querytest">Test</span></a></li>
@@ -43,7 +43,7 @@
         </div>
 
         <!-- Loading spinner -->
-        <div data-field="vdbdetails-loading-spinner" class="spinner artifact-details-loading hide" data-i18n-key="loading-vdbdetails">Loading VDB details, please wait...</div>
+        <div data-field="vdbdetails-loading-spinner" class="spinner datavirt-details-loading hide" data-i18n-key="loading-vdbdetails">Loading VDB details, please wait...</div>
 
         <!-- Page Title Info -->
         <div class="row">
@@ -63,11 +63,11 @@
           </div>
         </div>
         
-        <!-- The VDBs table -->
+        <!-- The VDB Models table -->
         <div class="span9">
             <!-- Actions Bar -->
-            <div class="row-fluid sramp-artifacts">
-              <div class="span12 sramp-artifacts-actions">
+            <div class="row-fluid datavirt-items">
+              <div class="span12 datavirt-items-actions">
                 <div class="pull-right">
                   <button data-field="btn-add-source" id="btn-add-source" class="btn btn-focus requires-fileupload" data-i18n-key="addSource">Add Source</button>
                   <button data-field="btn-add-view" id="btn-add-view" class="btn btn-focus requires-fileupload" data-i18n-key="addView">Add View</button>
@@ -80,21 +80,21 @@
             </div>
             
             <!-- Messages -->
-            <div data-field="datavirt-vdbmodels-none" style="display:none" class="sramp-artifacts-none">
+            <div data-field="datavirt-vdbmodels-none" style="display:none" class="datavirt-items-none">
               <span data-i18n-key="no-vdbmodels">No VDB Models found.</span>
             </div>
-            <div data-field="datavirt-vdbmodels-retrieving" style="display:none" class="sramp-artifacts-searching">
+            <div data-field="datavirt-vdbmodels-retrieving" style="display:none" class="datavirt-items-searching">
               <span class="spinner" data-i18n-key="retrieving-vdbmodels">Retrieving Virtual DB Models, please wait...</span>
             </div>
-            <div data-field="datavirt-vdbmodels-adding" style="display:none" class="sramp-artifacts-searching">
+            <div data-field="datavirt-vdbmodels-adding" style="display:none" class="datavirt-items-searching">
               <span class="spinner" data-i18n-key="adding-vdbmodels">Adding the Model, please wait...</span>
             </div>
 
             <!-- VDBs Table -->
-            <table data-field="datavirt-vdbmodels-table" class="sramp-artifacts-table table table-striped table-condensed table-hover">
+            <table data-field="datavirt-vdbmodels-table" class="datavirt-items-table table table-striped table-condensed table-hover">
               <thead>
                 <tr>
-                  <th data-i18n-key="select"></th>
+                  <th style="width:20px" data-i18n-key="select"></th>
                   <th data-i18n-key="name">Model Name</th>
                   <th data-i18n-key="status">Status</th>
                   <th data-i18n-key="type">Model Type</th>
@@ -160,10 +160,10 @@
         editor.setTheme("ace/theme/eclipse");
         editor.getSession().setMode("ace/mode/xml");
       });
-      $('.sramp-artifact-actions ul li:nth-child(3)').click(function() {
+      $('.datavirt-item-actions ul li:nth-child(3)').click(function() {
         $('#delete-dialog-derived').modal();
       });
-      $('.sramp-artifact-actions ul li:nth-child(4)').click(function() {
+      $('.datavirt-item-actions ul li:nth-child(4)').click(function() {
         $('#delete-dialog-referenced').modal();
       });
     </script>

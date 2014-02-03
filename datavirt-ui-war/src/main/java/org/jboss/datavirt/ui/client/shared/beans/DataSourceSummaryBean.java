@@ -37,6 +37,7 @@ public class DataSourceSummaryBean {
     private String createdBy;
     private Date createdOn;
     private Date updatedOn;
+    private boolean testable = false;
 
     /**
      * Constructor.
@@ -101,6 +102,13 @@ public class DataSourceSummaryBean {
     }
 
     /**
+     * @return the isTestable state
+     */
+    public boolean isTestable() {
+        return testable;
+    }
+
+    /**
      * @param model the model to set
      */
     public void setModel(String model) {
@@ -154,6 +162,13 @@ public class DataSourceSummaryBean {
      */
     public void setUpdatedOn(Date updatedOn) {
         this.updatedOn = updatedOn;
+    }
+    
+    /**
+     * @param testable 'true' if testable on test page
+     */
+    public void setTestable(boolean testable) {
+        this.testable = testable;
     }
 
     /**

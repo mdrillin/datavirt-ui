@@ -110,6 +110,9 @@ public class DataSourceService implements IDataSourceService {
         	page_endIndex = totalSources-1;
         }
         
+        // Gets jdbc Jndi names available on the server
+        List<String> jdbcJndiNames = JdbcSourceHelper.getInstance().getJdbcSourceNames(false);
+        
         List<DataSourceSummaryBean> rows = new ArrayList<DataSourceSummaryBean>();
         if(!allDsNamesSort.isEmpty()) {
         	for(int i=page_startIndex; i<=page_endIndex; i++) {
@@ -121,7 +124,11 @@ public class DataSourceService implements IDataSourceService {
         			String thisDsName = dsProps.getProperty("name");
         			if(thisDsName.equalsIgnoreCase(dsName)) {
         				summaryBean.setName(thisDsName);
-        				summaryBean.setJndiName(dsProps.getProperty("jndi-name"));
+        				String jndiName = dsProps.getProperty("jndi-name");
+        				summaryBean.setJndiName(jndiName);
+        				if(jdbcJndiNames.contains(jndiName)) {
+        					summaryBean.setTestable(true);
+        				}
         				summaryBean.setType(dsProps.getProperty("type"));
         				rows.add(summaryBean);
         				break;

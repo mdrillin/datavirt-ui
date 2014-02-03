@@ -17,6 +17,8 @@ package org.jboss.datavirt.ui.client.local.pages;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
@@ -122,6 +124,7 @@ public class DataSourcesPage extends AbstractPage {
 
     private int currentDataSourcePage = 1;
     private Collection<String> allDsNames = new ArrayList<String>();
+    private Map<String, Boolean> sourceTestableMap = new HashMap<String,Boolean>();
 
     //=========================================================================================
     @Inject @DataField("btn-add-source-type")
@@ -313,6 +316,11 @@ public class DataSourcesPage extends AbstractPage {
      */
     @EventHandler("btn-test-source")
     public void onTestSourceClick(ClickEvent event) {
+    	// Get the selected source - set the application state.  Then go to Test page.
+    	String selectedSource = dataSourcesTable.getSelectedDataSources().iterator().next();
+		stateService.put(ApplicationStateKeys.QUERY_SOURCELIST_SELECTED, selectedSource);
+		
+		toQueryTestPage.click();
     }
 
     /**
@@ -424,15 +432,22 @@ public class DataSourcesPage extends AbstractPage {
     }
 
     private void doSetSourceButtonEnablements() {
-    	// Test Button Disabled for now
-    	testSourceButton.setEnabled(false);
-    	
+
     	// Remove DataSource Button - enabled if at least one row is selected.
     	int selectedRows = this.dataSourcesTable.getSelectedDataSources().size();
     	if(selectedRows==0) {
     		removeSourceButton.setEnabled(false);
     	} else {
     		removeSourceButton.setEnabled(true);
+    	}
+    	
+    	// Test DataSource Button - enabled if only one row is selected - and source is testable
+    	if(selectedRows==1) {
+    		String selectedSource = this.dataSourcesTable.getSelectedDataSources().iterator().next();
+    		boolean isTestable = this.sourceTestableMap.get(selectedSource);
+    		testSourceButton.setEnabled(isTestable);
+    	} else {
+    		testSourceButton.setEnabled(false);
     	}
     }
 
@@ -498,15 +513,21 @@ public class DataSourcesPage extends AbstractPage {
     }
 
     /**
-     * Updates the table of Data Sources with the given data.
+     * Updates the table of Data Sources with the given data. Also updates sourceTestableMap.
      * @param data
      */
     protected void updateDataSourcesTable(DataSourceResultSetBean data) {
         this.dataSourcesTable.clear();
+        this.sourceTestableMap.clear();
         this.datasourceSearchInProgressMessage.setVisible(false);
         if (data.getDataSources().size() > 0) {
             for (DataSourceSummaryBean dataSourceSummaryBean : data.getDataSources()) {
                 this.dataSourcesTable.addRow(dataSourceSummaryBean);
+                if(dataSourceSummaryBean.isTestable()) {
+                	this.sourceTestableMap.put(dataSourceSummaryBean.getName(), true);
+                } else {
+                	this.sourceTestableMap.put(dataSourceSummaryBean.getName(), false);
+                }
             }
             this.dataSourcesTable.setVisible(true);
         } else {

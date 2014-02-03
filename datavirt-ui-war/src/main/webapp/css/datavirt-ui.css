@@ -76,7 +76,7 @@ a:hover {
   src: url("../images/StatusIcon_inactive_32x32.png");
 }
 
-input.sramp-date {
+input.datavirt-date {
   cursor: pointer;
   background-color: white;
 }
@@ -241,11 +241,11 @@ button.tree:hover {
   padding: 5px;
 }
 
-.sramp-artifacts {
+.datavirt-items {
   padding: 0px;
 }
 
-.sramp-artifacts-actions, .sramp-artifact-actions {
+.datavirt-items-actions, .datavirt-item-actions {
   border: 1px solid #d3d3d3;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -256,14 +256,14 @@ button.tree:hover {
   padding: 10px;
   border-bottom: 1px solid #d3d3d3;
 }
-.sramp-artifacts-actions .sramp-sp4n-label, .sramp-artifact-actions .sramp-sp4n-label {
+.datavirt-items-actions .datavirt-sp4n-label, .datavirt-item-actions .datavirt-sp4n-label {
   text-shadow: 0px 1px 0px white;
   padding: 4px 12px;
   line-height: 20px;
   display: inline;
 }
 
-.sramp-artifacts-none, .sramp-artifacts-searching {
+.datavirt-items-none, .datavirt-items-searching {
   float: left;
   width: 100%;
   background-color: white;
@@ -272,12 +272,12 @@ button.tree:hover {
   border-bottom: 1px solid #d3d3d3;
   margin-bottom: 20px;
 }
-.sramp-artifacts-none span {
+.datavirt-items-none span {
   padding: 10px;
   float: left;
   font-style: italic;
 }
-.sramp-artifacts-searching span {
+.datavirt-items-searching span {
   padding-top: 10px;
   padding-bottom: 10px;
   padding-left: 36px;
@@ -285,31 +285,31 @@ button.tree:hover {
   background-position: 16px 11px;
 }
 
-.sramp-artifact-details-title {
+.datavirt-item-details-title {
   font-weight: bold;
   font-size: 16px;
   text-shadow: 1px 1px 2px #aaa;
 }
 
-.sramp-artifact-details-version {
+.datavirt-item-details-version {
   margin-left: 8px;
 }
 
-.sramp-artifact-details-type {
+.datavirt-item-details-type {
   margin-left: 8px;
 }
 
-.sramp-artifacts-table {
+.datavirt-items-table {
   border-left: 1px solid #d3d3d3;
   border-right: 1px solid #d3d3d3;
   border-bottom: 1px solid #d3d3d3;
 }
 
-.sramp-artifacts-table thead th {
+.datavirt-items-table thead th {
   background-color: white;
 }
 
-.sramp-artifacts-table thead th, .sramp-artifacts-table tbody td {
+.datavirt-items-table thead th, .datavirt-items-table tbody td {
   border-left: 1px solid #d3d3d3;
 }
 
@@ -344,13 +344,13 @@ button.tree:hover {
   border-right: 1px solid rgb(221, 221, 221);
 }
 
-.sramp-nav-tabs {
+.datavirt-nav-tabs {
   margin-bottom: 0px;
   border-left: 1px solid rgb(221, 221, 221);
   border-right: 1px solid rgb(221, 221, 221);
 }
 
-.sramp-nav-tabs li a {
+.datavirt-nav-tabs li a {
   color: #666;
   border-radius: 0px;
   border-top: 0px;
@@ -360,100 +360,61 @@ button.tree:hover {
   margin-right: 0px;
   background-color: rgb(234, 234, 234);
 }
-.sramp-nav-tabs li a:hover {
+.datavirt-nav-tabs li a:hover {
   border-right: 1px solid rgb(221, 221, 221);
   background-color: rgb(234, 234, 234);
   color: #007ca3;
 }
-.sramp-nav-tabs .active a, .sramp-nav-tabs .active a:hover {
+.datavirt-nav-tabs .active a, .datavirt-nav-tabs .active a:hover {
   border-top: 0px;
   border-left: 0px;
   border-right: 1px solid rgb(221, 221, 221);
 }
 
-.sramp-tab-content {
+.datavirt-tab-content {
   border-left: 1px solid rgb(221, 221, 221);
   border-right: 1px solid rgb(221, 221, 221);
   border-bottom: 1px solid rgb(221, 221, 221);
   padding-bottom: 15px;
 }
 
-.artifact-details-loading {
+.datavirt-details-loading {
   margin: 20px;
   padding-bottom: 20px;
 }
 
-.sramp-details-tab-spinner {
+.datavirt-details-tab-spinner {
   margin-top: 20px
 }
 
-.sramp-meta-data-section {
-  margin-top: 15px;
+.datavirt-settings {
 }
 
-.sramp-meta-data-section .btn {
-  margin-top: 5px;
-}
-
-.sramp-meta-data-section-header {
-  font-weight: bold;
-  float: left;
-}
-
-.sramp-meta-data-section-label {
-  white-space: nowrap;
-  min-width: 130px;
-  float: left;
-}
-
-.sramp-meta-data-section-value {
-  float: left;
-}
-
-.sramp-source-editor-wrapper {
-  margin-top: 15px;
-  background-color: #fff8f8;
-  position: relative;
-  height: 350px;
-  border: 1px solid rgb(221, 221, 221);
-}
-
-.sramp-source-editor {
-  left: 0px;
-  top: 0px;
-  bottom: 1px;
-  right: 1px;
-  background: white;
-}
-
-.sramp-settings {
-}
-
-.sramp-settings .sramp-settings-sh {
+.datavirt-settings .datavirt-settings-sh {
   padding: 15px 5px 15px 5px;
 }
-.sramp-settings .sramp-settings-header {
+.datavirt-settings .datavirt-settings-header {
   font-size: medium;
 }
-.sramp-settings .sramp-settings-message {
+.datavirt-settings .datavirt-settings-message {
   font-size: small;
 }
-.sramp-settings .sramp-settings-header, .sramp-settings .sramp-settings-message {
+.datavirt-settings .datavirt-settings-header, .datavirt-settings .datavirt-settings-message {
   color: #666;
   text-shadow: 0px 1px 0px white;
   width: 95%;
 }
 
-.sramp-settings-properties {
+.datavirt-settings-properties {
   background-color: #f9f9f9;
   border: 1px solid #d3d3d3;
 }
 
-.sramp-settings-property-list .nav-stacked {
+.datavirt-settings-property-list .nav-stacked {
   margin-bottom: 8px;
 }
 
-.sramp-settings-property-list .nav-pills .sramp-settings-property a {
+.datavirt-settings-property-list .nav-pills .datavirt-settings-property a {
   border-radius: 0px;
   border-bottom: 1px solid #d3d3d3;
   background-image: url("../images/datavirt-filter-header-bg.png");
@@ -465,20 +426,20 @@ button.tree:hover {
   padding-bottom: 10px;
 }
 
-.sramp-settings-property-list .nav-pills .active a, .sramp-settings-property-list .nav-pills .active a:hover {
+.datavirt-settings-property-list .nav-pills .active a, .datavirt-settings-property-list .nav-pills .active a:hover {
   color: rgb(255, 255, 255);
   background-color: rgb(0, 136, 204);
   background-image: none;
 }
 
-.row-fluid .sramp-settings-property-details {
+.row-fluid .datavirt-settings-property-details {
   padding: 10px;
   border-left: 1px solid #d3d3d3;
   background-color: white;
   margin-left: 0px;
 }
 
-.sramp-settings-add-prop {
+.datavirt-settings-add-prop {
   margin-left: 10px;
   margin-bottom: 10px;
 }
@@ -521,6 +482,13 @@ footer hr {
   border-bottom: 1px solid #bbb;
 }
 
+.addsource-modal {
+  height : 550px;
+}
+.addsource-modal-body {
+  max-height : 550px;
+}
+
 .modal-header {
   padding: 1px 15px;
   background-color: #f5f5f5;
@@ -536,20 +504,6 @@ footer hr {
 }
 .modal-header .close {
   margin-top: 10px;
-}
-
-.classifiers-modal .modal-footer {
-  padding: 5px 10px 8px 10px;
-}
-
-.modify-classifiers-dialog-ontology-selector hr {
-  margin-top: 5px;
-}
-.modify-classifiers-dialog-ontology-selector .sramp-sp4n-label {
-  text-shadow: 0px 1px 0px white;
-  padding: 4px 12px;
-  line-height: 20px;
-  display: inline;
 }
 
 #fileupload-import .input-append {

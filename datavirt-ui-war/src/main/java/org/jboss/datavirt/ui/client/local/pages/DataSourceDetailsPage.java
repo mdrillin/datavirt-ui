@@ -284,6 +284,7 @@ public class DataSourceDetailsPage extends AbstractPage {
     	for(DataSourcePropertyBean defn : corePropList) {
    			dataSourceCorePropertiesTable.addRow(defn);
     	}
+    	dataSourceCorePropertiesTable.setValueColTextBoxWidths();
     	dataSourceCorePropertiesTable.setVisible(true);
     }
 
@@ -304,6 +305,7 @@ public class DataSourceDetailsPage extends AbstractPage {
     	for(DataSourcePropertyBean defn : advPropList) {
     		dataSourceAdvancedPropertiesTable.addRow(defn);
     	}
+    	dataSourceAdvancedPropertiesTable.setValueColTextBoxWidths();
     	dataSourceAdvancedPropertiesTable.setVisible(true);
     }
     
