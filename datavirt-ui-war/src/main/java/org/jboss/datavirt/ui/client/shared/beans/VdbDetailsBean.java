@@ -38,6 +38,7 @@ public class VdbDetailsBean extends VdbSummaryBean implements Serializable {
     private Collection<VdbModelBean> models = new ArrayList<VdbModelBean>();
     private int modelsPerPage;
     private int startIndex;
+    private int endIndex;
 
     /**
      * Constructor.
@@ -158,6 +159,20 @@ public class VdbDetailsBean extends VdbSummaryBean implements Serializable {
      */
     public void setStartIndex(int startIndex) {
         this.startIndex = startIndex;
+    }
+
+    /**
+     * @return the endIndex
+     */
+    public int getEndIndex() {
+        return endIndex;
+    }
+
+    /**
+     * @param endIndex the endIndex to set
+     */
+    public void setEndIndex(int endIndex) {
+        this.endIndex = endIndex;
     }
 
 }

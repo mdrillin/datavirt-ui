@@ -147,8 +147,6 @@ public class VdbDetailsPage extends AbstractPage {
     protected HtmlSnippet datasourceLoading;
 
     private int currentPage = 1;
-    private int pgrStartIndex = 1;
-    private int pgrEndIndex = 1;
     protected VdbDetailsBean currentVdbDetails;
         
 	/**
@@ -547,8 +545,8 @@ public class VdbDetailsPage extends AbstractPage {
         	// Sort by name in the desired order
         	Collections.sort(vdbModelList,new VdbModelBeanComparator(!currentSortColumn.ascending));
 
-        	int startIndx = pgrStartIndex-1;
-        	int endIndx = pgrEndIndex;
+        	int startIndx = vdbDetails.getStartIndex();
+        	int endIndx = vdbDetails.getEndIndex()+1;
         	for(int i=startIndx; i<endIndx; i++) {
         		VdbModelBean vdbModelBean = vdbModelList.get(i);
                 this.vdbModelsTable.addRow(vdbModelBean);

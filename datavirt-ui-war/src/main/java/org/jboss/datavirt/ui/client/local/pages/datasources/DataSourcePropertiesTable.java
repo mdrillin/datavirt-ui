@@ -36,6 +36,7 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
@@ -46,9 +47,11 @@ import com.google.gwt.user.client.ui.TextBox;
 @Dependent
 public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable implements HasValueChangeHandlers<Void> {
 
+	private static final String PASSWORD_KEY = "password"; //$NON-NLS-1$
+	
     private Map<Integer,TextBox> rowNameMap = new HashMap<Integer,TextBox>();
     private Map<Integer,DataSourcePropertyBean> rowBeanMap = new HashMap<Integer,DataSourcePropertyBean>();
-
+    
     /**
      * Constructor.
      */
@@ -89,8 +92,14 @@ public class DataSourcePropertiesTable extends SortableTemplatedWidgetTable impl
         int rowIdx = this.rowElements.size();
 
         InlineLabel name = new InlineLabel(dataSourcePropertyBean.getName());
-        
-        TextBox valueTextBox = new TextBox();
+
+        TextBox valueTextBox = null;
+        String propName = dataSourcePropertyBean.getName();
+        if( propName!=null && propName.equalsIgnoreCase(PASSWORD_KEY) ) {
+        	valueTextBox = new PasswordTextBox();
+        } else {
+        	valueTextBox = new TextBox();
+        }
         valueTextBox.setText(dataSourcePropertyBean.getValue());
         
         valueTextBox.addKeyUpHandler(new KeyUpHandler() {

@@ -174,6 +174,7 @@ public class VdbService implements IVdbService {
         
         vdbDetailsBean.setModelsPerPage(pageSize);
         vdbDetailsBean.setStartIndex(page_startIndex);
+        vdbDetailsBean.setEndIndex(page_endIndex);
 
         return vdbDetailsBean;
     }
