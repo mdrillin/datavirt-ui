@@ -316,8 +316,11 @@ public class VdbDetailsPage extends AbstractPage {
             @Override
             public void onError(Throwable error) {
                 notificationService.sendErrorNotification(i18n.format("vdbdetails.error-adding-source-model"), error); //$NON-NLS-1$
-                noDataMessage.setVisible(true);
                 addModelInProgressMessage.setVisible(false);
+                setVdbStatus(currentVdbDetails);
+                updatePager(currentVdbDetails);
+                updateVdbModelsTable(currentVdbDetails);
+                doSetButtonEnablements();
             }
         });           	
     }
@@ -359,8 +362,11 @@ public class VdbDetailsPage extends AbstractPage {
             @Override
             public void onError(Throwable error) {
                 notificationService.sendErrorNotification(i18n.format("vdbdetails.error-adding-view-model"), error); //$NON-NLS-1$
-                noDataMessage.setVisible(true);
                 addModelInProgressMessage.setVisible(false);
+                setVdbStatus(currentVdbDetails);
+                updatePager(currentVdbDetails);
+                updateVdbModelsTable(currentVdbDetails);
+                doSetButtonEnablements();
             }
         });           	
     }

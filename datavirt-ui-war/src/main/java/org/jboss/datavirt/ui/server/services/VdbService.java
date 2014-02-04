@@ -376,7 +376,10 @@ public class VdbService implements IVdbService {
     		jndiName = "java:/"+dataSourceName;
     	}
     	// Deploy the Source VDB
-    	deploySourceVDB(sourceVDBName, modelName, dataSourceName, jndiName, translator);
+    	String sourceStatus = deploySourceVDB(sourceVDBName, modelName, dataSourceName, jndiName, translator);
+    	if(sourceStatus!=Constants.SUCCESS) {
+    		throw new DataVirtUiException("Could not add the source : \n "+sourceStatus);
+    	}
 
     	// Add the source VDB as an import, then redeploy the vdb
     	addImportAndRedeploy(vdbName,sourceVDBName,1);
@@ -414,8 +417,7 @@ public class VdbService implements IVdbService {
         	if(sourceVdb!=null) {
         		String sourceVdbStatus = getVDBStatusMessage(sourceVDBName);
         		if(!sourceVdbStatus.equals(Constants.SUCCESS)) {
-        			return "<bold>The Source could not be added: <br> - Error deploying Source VDB '"+
-        					dataSourceName+"', with translator '"+translator+"'</bold><br><br>"+sourceVdbStatus;
+        			return sourceVdbStatus;
         		}
         		return sourceVdbStatus;
         	}
@@ -444,7 +446,7 @@ public class VdbService implements IVdbService {
         	// Get deployed VDB and return status
         	String vdbStatus = getVDBStatusMessage(sourceVDBName);
         	if(!vdbStatus.equals(Constants.SUCCESS)) {
-        		return "<bold>Error deploying VDB "+sourceVDBName+"</bold><br>"+vdbStatus;
+        		return vdbStatus;
         	}
         	return Constants.SUCCESS;
     	} catch (Exception e) {
@@ -473,7 +475,7 @@ public class VdbService implements IVdbService {
     			if(allErrors!=null && !allErrors.isEmpty()) {
     				StringBuffer sb = new StringBuffer();
     				for(String errorMsg : allErrors) {
-    					sb.append("ERROR: " +errorMsg+"<br>");
+    					sb.append("ERROR: " +errorMsg);
     				}
     				return sb.toString();
     			}
@@ -556,13 +558,7 @@ public class VdbService implements IVdbService {
      * @param importVdbVersion the version of the VDB to import
      * @return the success string
      */
-    public String addImportAndRedeploy(String vdbName, String importVdbName, int importVdbVersion) throws DataVirtUiException {
-    	// First Check the VDB being added. If it has errors, dont add
-    	String sourceStatus = getVDBStatusMessage(importVdbName);
-    	if(!sourceStatus.equals(Constants.SUCCESS)) {
-    		return "<bold>Import Source has errors and was not added:</bold><br>"+sourceStatus;
-    	}
-    	
+    private String addImportAndRedeploy(String vdbName, String importVdbName, int importVdbVersion) throws DataVirtUiException {
     	// Get deployed VDB and check status
     	VDBMetaData theVDB;
 		try {

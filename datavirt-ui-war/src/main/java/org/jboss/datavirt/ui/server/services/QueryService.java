@@ -287,21 +287,16 @@ public class QueryService implements IQueryService {
     			stmt.close();
     		}
     	} catch (Exception e) {
-    		if(connection!=null) {
-    			try {
-    				connection.rollback();
-    			} catch (SQLException e2) {
-    				throw new DataVirtUiException(e2.getMessage());
-    			}
-    		}
+    		try {
+				closeConnection(connection);
+			} catch (SQLException e1) {
+			}
+    		throw new DataVirtUiException(e.getMessage());
     	} finally {
-    		if(connection!=null) {
-    			try {
-    				connection.close();
-    			} catch (SQLException e2) {
-
-    			}
-    		}
+    		try {
+				closeConnection(connection);
+			} catch (SQLException e1) {
+			}
     	}
 
     	int totalRows = rowList.size();
@@ -399,13 +394,6 @@ public class QueryService implements IQueryService {
     			}
     			resultSet.close();
     		} catch (Exception e) {
-    			if(connection!=null) {
-    				try {
-    					connection.rollback();
-    				} catch (SQLException e2) {
-
-    				}
-    			}
     		}
     	}
 
@@ -460,13 +448,6 @@ public class QueryService implements IQueryService {
     			}
     			resultSet.close();
     		} catch (Exception e) {
-    			if(connection!=null) {
-    				try {
-    					connection.rollback();
-    				} catch (SQLException e2) {
-
-    				}
-    			}
     		}
     	}
     	
@@ -526,13 +507,6 @@ public class QueryService implements IQueryService {
     		}
     		resultSet.close();
     	} catch (Exception e) {
-    		if(connection!=null) {
-    			try {
-    				connection.rollback();
-    			} catch (SQLException e2) {
-    				throw new DataVirtUiException(e2.getMessage());
-    			}
-    		}
     	}
 
     	return resultList;
@@ -577,13 +551,6 @@ public class QueryService implements IQueryService {
     		}
     		resultSet.close();
     	} catch (Exception e) {
-    		if(connection!=null) {
-    			try {
-    				connection.rollback();
-    			} catch (SQLException e2) {
-    				throw new DataVirtUiException(e2.getMessage());
-    			}
-    		}
     	}
 
     	return resultList;
